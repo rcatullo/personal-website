@@ -27,7 +27,7 @@ export default function Footer() {
             href="mailto:rcatullo@stanford.edu"
           >
             <ArrowIcon />
-            <p className="ml-2 h-7">rcatullo@stanford.edu</p>
+            <p className="ml-2 h-7">email</p>
           </a>
         </li>
         <li>
@@ -35,7 +35,7 @@ export default function Footer() {
             className="flex items-center transition-all hover:text-neutral-800 dark:hover:text-neutral-100"
             rel="noopener noreferrer"
             target="_blank"
-            href="/CS Resume.pdf"
+            href="/resume.pdf"
           download>
             <ArrowIcon />
             <p className="ml-2 h-7">resume</p>
