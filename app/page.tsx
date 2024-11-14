@@ -6,7 +6,7 @@ export default function Page() {
       <h1 className="mb-2 text-2xl font-semibold tracking-tighter">
         Ryan Catullo
       </h1>
-      <h2 className="mb-8 text-2xl italic tracking-tight">
+      <h2 className="mb-8 text-xl italic tracking-tight">
         Mathematics and Computer Science @ Stanford University
       </h2>
       <p className="mb-4">
@@ -25,7 +25,7 @@ export default function Page() {
         polynomials using them such that the average-case complexity of evaluating 
         these polynomials on random inputs (with respect to some chosen probability 
         distribution) is equal to the worst-case complexity of the NP-hard problem. 
-        This is really useful in generating cryptographic primitives for encryption 
+        This is useful in generating cryptographic primitives for encryption 
         algorithms, which is increasingly relevant as we enter the dawn of quantum 
         computing.`}
       </p>
