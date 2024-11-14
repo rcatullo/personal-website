@@ -6,7 +6,7 @@ export default function Page() {
       <h1 className="mb-2 text-2xl font-semibold tracking-tighter">
         Ryan Catullo
       </h1>
-      <h2 className="mb-8 text-xl font-semibold tracking-tight">
+      <h2 className="mb-8 text-xl tracking-tight">
         Mathematics and Computer Science @ Stanford University
       </h2>
       <p className="mb-4 text-justify">
