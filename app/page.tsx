@@ -6,7 +6,7 @@ export default function Page() {
       <h1 className="mb-2 text-2xl font-semibold tracking-tighter">
         Ryan Catullo
       </h1>
-      <h2 className="mb-8 text-1xl italic tracking-tight">
+      <h2 className="mb-8 text-2xl italic tracking-tight">
         Mathematics and Computer Science @ Stanford University
       </h2>
       <p className="mb-4">
@@ -16,9 +16,10 @@ export default function Page() {
         studies roughly the correspondence between sheaves on the space of 
         LG-local systems and D-modules (modules over regular differential 
         operators) on the space of principal G-bundles, where LG is a sort of 
-        "Langland's dual group" to G.
-
-        I also study theoretical computer science, particularly computational 
+        "Langland's dual group" to G.`}
+        </p>
+      <p className="mb-4">
+        {`I also study theoretical computer science, particularly computational 
         complexity. One area of research I find interesting is worst-case to 
         average-case reductions, which roughly takes NP-hard problems and constructs 
         polynomials using them such that the average-case complexity of evaluating 
