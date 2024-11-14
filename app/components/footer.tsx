@@ -27,7 +27,7 @@ export default function Footer() {
             href="mailto:rcatullo@stanford.edu"
           >
             <ArrowIcon />
-            <p className="ml-2 h-7">email</p>
+            <p className="ml-2 h-7">rcatullo@stanford.edu</p>
           </a>
         </li>
         <li>
