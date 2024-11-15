@@ -6,7 +6,7 @@ export default function Page() {
       <ul className="list-disc">
         <li className="font-serif">
           “PSPACE-hardness of Two-Player Games”, with Tanvi Deshpande, 2024, Stanford University, available 
-            <a className="flex items-center transition-all hover:text-neutral-800 dark:hover:text-neutral-100"
+            <a className="transition-all hover:text-neutral-800 dark:hover:text-neutral-100"
               rel="noopener noreferrer"
               target="_blank"
               href="https://obnh745pyfptrm8z.public.blob.vercel-storage.com/papers/PSPACE-hardness%20of%20Two-Player%20Games.pdf"
