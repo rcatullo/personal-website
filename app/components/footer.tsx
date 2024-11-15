@@ -35,7 +35,7 @@ export default function Footer() {
             className="flex items-center transition-all hover:text-neutral-800 dark:hover:text-neutral-100"
             rel="noopener noreferrer"
             target="_blank"
-            href="https://obnh745pyfptrm8z.public.blob.vercel-storage.com/CS%20Resume-I8d2ptBcR0dwDYWQgEEcOQVXexULEt.pdf"
+            href="https://obnh745pyfptrm8z.public.blob.vercel-storage.com/resume.pdf"
             download="resume.pdf">
             <ArrowIcon />
             <p className="ml-2 h-7">resume</p>
