@@ -14,6 +14,29 @@ export default function Page() {
              {` here`}
             </a>.
           </li>
+          <li className="font-serif">
+          “Riemann's Existence Theorem and Admissible Covers", 2024, under the supervision of Mohan Swaminathan, Stanford 
+          Undergraduate Research Institute in Mathematics, available 
+            <a className="transition-all hover:text-neutral-800 dark:hover:text-neutral-100"
+              rel="noopener noreferrer"
+              target="_blank"
+              href="https://obnh745pyfptrm8z.public.blob.vercel-storage.com/papers/SURIM_2024.pdf"
+              download>
+             {` here`}
+            </a>.
+          </li>
+          <li className="font-serif">
+          "Supersingular Diagonal Curves and their Genera", with A. Sukhadia and M. Machado, 2023, Stanford 
+          Undergraduate Research Institute in Mathematics, available 
+            <a className="transition-all hover:text-neutral-800 dark:hover:text-neutral-100"
+              rel="noopener noreferrer"
+              target="_blank"
+              href="https://obnh745pyfptrm8z.public.blob.vercel-storage.com/papers/SURIM_2023.pdf"
+              download>
+             {` here`}
+            </a>.
+          </li>
+          
       </ul>
     </section>
   )
