@@ -35,7 +35,7 @@ export default function Footer() {
             className="flex items-center transition-all hover:text-neutral-800 dark:hover:text-neutral-100"
             rel="noopener noreferrer"
             target="_blank"
-            href="https://github.com/rcatullo/portfolio/blob/62f8820988a5e3bfcf75686fe64aeeb5413eb810/app/resume.pdf"
+            href="app/files/CS Resume.pdf"
             download="resume.pdf">
             <ArrowIcon />
             <p className="ml-2 h-7">resume</p>
