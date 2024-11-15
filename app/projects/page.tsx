@@ -5,8 +5,8 @@ export default function Page() {
       <h2 className="text-xl mb-4">Papers</h2>
       <ul className="list-disc space-y-4">
         <li className="font-serif whitespace-pre-wrap">
-          <p className="transition-all font-semibold break-before-avoid break-after-avoid">“PSPACE-hardness of Two-Player Games”`</p>, with Tanvi Deshpande, 2024, Stanford University, available 
-            <a className="break-before-avoid break-after-avoid transition-all relative after:bg-gradient-to-r after:from-indigo-500 after:via-purple-500 after:to-pink-500 after:absolute after:h-px after:w-0 after:bottom-0 after:left-0 hover:after:w-full after:transition-all after:duration-300 cursor-pointer"
+          <span className="transition-all font-semibold">“PSPACE-hardness of Two-Player Games”</span>{`, with Tanvi Deshpande, 2024, Stanford University, available `}
+            <a className="break-before-avoid break-after-avoid transition-all relative after:bg-gradient-to-r after:from-indigo-500 after:via-purple-500 after:to-pink-500 after:absolute after:h-0.5 after:w-0 after:bottom-0 after:left-0 hover:after:w-full after:transition-all after:duration-300 cursor-pointer"
               rel="noopener noreferrer"
               target="_blank"
               href="https://obnh745pyfptrm8z.public.blob.vercel-storage.com/papers/PSPACE-hardness%20of%20Two-Player%20Games.pdf"
