@@ -36,7 +36,7 @@ export default function Footer() {
             rel="noopener noreferrer"
             target="_blank"
             href="/resume.pdf"
-            download = "resume.pdf">
+            download="resume.pdf">
             <ArrowIcon />
             <p className="ml-2 h-7">resume</p>
           </a>
