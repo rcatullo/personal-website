@@ -32,7 +32,7 @@ export default function Page() {
       <div className="my-8">
         <BlogPosts />
       </div>
-      <h2 className="mb-2">
+      <h2 className="mb-2 text-xl">
         Contact
       </h2>
       <p className="mb-8 text-left">
