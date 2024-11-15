@@ -35,8 +35,8 @@ export default function Footer() {
             className="flex items-center transition-all hover:text-neutral-800 dark:hover:text-neutral-100"
             rel="noopener noreferrer"
             target="_blank"
-            href="app/resume.pdf"
-          download>
+            href="/resume.pdf"
+            download = "resume.pdf">
             <ArrowIcon />
             <p className="ml-2 h-7">resume</p>
           </a>
