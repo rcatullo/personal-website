@@ -32,6 +32,14 @@ export default function Page() {
       <div className="my-8">
         <BlogPosts />
       </div>
+      <h2 className="mb-2">
+        Contact
+      </h2>
+      <p className="mb-8 text-left">
+        {`Ryan Catullo`} <br />
+        {`e: rcatullo@stanford.edu`} <br />
+        {`p: 540-604-6019`}
+      </p>
     </section>
   )
 }
