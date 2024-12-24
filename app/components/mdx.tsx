@@ -1,8 +1,13 @@
 import Link from 'next/link'
 import Image from 'next/image'
-import { MDXRemote } from 'next-mdx-remote/rsc'
+import { MDXRemote } from 'next-mdx-remote'
 import { highlight } from 'sugar-high'
 import React from 'react'
+import { compileMDX } from 'next-mdx-remote/rsc'
+import remarkMath from 'remark-math'
+import rehypeKatex from 'rehype-katex'
+
+const katexCSS = '\n <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossOrigin="anonymous"/>'
 
 function Table({ data }) {
   let headers = data.headers.map((header, index) => (
@@ -86,6 +91,18 @@ function createHeading(level) {
   return Heading
 }
 
+function Strong(props) {
+  return <strong className="font-semiboldfont-bold bg-clip-text text-transparent bg-gradient-to-r from-dirty-brown to-platinum via-aztec-gold" {...props} />
+}
+
+function Blockquote(props) {
+  return (
+    <blockquote className="border-l-4 border-gradient-b-brown-platinum pl-4 md:mx-5">
+      {props.children}
+    </blockquote>
+  )
+}
+
 let components = {
   h1: createHeading(1),
   h2: createHeading(2),
@@ -96,14 +113,22 @@ let components = {
   Image: RoundedImage,
   a: CustomLink,
   code: Code,
+  strong: Strong,
+  blockquote: Blockquote,
   Table,
 }
 
-export function CustomMDX(props) {
-  return (
-    <MDXRemote
-      {...props}
-      components={{ ...components, ...(props.components || {}) }}
-    />
-  )
+export async function CustomMDX(post) {
+  const { content } = await compileMDX({
+      source: post.concat(katexCSS),
+      options: {
+        parseFrontmatter: false,
+        mdxOptions: {
+          remarkPlugins: [remarkMath],
+          rehypePlugins: [rehypeKatex]
+        }
+      },
+      components: components
+    })
+  return content
 }

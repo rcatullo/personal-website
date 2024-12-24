@@ -1,0 +1,29 @@
+---
+title: 'Introduction to Riemannian Metrics'
+publishedAt: '2024-12-23'
+summary: 'A short exposition on Riemannian metrics from John Lee's "Introduction to Smooth Manifolds".'
+---
+
+The purpose of this post is to give a short first account of Riemannian metrics on smooth manifolds. To define things like *lengths* and *angles* in a normal vector space one would use the notion of an inner product. In the setting of smooth manifolds, the appropriate generalization turns out to be what are called **Riemannian metrics**. 
+
+The necessary background is essentially knowledge of smooth manifolds and tangent/cotangent bundles. In the first section, I will provide some necessary context on the idea behind tensor fields, of which a Riemannian metric is a specific example.
+
+## Tensor Fields
+
+Throughout this post, we will let $M$ be a smooth manifold (with or without boundary), say over $\mathbb{C}$, and denote the **tanget bundle** (resp. **cotangent bundle**) of $M$ by $TM$ (resp. $T^* M$). By definition, we have
+
+$$
+TM = \prod_{p \in M} T_p M \qquad T^* M  = \prod_{p \in M} T^*_p M
+$$
+
+where $T_p M$ is the tangent space to $M$ at $p$, and $T^*_p M$ is its dual as a complex vector space. We can then construct *covariant and contravariant bundles of k-tensors* and the *bundle of mixed tensors of type $(k,\ell)$* in the following way.
+
+$$
+\begin{align*}
+(T^*M)^{\otimes k} &= \prod_{p \in M} (T^*_p M)^{\otimes k} \\
+(TM)^{\otimes k} &= \prod_{p \in M} (T_p M)^{\otimes k} \\
+(TM)^{\otimes (k,\ell)} &= \prod_{p \in M} (T_p M)^{\otimes (k,\ell)} \\
+\end{align*}
+$$
+
+Recall that for a vector space $V$, the *space of mixed tensors on $V$ of type $(k,\ell)$* is $V^{\otimes (k,\ell)} = \underbrace{V \otimes \ldots \otimes V}_{k \text{ times}} \otimes \underbrace{V^* \otimes \ldots \otimes V^*}_{\ell \text{ times}}$

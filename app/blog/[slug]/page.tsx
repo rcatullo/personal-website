@@ -1,20 +1,19 @@
 import { notFound } from 'next/navigation'
-import { CustomMDX } from 'app/components/mdx'
 import { formatDate, getBlogPosts } from 'app/blog/utils'
 import { baseUrl } from 'app/sitemap'
+import { CustomMDX } from 'app/components/mdx'
 
 export async function generateStaticParams() {
   let posts = getBlogPosts()
-
   return posts.map((post) => ({
-    slug: post.slug,
+    slug: post.slug
   }))
 }
 
 export function generateMetadata({ params }) {
   let post = getBlogPosts().find((post) => post.slug === params.slug)
   if (!post) {
-    return
+    notFound()
   }
 
   let {
@@ -51,12 +50,13 @@ export function generateMetadata({ params }) {
   }
 }
 
-export default function Blog({ params }) {
-  let post = getBlogPosts().find((post) => post.slug === params.slug)
-
+export default async function Blog({ params }) {
+  const { slug } = await params
+  let post = getBlogPosts().find((post) => post.slug === slug)
   if (!post) {
     notFound()
   }
+  const content = await CustomMDX(post.content)
 
   return (
     <section>
@@ -65,7 +65,6 @@ export default function Blog({ params }) {
         suppressHydrationWarning
         dangerouslySetInnerHTML={{
           __html: JSON.stringify({
-            '@context': 'https://schema.org',
             '@type': 'BlogPosting',
             headline: post.metadata.title,
             datePublished: post.metadata.publishedAt,
@@ -86,12 +85,12 @@ export default function Blog({ params }) {
         {post.metadata.title}
       </h1>
       <div className="flex justify-between items-center mt-2 mb-8 text-sm">
-        <p className="text-sm text-neutral-600 dark:text-neutral-400">
+      <p className="text-sm text-neutral-600 dark:text-neutral-400">
           {formatDate(post.metadata.publishedAt)}
         </p>
       </div>
       <article className="prose">
-        <CustomMDX source={post.content} />
+        {content}
       </article>
     </section>
   )
