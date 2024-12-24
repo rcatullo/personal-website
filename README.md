@@ -1,8 +1,9 @@
-# Portfolio Blog Starter
+# Ryan's Personal Website
 
-This is a porfolio site template complete with a blog. Includes:
+This is my personal website and porfolio build from a react app template I found on Vercel. I have added support for the following features.
 
-- MDX and Markdown support
+- Custom MDX with LaTeX formatting
+- Blog and Projects Pages
 - Optimized for SEO (sitemap, robots, JSON-LD schema)
 - RSS Feed
 - Dynamic OG images
@@ -11,32 +12,6 @@ This is a porfolio site template complete with a blog. Includes:
 - Vercel Speed Insights / Web Analytics
 - Geist font
 
-## Demo
+## Link
 
-https://portfolio-blog-starter.vercel.app
-
-## How to Use
-
-You can choose from one of the following two methods to use this repository:
-
-### One-Click Deploy
-
-Deploy the example using [Vercel](https://vercel.com?utm_source=github&utm_medium=readme&utm_campaign=vercel-examples):
-
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/vercel/examples/tree/main/solutions/blog&project-name=blog&repository-name=blog)
-
-### Clone and Deploy
-
-Execute [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app) with [pnpm](https://pnpm.io/installation) to bootstrap the example:
-
-```bash
-pnpm create next-app --example https://github.com/vercel/examples/tree/main/solutions/blog blog
-```
-
-Then, run Next.js in development mode:
-
-```bash
-pnpm dev
-```
-
-Deploy it to the cloud with [Vercel](https://vercel.com/templates) ([Documentation](https://nextjs.org/docs/app/building-your-application/deploying)).
+https://portfolio-rcatullos-projects.vercel.app/
