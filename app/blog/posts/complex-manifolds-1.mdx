@@ -19,31 +19,34 @@ One might be able to guess the usual way of defining complex manifolds, which is
 
 ## Linear Algebra Motivation
 
-We make the following observation. A complex vector space $V$ is equivalent to a real vector space $V$ along with some $J \in \End_{\bbr}(V)$ such that $J^2 = - \id_V$. Given a complex vector space $V$, we can let $J$ be multiplication by $i$. Given $(V,J)$ as above, we can get a natural $\bbc$-structure on $V$ by letting 
+We make the following observation. A complex vector space $V$ is equivalent to a real vector space $V$ along with some $J \in \End_{\bbr}(V)$ such that $J^2 = - \id_V$, called a *complex structure*. Given a complex vector space $V$, we can let $J$ be multiplication by $i$. Given $(V,J)$ as above, we can get a natural $\bbc$-structure on $V$ by letting 
 $$
 (a+bi)v = av + bJv
 $$ 
 for all $a,b \in \bbr$ and $v \in V$. 
 
-**Example** Let $M = \bbc^n$, $p \in M$ and $V = T_p M$ with local coordinates $z = (z_1, \ldots, z_n)$. Then each $z_k = x_k + i y_k$ where the $x,y$ are real-valued coordinates, and so $T_p M = \bbr^n \times \bbr^n$ with the local coordinates $\left\{\frac{\del}{\del x_1}, \ldots, \frac{\del}{\del x_n}, \frac{\del}{\del y_1}, \ldots, \frac{\del}{\del y_n}\right\}$. Define
+**Example** Let $M = \bbc^n$, $p \in M$ and $V = T_p M$ with local coordinates $z = (z_1, \ldots, z_n)$. Then each $z_k = x_k + i y_k$ where the $x,y$ are real-valued coordinates, and so $T_p M = \bbr^n \times \bbr^n$ with the local coordinates 
+$$
+\left\{\frac{\del}{\del x_1}, \ldots, \frac{\del}{\del x_n}, \frac{\del}{\del y_1}, \ldots, \frac{\del}{\del y_n}\right\}
+$$
+Define the following complex structure on $T_pM$
 $$
 J = \begin{pmatrix}0 & I_n \\ -I_n & 0 \end{pmatrix} \in \End(V)
 $$
-to be our endomorphism of $V$, and note that $J$ satisfies the following equations.
-$$
-\begin{align*}
-J \frac{\del}{\del x_k} &= \frac{\del}{\del y_k} \\ 
-J \frac{\del}{\del y_k} &= -\frac{\del}{\del x_k}
-\end{align*}
-$$
 
-Note that this extends naturally to families, i.e. to vector bundles, by defining everything fiberwise. That is, a complex vector bundle $\cale$ over a manifold $M$ is a real vector bundle $\cale$ over $M$ together with a $J \in \End(\cale)$ such that for every $p \in M$, the map $J_p \colon \cale_p \to \cale_p$ on the fibers satisfies $J_p^2 = -\id$.
+**Unimportant Remark** Note that $J$ satisfies the following equations which resemble a PDE.
+$$
+J \frac{\del}{\del x_k} = \frac{\del}{\del y_k} \qquad J \frac{\del}{\del y_k} = -\frac{\del}{\del x_k}
+$$
+We will see later that on manifolds whose tangent bundle has a complex structure $J$, we can always find coordinates around a point such that $J$ takes the above canonical form and satisfies these equations. This might not be true in a neighborhood of $p$, but if it is then $J$ is said to be *integrable*. 
 
-**Remark** Because the notation will get annoying, for $v \in \cale_p$ an element of the fiber over $p \in M$ we write $Jv$ instead of $J_p v$.
+Ignore this for now, but note that this is the reason for the terminology *almost* complex structure below. If a manifold has an almost complex structure and is integrable, then it has a complex structure (i.e. it is a complex manifold).
+
+**Important Remark** Note that this extends naturally to families, i.e. to vector bundles, by defining everything fiberwise. That is, a complex vector bundle $\cale$ over a manifold $M$ is a real vector bundle $\cale$ over $M$ together with a $J \in \End(\cale)$ such that for every $p \in M$, the map $J_p \colon \cale_p \to \cale_p$ on the fibers satisfies $J_p^2 = -\id$. Because the notation will get annoying, for $v \in \cale_p$ an element of the fiber over $p \in M$ we write $Jv$ instead of $J_p v$.
 
 ## Almost Complex Structure
 
-**Definition** An *almost complex manifold* (ACM) is a manifold $M$ with an almost complex structure (ACS), i.e. a complex structure $J \in \End(TM)$ on the tangent bundle $TM$.
+**Definition** An *almost complex manifold* (ACM) is a manifold $M$ with an *almost complex structure* (ACS), i.e. a complex structure $J \in \End(TM)$ on the tangent bundle $TM$.
 
 For example, if $M$ is a complex manifold then multiplying by $i$ in each local holomorphic chart induces a well-defined almost complex structure on $M$. The details are easily obtained from the $M = \bbc^n$ example in the previous subsection.
 
@@ -66,15 +69,20 @@ Let $V$ be a real vector space. We can construct the *complexification of* $V$ b
 
 Let $(V,J)$ be a complex vector space, i.e. $V$ is a real vector space and $J$ is a complex structure on $V$. Note then that $J$ extends to $V^{\bbc}$ by $J(v + iw) = Jv + i Jw$. As an aside, we denote the *conjugate* $(V,-J)$ by $\bar{V}$.
 
-Since $J$ has two eigenvalues on $V^{\bbc}$, namely $\pm i$, there are two eigenspaces $V^{1,0}$ and $V^{0,1}$ corresponding to $i$ and $-i$, respectively. Then there is a natural decomposition
+Since $J$ has two eigenvalues on $V^{\bbc}$, namely $\pm i$, there are two eigenspaces
+$$
+V^{1,0} = \{v \mid Jv = iv\} = \{v - i Jv \mid v \in V\}
+$$
+$$
+V^{0,1} = \{v \mid Jv = -iv\} = \{v + i J v \mid v \in V\}
+$$
+corresponding to the eigenvalues $i$ and $-i$ of $J$, respectively. Note that $V^{1,0} = \bar{V^{0,1}}$ are conjugate.
+
+**Important** There is a natural decomposition of $V^{\bbc}$ into a direct sum of its eigenspaces.
 $$
 V^{\bbc} = V^{1,0} \oplus V^{1,0}
 $$
-such that $V^{1,0} = \bar{V^{0,1}}$, where
-$$
-V^{1,0} = \{v - i Jv \mid v \in V\} \qquad V^{0,1} = \{v + i J v \mid v \in V\}
-$$
-Further, there are natural $\bbc$-linear maps $v \mapsto \frac{1}{2}(v \pm i J v)$ that identify $(V,J)$ with $(V^{1,0}, i)$ and $(V^{0,1}, -i)$.
+
 
 This again extends in families, i.e. to vector bundles by applying the definitions fiberwise. That is, if $(\cale, J)$ is a complex vector bundle then we can extend $\cale^{\bbc} = \cale \otimes_{\bbr} \bbc$ and $J$ extends on the fibers $\cale^{\bbc}_p$ as before. We then have a decomposition
 $$
@@ -82,8 +90,12 @@ $$
 $$
 where
 $$
-\cale^{1,0} = \{(p, v - i J v) \mid p \in M, v \in \cale_p\} \qquad \cale^{0,1} = \{(p, v + i J v) \mid p \in M, v \in \cale_p\}
+\cale^{1,0} = \{(p, v - i J v) \mid p \in M, v \in \cale_p\}
 $$
+$$
+\cale^{0,1} = \{(p, v + i J v) \mid p \in M, v \in \cale_p\}
+$$
+are the eigenbundles corresponding to $i$ and $-i$, respectively.
 
 ## Holomorphic Tangent Bundle
 
@@ -91,15 +103,29 @@ We can apply the above motivation to the setting of a manifold $M$ with an almos
 $$
 TM^{\bbc} = T^{1,0} M \oplus T^{0,1} M
 $$
-Since the notation will get particularly bad otherwise, let us denote the cotangent bundle $T^*M$ by $\Omega M$. We have an induced almost complex structure $J^*$ on $\Omega M$ given by $J^* \eta = -\eta \circ J$ for $\eta \in \Omega_p M = T^*_p M$. Then $(\Omega M, J^*)$ is a complex vector bundle, so we can complexify it as before. Let $\Omega M^{\bbc} = \text{ space of } \bbc \text{-valued functions } = (T^* M)^{\bbc}$. We really want to think of this as the space of **complex differential 1-forms** on $M$. As before,
+Since the notation will get particularly bad otherwise, let us denote the cotangent bundle $T^*M$ by $\Omega M$. 
+
+Given a complex structure $J$ on $TM$, we can obtain a complex structure $J^*$ on $\Omega M$ by $J^* \omega = -\omega \circ J$ for $\omega \in \Omega_p M = T^*_p M$. The negative sign is not necessary but its a useful convention.
+
+Then $(\Omega M, J^*)$ is a complex vector bundle, so we can complexify it just like $(TM, J)$. Let 
+$$
+\Omega M^{\bbc} = \text{ space of } \bbc \text{-valued functions } = (T^* M)^{\bbc}
+$$ 
+We really want to think of this as the space of **complex-valued differential 1-forms** on $M$. As before,
 $$
 \Omega M^{\bbc} = \Omega^{1,0} M \oplus \Omega^{0,1}M
 $$
-Let's unravel the definitions here real quick. Note that by definition,
+Let's unravel the definitions here real quick.
 $$
 \begin{align*}
 \Omega^{1,0} M &= \{(p, \omega - i J^* \omega) \mid p \in M, \omega \in \Omega_p M\} \\
-&= \{(p, \omega + i \omega \circ J ) \mid p \in M, \omega \in \Omega_p M\}
+&= \{(p, \omega + i \omega \circ J ) \mid p \in M, \omega \in \Omega_p M\} 
+\end{align*} 
+$$
+$$
+\begin{align*}
+\Omega^{0,1} M &= \{(p, \omega + i J^* \omega) \mid p \in M, \omega \in \Omega_p M\} \\
+&= \{(p, \omega - i \omega \circ J ) \mid p \in M, \omega \in \Omega_p M\}
 \end{align*}
 $$
 
@@ -113,7 +139,7 @@ $$
 &= \oplus_{p+q = k} \Omega^{p,q} M
 \end{align*}
 $$
-where $\Omega^{p,q} M$ is called the space of complex-valued differential forms of type $(p,q)$ on $M$.
+where $\Omega^{p,q} M$ is called the space of **complex-valued differential forms of type** $(p,q)$ on $M$.
 $$
 \Omega^{p,q} M = \underbrace{\Omega^{1,0} M \wedge \ldots \wedge \Omega^{1,0} M}_{p \text{ times}} \otimes \underbrace{\Omega^{0,1} M \wedge \ldots \wedge \Omega^{0,1} M}_{q \text{ times}}
 $$
