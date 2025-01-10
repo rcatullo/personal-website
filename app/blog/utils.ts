@@ -8,6 +8,83 @@ type Metadata = {
   image?: string
 }
 
+function getSTYFiles(dir) {
+  return fs.readdirSync(dir).filter((file) => path.extname(file) === '.sty')
+}
+
+function readSTYFile(filePath) {
+  let rawContent = fs.readFileSync(filePath, 'utf-8')
+  return rawContent
+}
+
+function findBalancedClosing(input: string, start: number) {
+  let stack = 0;
+
+  for (let i = start; i < input.length; i++) {
+      const char = input[i];
+
+      if (char === '{') stack++; // Increment stack for an opening brace
+      if (char === '}') {
+          stack--; // Decrement stack for a closing brace
+          if (stack === 0) return i; // Found the balanced closing brace
+      }
+  }
+
+  return 0; // No balanced closing brace found (should not happen if braces are balanced)
+}
+
+function parseSTYtoMacros(fileContent: string) {
+    type CMD = {
+      commandString: string, // substring of fileContent containing the command and its arguments
+      arg1: string, // first argument (new command)
+      arg2: string // second argument (LaTeX it is replacing)
+    }
+    const selectCmds = ["\\newcommand", "\\renewcommand", "\\DeclareMathOperator"];
+    let macros = {};
+    let i = 0;
+
+    while (i < fileContent.length) {
+        const command = selectCmds.find((cmd) => fileContent.startsWith(cmd, i));
+        if (command) {
+          const start = i
+          i = findBalancedClosing(fileContent, start); // index of the first (balanced) closing brace
+          const firstArg = fileContent.slice(fileContent.indexOf('{', start) + 1, i);
+          i = fileContent.indexOf('{', i) // move index of the opening brace of the second argument
+          const end = findBalancedClosing(fileContent, i); // index of the second (balanced) closing brace
+          const secondArg = fileContent.slice(i + 1, end);
+          i = end + 1; // move index to the next character after the closing brace
+          if (command === "\\DeclareMathOperator") {
+            macros = {
+              ...macros,
+              [firstArg]: `\\operatorname{${secondArg}}`
+            }
+          } else {
+            macros = {
+              ...macros,
+              [firstArg]: secondArg
+            }
+          }
+        } else {
+            i++;
+        }
+    }
+
+    return macros
+}
+
+export function generateMacros() {
+  let styFiles = getSTYFiles(path.join(process.cwd(), 'app', 'latex'))
+  let macros = {}
+  styFiles.forEach((file) => {
+    let content = readSTYFile(path.join(process.cwd(), 'app', 'latex', file))
+    macros = {
+      ...macros,
+      ...parseSTYtoMacros(content)
+    }
+  })
+  return macros
+}
+
 function parseFrontmatter(fileContent: string) {
   let frontmatterRegex = /---\s*([\s\S]*?)\s*---/
   let match = frontmatterRegex.exec(fileContent)

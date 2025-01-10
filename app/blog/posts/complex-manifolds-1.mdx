@@ -1,0 +1,138 @@
+---
+title: 'Geometry and Topology of Complex Manifolds - Lecture 1'
+publishedAt: '2024-01-09'
+summary: 'Lecture 1 Notes from Math 270 Winter 2025 at Stanford University on the Geometry and Topology of Complex Manifolds, taught by Professor Eleny Ionel.'
+---
+
+This is the first post in a series on the content from the course taught Winter 2025 at Stanford University on Math 270: **Geometry and Topology of Complex Manifolds** by Professor Eleny Ionel. The assumed background is the content of Math 215ABC, i.e. the basics of algebraic topology, differential topology, and Riemannian geometry. 
+
+The topics we plan to cover include the following.
+* Complex and K&auml;hler Manifolds
+* Complex vector bundles, holomorphic vector bundles (connections and curvature)
+* Dolbeault cohomology, Hodge theorem, Lefschetz theorem
+* Several vanishing theorems (e.g. Kodaira vanishing)
+* K&auml;hler-Einstein metrics on manifolds and Hermitian-Einstein metrics on holomorphic vector bundles.
+
+## Second Perspective on Complex Manifolds
+
+One might be able to guess the usual way of defining complex manifolds, which is the usual manifold axioms along with local charts in $\bbc^n$ such that the transition maps are holomorphic, blah blah blah. We will introduce a second perspective on complex manifolds that will prove useful.
+
+## Linear Algebra Motivation
+
+We make the following observation. A complex vector space $V$ is equivalent to a real vector space $V$ along with some $J \in \End_{\bbr}(V)$ such that $J^2 = - \id_V$. Given a complex vector space $V$, we can let $J$ be multiplication by $i$. Given $(V,J)$ as above, we can get a natural $\bbc$-structure on $V$ by letting 
+$$
+(a+bi)v = av + bJv
+$$ 
+for all $a,b \in \bbr$ and $v \in V$. 
+
+**Example** Let $M = \bbc^n$, $p \in M$ and $V = T_p M$ with local coordinates $z = (z_1, \ldots, z_n)$. Then each $z_k = x_k + i y_k$ where the $x,y$ are real-valued coordinates, and so $T_p M = \bbr^n \times \bbr^n$ with the local coordinates $\left\{\frac{\del}{\del x_1}, \ldots, \frac{\del}{\del x_n}, \frac{\del}{\del y_1}, \ldots, \frac{\del}{\del y_n}\right\}$. Define
+$$
+J = \begin{pmatrix}0 & I_n \\ -I_n & 0 \end{pmatrix} \in \End(V)
+$$
+to be our endomorphism of $V$, and note that $J$ satisfies the following equations.
+$$
+\begin{align*}
+J \frac{\del}{\del x_k} &= \frac{\del}{\del y_k} \\ 
+J \frac{\del}{\del y_k} &= -\frac{\del}{\del x_k}
+\end{align*}
+$$
+
+Note that this extends naturally to families, i.e. to vector bundles, by defining everything fiberwise. That is, a complex vector bundle $\cale$ over a manifold $M$ is a real vector bundle $\cale$ over $M$ together with a $J \in \End(\cale)$ such that for every $p \in M$, the map $J_p \colon \cale_p \to \cale_p$ on the fibers satisfies $J_p^2 = -\id$.
+
+**Remark** Because the notation will get annoying, for $v \in \cale_p$ an element of the fiber over $p \in M$ we write $Jv$ instead of $J_p v$.
+
+## Almost Complex Structure
+
+**Definition** An *almost complex manifold* (ACM) is a manifold $M$ with an almost complex structure (ACS), i.e. a complex structure $J \in \End(TM)$ on the tangent bundle $TM$.
+
+For example, if $M$ is a complex manifold then multiplying by $i$ in each local holomorphic chart induces a well-defined almost complex structure on $M$. The details are easily obtained from the $M = \bbc^n$ example in the previous subsection.
+
+**Remark** Suppose $M$ is a complex manifold, $J$ an ACS on $M$, and $f \colon M \to \bbc$ a function. Then the following are equivalent.
+1. $f$ is holomorphic
+2. $df \colon TM \to T\bbc$ is complex linear, i.e. $df \circ J = J_0 \circ df$ where $J_0$ is the canonical ACS on $T \bbc$
+3. $f = u + iv$ are the real and imaginary components, $du \circ J_0 = dv$
+4. The $u,v$ above satisfy the Cauchy-Riemann equations in each local chart, i.e. 
+$$
+\frac{\del u}{\del x_k} = \frac{\del v}{\del y_k} \qquad \frac{\del u}{\del y_k} = -\frac{\del v}{\del x_k}
+$$
+
+## Differential Calculus on Almost Complex Manifolds
+
+Note that $J \in \End(TM)$ being such that $J^2 = -\id$ on the fibers implies that $J$ has eigenvalues $\pm i$. Considering the eignspaces will allow us to decompose almost complex manifolds into direct sums, which will prove useful. I'll expand on this with some motivation from linear algebra first.
+
+## Linear Algebra Motivation
+
+Let $V$ be a real vector space. We can construct the *complexification of* $V$ by taking $V^{\bbc} = V \otimes_{\bbr} \bbc$. We denote elements of $V^{\bbc}$ by $v + iw$, which is shorthand for $v \otimes 1 + w \otimes i$. This is naturally a complex vector space.
+
+Let $(V,J)$ be a complex vector space, i.e. $V$ is a real vector space and $J$ is a complex structure on $V$. Note then that $J$ extends to $V^{\bbc}$ by $J(v + iw) = Jv + i Jw$. As an aside, we denote the *conjugate* $(V,-J)$ by $\bar{V}$.
+
+Since $J$ has two eigenvalues on $V^{\bbc}$, namely $\pm i$, there are two eigenspaces $V^{1,0}$ and $V^{0,1}$ corresponding to $i$ and $-i$, respectively. Then there is a natural decomposition
+$$
+V^{\bbc} = V^{1,0} \oplus V^{1,0}
+$$
+such that $V^{1,0} = \bar{V^{0,1}}$, where
+$$
+V^{1,0} = \{v - i Jv \mid v \in V\} \qquad V^{0,1} = \{v + i J v \mid v \in V\}
+$$
+Further, there are natural $\bbc$-linear maps $v \mapsto \frac{1}{2}(v \pm i J v)$ that identify $(V,J)$ with $(V^{1,0}, i)$ and $(V^{0,1}, -i)$.
+
+This again extends in families, i.e. to vector bundles by applying the definitions fiberwise. That is, if $(\cale, J)$ is a complex vector bundle then we can extend $\cale^{\bbc} = \cale \otimes_{\bbr} \bbc$ and $J$ extends on the fibers $\cale^{\bbc}_p$ as before. We then have a decomposition
+$$
+\cale^{\bbc} = \cale^{1,0} \oplus \cale^{0,1}
+$$
+where
+$$
+\cale^{1,0} = \{(p, v - i J v) \mid p \in M, v \in \cale_p\} \qquad \cale^{0,1} = \{(p, v + i J v) \mid p \in M, v \in \cale_p\}
+$$
+
+## Holomorphic Tangent Bundle
+
+We can apply the above motivation to the setting of a manifold $M$ with an almost complex structure $J$. Note $(TM, J)$ is a complex vector bundle, so we can complexify it to $TM^{\bbc} = TM \otimes_{\bbr} \bbc$. As above, we have a decomposition
+$$
+TM^{\bbc} = T^{1,0} M \oplus T^{0,1} M
+$$
+Since the notation will get particularly bad otherwise, let us denote the cotangent bundle $T^*M$ by $\Omega M$. We have an induced almost complex structure $J^*$ on $\Omega M$ given by $J^* \eta = -\eta \circ J$ for $\eta \in \Omega_p M = T^*_p M$. Then $(\Omega M, J^*)$ is a complex vector bundle, so we can complexify it as before. Let $\Omega M^{\bbc} = \text{ space of } \bbc \text{-valued functions } = (T^* M)^{\bbc}$. We really want to think of this as the space of **complex differential 1-forms** on $M$. As before,
+$$
+\Omega M^{\bbc} = \Omega^{1,0} M \oplus \Omega^{0,1}M
+$$
+Let's unravel the definitions here real quick. Note that by definition,
+$$
+\begin{align*}
+\Omega^{1,0} M &= \{(p, \omega - i J^* \omega) \mid p \in M, \omega \in \Omega_p M\} \\
+&= \{(p, \omega + i \omega \circ J ) \mid p \in M, \omega \in \Omega_p M\}
+\end{align*}
+$$
+
+Let us extend this to the space of $\bbc$-valued differential $k$-forms $\Omega^k M^{\bbc}$. Recall $\Omega^k M = \bigwedge^k \Omega M$ and naturally we define $\Omega^k M^{\bbc} = \Omega^k M \otimes_{\bbr} \bbc$. Since complexifying commutes with the wedge product, we have 
+$$
+\begin{align*}
+\Omega^k M^{\bbc} &= \left(\wedge^k \Omega M\right)^{\bbc} \\
+&= \wedge^k \Omega M^{\bbc} \\
+&= \wedge^k \left(\Omega^{1,0} M \oplus \Omega^{0,1} M\right) \\
+&= \oplus_{p + q = k} \left(\wedge^p\Omega^{1,0} M \otimes \wedge^q\Omega^{0,1} M \right) \\
+&= \oplus_{p+q = k} \Omega^{p,q} M
+\end{align*}
+$$
+where $\Omega^{p,q} M$ is called the space of complex-valued differential forms of type $(p,q)$ on $M$.
+$$
+\Omega^{p,q} M = \underbrace{\Omega^{1,0} M \wedge \ldots \wedge \Omega^{1,0} M}_{p \text{ times}} \otimes \underbrace{\Omega^{0,1} M \wedge \ldots \wedge \Omega^{0,1} M}_{q \text{ times}}
+$$
+Let's denote $A^k M = \Gamma(\Omega^k M^{\bbc})$ by the space of *smooth* sections of complex-valued differential $k$-forms on $M$, and similarly $A^{p,q} = \Gamma(\Omega^{p,q} M)$ for $(p,q)$-forms.
+
+**Definition** If $M$ is a complex manifold, we have the following names for the spaces defined above.
+* $T^{1,0}M$ is called the *holomorphic tangent bundle*,
+* $T^{0,1}M$ is the *anti-holomorphic tangent bundle*,
+* $\Omega^{1,0} M$ is the *holomorphic cotangent bundle*, and, lastly
+* $\Omega^{0,1} M$ is the *anti-holomorphic cotangent bundle*.
+
+We want to be able to do calculations, so it helps to know what these spaces look like locally. Let $M$ be a complex manifold with local coordinate $z = (z_1, \ldots, z_n)$. A complex-valued $1$-form can be written locally uniquely as
+$$
+\eta = \underbrace{\sum_{i} \eta_i dz_i}_{\text{holomorphic part}} + \underbrace{\sum_j \eta_j d\bar{z}_j}_{\text{anti-holomorphic part}}
+$$
+where $\eta_i, \eta_j \in C^{\infty}(M, \bbc)$. Similarly, a complex-valued $(p,q)$ form can be written locally uniquely as
+$$
+\eta = \sum_{I, J} \eta_{I, J} dz_I \wedge d\bar{z}_J
+$$
+where $I$ is the multiindex $i_1 < \ldots < i_p$ (and $J$ is $j_1 < \ldots < j_q$), and where $dz_I = dz_{i_1} \wedge \ldots \wedge dz_{i_p}$ (and $d\bar{z}_J = d\bar{z}_{j_1} \wedge \ldots \wedge d\bar{z}_{j_q}$). As before, $\eta_{I,J} \in C^{\infty}(M, \bbc)$.
+
+In the coming lectures we will expand on this. Namely, we can consider what happens for example when $\eta_{I,J}$ take values in spaces other than $\bbc$, or are holomorphic rather than smooth. We will also define the *Dolbeault complex* consisting of sections $A^{p,q}$ which leads us naturally into the topic of Dolbeault cohomology.
