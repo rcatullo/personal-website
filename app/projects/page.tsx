@@ -1,3 +1,8 @@
+export const metadata = {
+  title: 'Projects',
+  description: 'A list of my projects and papers.',
+}
+
 export default function Page() {
   return (
     <section>
