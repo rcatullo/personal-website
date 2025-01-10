@@ -123,6 +123,18 @@ html {
   margin-bottom: 1.25em !important;
 }
 
+ol.latex-style {
+  counter-reset: list;
+}
+
+ol.latex-style > li {
+  counter-increment: list;
+}
+
+ol.latex-style > li::marker {
+  content: "(" counter(list) ") ";
+}
+
 pre::-webkit-scrollbar {
   display: none;
 }
@@ -150,3 +162,4 @@ table {
 .title {
   text-wrap: balance;
 }
+
