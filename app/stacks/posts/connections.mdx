@@ -1,0 +1,87 @@
+---
+title: 'Connections and Curvature'
+publishedAt: '2025-01-28'
+summary: 'Background on the theory of connections on complex manifolds.'
+---
+
+Here's some motivation for the problem at hand. Suppose we have a tangent vector $\vec{v}$ at a point on the sphere $p \in S^2$, and we want a way to consistently slide this vector along some path to get a "parallel" vector at $q$. This is called *parallel transport*. We can do this by fixing some local coordinates and sliding the vector as we would in $\bbc^1$, but the issue is that the vector we get might not agree with the vector we get by doing this with a different set of local coordinates.
+
+To solve this, we can rotate $S^2$ to move $p$ along the sphere without rotating about the axis through $p$. This is an example of a **connection** on the sphere, which is a special example since we use in some sense the Lie group structure of $S^2$. We will see later that this generalizes, but that we can also define connections on other complex manifolds.
+
+Another important motivaiton is that, given some vector bundle $\cale \to M$ over a complex manifold $M$, suppose we want to differentiate a section $\sigma \colon M \to \cale$ at $p$ in the direction $v \in T_p M$. Let's work naively and see where it goes wrong. Consider a path $\gamma \colon (-1,1) \to M$ with $\gamma(0) = p$ and $\gamma'(0) = v$. Then we could try to define it as follows.
+$$
+d\sigma(v)(p) = \lim_{t \to 0} \frac{\sigma(\gamma(t)) - \sigma(\gamma(0))}{t}
+$$
+But we run into an issue since $\sigma(\gamma(t)) \in \cale_{\gamma(t)}$ and $\sigma(\gamma(0)) \in \cale_p$ are in distinct vector spaces, so subtracting them is meaningless. Thus we need a *parallel transport* of $\sigma(\gamma(t))$ to $\cale_p$ in order to define this difference, and hence the directional derivative of a section of the bundle.
+
+## Linear Connections
+
+Let $\cale \to M$ be a smooth complex vector bundle over a smooth complex manifold $M$. Let $\calo_{\cale} = \calo_{\cale}(M)$ denote the space of smooth (global) sections of $\cale \to M$. 
+
+**Definition** A *covariant derivative* on $\cale \to M$ is a $\bbc$-linear map $\nabla \colon \calo_{\cale} \to  \Omega_M \otimes \calo_{\cale} $ such that the product rule
+$$
+\nabla(f\sigma) = df \otimes \sigma + f \nabla \sigma
+$$
+holds for all smooth functions $f$ on $M$ and all smooth sections $\sigma$ of $\cale$. 
+
+**Example** Let $\cale_0 = M \times \bbc^k$ be the trivial rank $k$ vector bundle on $M$. Then we can define a trivial connection $\nabla$ as follows. Take the standard basis $\{e_1,\ldots,e_k\}$ of $\bbc^k$ such that every section $\sigma$ of $\cale_0$ can be written as $\sigma = \sum_{i=1}^k \sigma^i e_i$ where $\sigma^i \colon M \to \bbc$ are smooth. Let 
+$$
+\nabla(\sigma) = \sum_{i=1}^k d\sigma^i \otimes e_i
+$$
+We denote the trivial connection by $d\sigma$. 
+
+We can use this example to describe a connection locally on a general vector bundle. Suppose $\cale$ is a rank $k$ bundle on $M$, and $U$ be an open subset of $M$ over while $\cale$ is trivial. Then over $U$, $\cale$ admits a smooth local frame of sections $\{e_1, \ldots, e_k\}$ where $e_i \colon U \to \cale_U$. The frame defines a basis for the fiber $\cale_p$ for any $p \in U$, so any local section $\sigma \colon U \to \cale_U$ can be written
+$$
+\sigma = \sum_{i=1}^k \sigma^i e_i
+$$
+where $\sigma^i \colon U \to \bbc$ are smooth. Then $\nabla(e_i) \in \Omega_M(U) \otimes \cale_U$ can be expanded in the local frame as follows.
+$$
+\nabla(e_i) = \sum_{j=1}^k \omega_i^j \otimes e_j
+$$
+where $\omega_i^j \in \Omega_M(U)$ are differential $1$-forms on $U$. We can put these together into a matrix
+$$
+\omega = \begin{pmatrix}
+\omega_1^1 & \ldots & \omega_k^1 \\
+\vdots & \ddots & \vdots \\
+\omega_1^k & \ldots & \omega_k^k
+\end{pmatrix} \in \Omega_M(U) \otimes \End(\cale_U)
+$$
+called the *local connection form of* $\nabla$ *over* $U$, which is an endomorphism-valued 1-form. Then, using the product rule, we can see that
+$$
+\begin{align*}
+\nabla(\sigma) = \nabla \left( \sum_{i=1}^k \sigma^i e_i\right) &= \sum_{i=1}^k \left(d\sigma^i \otimes e_i + \sigma^i \nabla e_i \right) \\
+&= \sum_{i=1}^k \left(d\sigma^i \otimes e_i + \sigma^i  \sum_{j=1}^k \omega_i^j \otimes e_j \right) \\
+&= \sum_{i=1}^k \left(d\sigma^i \otimes e_i\right) + \sum_{i=1}^k\left(\sum_{j=1}^k \sigma^j \omega_j^i\right) \otimes e_i \\
+&= \sum_{i=1}^k \left(d\sigma^i + \sum_{j=1}^k \sigma^j \omega_j^i\right) \otimes e_i
+\end{align*}
+$$
+If $\sigma$ is written in column vector notation using the $\sigma^i$'s given by the local frame, then
+$$
+\nabla(\sigma) = d\sigma + \omega \sigma
+$$
+We see that $d\sigma$ is the trivial connection on the trivial bundle $\cale_U$. This is a general fact about connections.
+
+**Remark** Any connection differs from another by an endomorphism-valued 1-form.
+
+In the case above, we see that any local connection $\nabla \mid_U$ on $U$ differs from the trivial connection $d$ by an endomorphism-valued 1-form $\omega$. 
+
+For any $p \in M$ we can canonically identify $\Omega_{M,p} \otimes \cale_p$ with the vector space of linear maps $T_p M \to \cale_p$, and so the above gives for every section $\sigma$ and $p \in M$ a smooth assignment (in terms of $p$) to a $\bbc$-linear map $\nabla_p \sigma \colon T_p M \to \cale_p$. We say that $\sigma$ is *parallel* in the direction of $v \in T_p M$ if $(\nabla_{p} \sigma) (v) = 0$. We will use the shorthand $\nabla_v \sigma = 0$. 
+
+This also makes sense if, say, $X$ is a vector field on $M$, i.e. a section of the tangent bundle $X \colon M \to TM$, in which case we use the notation $\nabla_X \sigma \colon M \to \cale$ to denote the section of $\cale$ given by $(\nabla_X \sigma)(p) = (\nabla_p \sigma)(X(p))$.
+
+**Unimportant Remark** If $\sigma$ is a section such that $\nabla_v \sigma = 0$ for all $v \in T_p M$, we can define the *horizontal subspace* of the connection at $\sigma(p) = e \in \cale$ to be 
+$$
+H_e = (d\sigma)_p(T_p M) \subseteq T_e \cale
+$$
+The following are true.
+* $H_e$ depends smoothly on $e$.
+* The $H_e$ glue to a vector subbundle $H$ of the tangent bundle $T\cale$ (called the *horizontal subbundle*).
+* There is another subbundle $V$ of $T\cale$ (called the *vertical subbundle*) such that $T \cale = V \oplus H$.
+* For every $e \in E$, $H_e \cap V_e = 0$.
+In fact, we can take this to be the definition of our connection. This is called the Ehresmann connection, and it allows us to generalize the notion to smooth fiber bundles like principal $G$-bundles.
+
+Let $\gamma$ be a smooth curve on $M$ as before, and $\sigma$ a section of $\cale$. Then we say $\sigma$ is parallel along $\gamma$ if 
+$$
+\nabla_{\gamma'(t)} \sigma = 0
+$$
+for all $t$. Equivalently, consider the pullback connection $\gamma^* \nabla$ on the pullback bundle $\gamma^* \cale$. Then a section $\sigma$ of $\gamma^* \cale$ is parallel if and ony if $\gamma^* \nabla(\sigma) = 0$.

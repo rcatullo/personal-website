@@ -4,16 +4,24 @@ publishedAt: '2024-12-26'
 summary: 'I give a first account of the properties of the ind-scheme affine Grassmannian following Professor Zhu's notes from PCMI 2015.'
 ---
 
-This is the first post in a series on a central object in the study of the geometric Langland's conjecture, the affine Grassmannian. I will be giving first properties of this object according to the lecture notes that Professor Xinwen Zhu compiled for a lecture series at the 2015 Park City Mathematics Institute (PCMI). The reader should have a good background in algebraic geometry (schemes, sheaves, stacks) and be somewhat familiar with the topological uniformization theorem on loop groups.
+This is the first post in a series on a central object in the study of the geometric Langland's conjecture, the affine Grassmannian. I will be giving first properties of this object according to the lecture notes that Professor Xinwen Zhu compiled for a lecture series at the 2015 Park City Mathematics Institute (PCMI). The reader should have a good background in algebraic geometry (schemes, sheaves, stacks) and the Grassmannian.
 
-Throughout this post, we will use the following notation. Let $X$ be a scheme over $k$ an algebraically closed field of arbitrary characteristic. The space
+Recall the Grassmannian $\Gr(r,n)$ whose points correspond to the $r$-dimensional subspaces of $V = k^n$. Note also that $\GL_n$ acts transitively on the $r$-dimensional subspaces of $V$, so we can fix a representative $W \in \Gr(k,n)$ of all $r$-dimensional subspaces under this action. This representative is unique up to the stabilizer of the action, which we denote by $P(W)$. For example, if $k = n-1$ and $W = k^{n-1}$ then $P(W) = B = $ upper triangular matrices, and in general $\GL_n \supseteq P(W) \supseteq B$. Thus, we can make the identification
 $$
-D = \spec k[[z]]
+\Gr(r, n) = \GL_n/P(W)
 $$
-will denote the formal unit disk, and similarly
+We can consider this in the context of the classification of algebraic groups. Note that $P(W)$ above is always a parabolic subgroup, i.e. a subgroup of $\GL_n$ containing the Borel subgroup $B = $ upper triangular matrices. We can consider a generalized Grassmannian for an algebraic group $G$ with parabolic subgroup $P$ by
 $$
-D^* = \spec k((z))
+\Gr(P, G) = G/P
 $$
-will denote the formal puntured unit disk. Let $R$ be a $k$-algebra. By an $R$-**family of lattices** in $k((z))^n$ we mean a finitely generated projective $R[[z]]$-module $\Lambda$ of $R((z))$ such that $\Lambda \otimes_{R[[z]]} R((z)) = R((z))^n$. 
+We can generalize some more to the setting of non-constant group schemes. Let $G$ be a reductive affine fiberwise connected non-constant $k$-group scheme, which is a sheaf on affine $k$-schemes. Since commutative $k$-algebras are the opposite category of $k$-schemes, we can consider it as a functor associating to every $R$ a set $G(R)$, which we call its $R$-valued points.
 
-The **affine Grassmannian** $\Gr_{\GL_n}$ for $\GL_n$ is the presheaf 
+Let $K$ be a non-archimedean local field (e.g. $k((t))$) with ring of integers $\calo$ (e.g. $k[[t]]$) and residue field $k$. An **Iwahori** subgroup of $G(K)$ is the analogue of the Borel subgroup for an algebraic group. Roughly, it is the inverse image in $G(\calo)$ of a Borel subgroup in $G(k)$. **Parahoric** subgroups $P$ are then analogues of parabolic subgroups as they are finite unions of double cosets of an Iwahori subgroup. Then, by analogy, we can define the affine Grassmannian as the $k$-space
+$$
+\Gr_G = G/P
+$$
+Actually, in this specific case the affine Grassmannian is referred to in the literature as the affine flag variety of $G$, and is denoted $\mathscr{Fl}_G$.
+
+For example, if $G = \GL_n(K)$ then it can be shown that maximal parahoric subgroups are the stabilizers of $\calo$-lattices in $K^n$. Namely, $\GL_n(\calo)$ is a maximal parahoric subgroup. The Iwahori subgroups up to conjugation can be identified with the subgroup $I$ of $\GL_n(\calo)$ of matrices that reduce to an upper triangular matrix in $\GL_n(k)$. Then the parahoric subgroups are all the subgroups $I \subseteq P \subseteq \GL_n(\calo)$, which reduce injectively to parabolic subgroups of $\GL_n(k)$ containing the upper-triangular matrices $B$. 
+
+This actually gives another description of the affine Grassmannian $\Gr_{\GL_n}$ of $\GL_n$. The motivation is to make the $k$-valued points equal to $k[[t]]$-lattices in $k((t))^n$. 
