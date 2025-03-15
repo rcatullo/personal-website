@@ -1,0 +1,94 @@
+---
+title: 'Reed-Solomon Codes'
+publishedAt: '2025-03-14'
+summary: 'We introduce the basics of error correcting codes and work our way toward defining Reed-Solomon codes. The eventual goal is to discuss Algebraic Geometry Codes in the next post, and this post covers the necessary background.'
+---
+
+The subject of this post is an introduction to error correcting codes with the main goal of defining a class of codes called Reed-Solomon codes. I eventually want to discuss another class of codes called Algebraic Geometry codes in the next post, so this will serve as sort of an optional post giving a quick and dirty background on codes for those unfamiliar with the general theory. 
+
+The notion of an algebraic error correcting code over an alphabet $\bbf_q$ of length $n$ and distance $k$ is a $k$-dimensional linear subspace $\calc$ of $\bbf_q^n$. Codes are a way of efficiently introducing redudancy into messages in order to protect against interference by noisy channels.
+
+For example, Alice and Bob are standing on opposite sides of a highway and Alice wants to tell Bob the message "Hello". If she just yells it once, Bob might not hear, so instead she can yell "HelloHelloHello" to make sure, even if parts of the message are lost, Bob is still likely to understand.
+
+This is not very efficient, however. Consider Alice sending a binary message of length $k$, $101100100$... and suppose that our noisy channel randomly flips bits, so Bob receives $111000101$ which has $3$ bits flipped. How can we encode Alice's message such that Bob can always correct at most $e$ errors?
+
+Insead of binary, we can send messages in an alphabet of size $q$, say $\bbf_q$. Then one way to encode the message is to linearly map the message space into higher dimensional space, i.e. if Alice is sending $q^k$ possilbe messages of length $k$, we can construct a linear injective map $G \colon \bbf_q^k \to \bbf_q^n$.
+
+The vectors $c = Gx$ are called *codewords* and the image $\calc = \{Gx \mid x \in \bbf_q^k\}$ is called the *code*. $G$ is called the *generator matrix* for the code. The integer $k$ is the *dimension* of the code $\calc$, and $n$ is the *message length* of $\calc$. The *Hamming distance* between any two vectors $d(v, w) = \#\{i \colon v_i \neq w_i\}$ is the number of indices at which $v_i$ and $w_i$ differ. 
+
+**Definition** The *distance* of the code $\calc$ is defined as the minimum distance between any two codewords in $\calc$, 
+$$
+d = \min_{c \neq c' \in \calc} d(c, c')
+$$
+
+We usually call a code $\calc$ with dimension $k$, message length $n$, distance $d$, and alphabet size $q$ a linear $[n,k,d]_q$ code.
+
+Suppose Alice encodes her message $x$ as $c = Gx$, and the noisy channel introduces an error vector $e$ such that Bob receives $y = Gx + e = c+ e$. Then the idea is for Bob to decode $y$ by taking the codeword $c' = \argmin_{c \in \calc} d(y,c)$ closest to the received $y$ in terms of modified indices. Then Bob can recover $x' \in \bbf_q^k$ such that $c' = Gx'$. The hope is that $c = c'$, i.e. Bob recovers Alice's message $x = x'$.
+
+How many errors can the channel introduce before Bob decodes the wrong codeword? Observe that the *Hamming ball* of radius $\lfloor (d-1)/2 \rfloor$ centered at a codeword $c$, defined as 
+$$
+B_n(c, \lfloor (d-1)/2 \rfloor) = \{y \in \bbf_q^n \mid d(y,c) \leq \lfloor (d-1)/2 \rfloor\}
+$$
+is the largest such ball of received messages $y$ such that Bob corrects $y$ to $c$, i.e. $c = \argmin_{c' \in \calc} d(y,c')$. This is because the midpoint between any two codewords $c,c'$ is at least Hamming distance $(d-1)/2$, which means if $y$ exceeds this distance from $c$ it might be decoded to another codeword.
+
+Thus we can correct errors $e$ with at most $\lfloor (d-1)/2\rfloor$ nonzero entries. This is the reason why we usually want to construct codes with good distance, since the larger the distance the more errors we can correct. Of course, we also want good *rate*, which is the amount of redudancy we have to introduce.
+
+**Definition** For a family of linear $[n,k,d]_q$ codes $\calc$, the *rate* $R$ and *distance* $\delta$ are defined as
+$$
+R = \lim_{n \to \infty} \frac{k}{n} \quad and \quad \delta = \lim_{n \to \infty} \frac{d}{n}
+$$
+
+Our goal is to construct families of codes with asymptotically good rate and distance tradeoff.
+
+We define the weight of a vector $\wt(v)$ as the number of nonzero entries, so in particular we can correct $e$ as long as $\wt(e) \leq \lfloor (d-1)/2\rfloor$.
+
+A very useful alternative definition for distance is the minimum weight of a codeword, $d = \min_{c \in \calc}\wt(c)$. Note that $0 = (0,\ldots,0)$ is always a codeword, and $\wt(c) = d(c,0)$ is the Hamming distance between $c$ and the $0$ vector. Then one can check with not too much difficulty that $d(c,c') = d(c-c', 0) = \wt(c-c')$. Since $\calc$ is a linear subspace, $c-c' \in \calc$ which means 
+$$
+d = \min_{c \neq c' \in \calc} d(c,c') = \min_{c \in \calc} \wt(c)
+$$
+
+We'll jump into the main example of a linear code that we're interested in, called the Reed-Solomon code. 
+
+**Definition** Let $q \geq n$ and $\alpha_1,\ldots,\alpha_n \in \bbf_q$. The **Reed-Solomon code** is defined as 
+$$
+RS_q(n,k) := \{(f(\alpha_1), \ldots, f(\alpha_n)) \colon f \in \bbf_q[x], \deg(f) < k\} \subseteq \bbf_q^n
+$$
+
+This is indeed a linear code. If $f,g \in \bbf_q[x]$ with $\deg(f),\deg(g) < k$ and $a,b \in \bbf_q$ then
+$$
+\begin{align*}
+&a(f(\alpha_1), \ldots, f(\alpha_n)) + b (g(\alpha_1), \ldots, g(\alpha_n)) \\
+&= ((af+bg)(\alpha_1), \ldots, (af+bg)(\alpha_n))
+\end{align*}
+$$
+The generator matrix $G$ is given by
+$$
+G = \begin{pmatrix} 1 & \alpha_1 & \ldots & \alpha_1^{k-1} \\ \vdots & \vdots & \ddots & \vdots \\ 1 & \alpha_n & \ldots & \alpha_n^{k-1}  \end{pmatrix}
+$$
+since if $f = a_0 + a_1 x + \ldots + a_{k-1} x^{k-1}$ and $a = (a_0, \ldots, a_{k-1})$ then 
+$$
+Ga = \begin{pmatrix} f(\alpha_1) \\ \vdots \\ f(\alpha_n) \end{pmatrix}
+$$
+
+Here's the interesting bit: computing the distance $d$ of $RS_q(n,k)$. Note that a codeword $c = (f(\alpha_1), \ldots, f(\alpha_n))$ has weight $d$ if and only if $f$ vanishes on $n-d$ points $\alpha_{i_1}, \ldots, \alpha_{i_{n-d}}$. Since $\deg(f) < k$, $f$ has at most $k-1$ roots which implies $n-d \leq k-1$ or
+$$
+d \geq n-k+1
+$$
+
+There is a theorem that establishes for any code the reverse inequality.
+
+**Theorem (Singleton Bound)** For any $[n,k,d]_q$ linear code $\calc$, i.e. a linear code over $\bbf_q$ with dimension $k$, message length $n$, and distance $d$,
+$$
+d \leq n-k+1
+$$
+
+Any code that meets this bound is called **maximum distance separable** or MDS. As we have just seen, Reed-Solomon codes are MDS, i.e. $d = n-k+1$ which is a very nice property.
+
+In particular, we note that
+$$
+\frac{d}{n} = 1 - \frac{k}{n} + \frac{1}{n}
+$$
+and therefore for MDS codes (and in particular RS codes),
+$$
+R + \delta = 1
+$$

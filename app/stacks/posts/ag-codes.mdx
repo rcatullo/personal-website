@@ -1,0 +1,179 @@
+---
+title: 'Algebraic Geometry Codes'
+publishedAt: '2025-03-15'
+summary: 'Algebraic geometry codes are a class of linear error-correcting codes generalizing Reed-Solomon codes that have a particularly nice structure and theory. In this post I give a brief account of them and why one should care, both mathematically and from an error-correction perspective.'
+---
+
+Recall the definition of Reed-Solomon codes.
+
+Let $n,k \geq 0$ and $q \geq n$. Let $\alpha_1,\ldots,\alpha_n \in \bbf_q$ and define the *Reed-Solomon Code* with parameters $q,n,k,\alpha$ as
+$$
+RS_q(n,k) = \{(f(\alpha_1), \ldots, f(\alpha_n)) \mid f \in \bbf_q[x], \deg f < k\}
+$$
+
+That is, $RS_q(n,k)$ codes are defined as evaluation maps of polynomials of degree at most $k$ on $n$ points $\alpha_1,\ldots,\alpha_n$ in $\mathbb{F}_q$. Geometrically, $\mathbb{F}_q$ is an affine line which we can projectivize to $\bbp^1_{\bbf_q} =: \bbp^1$.
+
+We can view $f(x) \in \bbf_q[x]$ equivalently as a rational function on $\bbp^1$. Then the condition $\deg f < k$ is restated equivalently as $f$ having a pole of order at most $k-1$ at $\infty$.
+
+In the notation of divisors, $\div(f) + (k-1)[\infty] \geq 0$, or equivalently $f \in \calo_{\bbp^1}((k-1)[\infty])$. Thus what if instead we try curves $C$ other than $\bbp^1$, and divisors $G$ other than $(k-1)[1:0]$? This is exactly the intuition behind algebraic geometry codes.
+
+## Algebraic Geometry Codes
+
+Throughout this post, we will fix the following notation. $C$ will denote a smooth, projective, connected, irreducible algebraic curve over $\bar{\bbf}_q$ of genus $g$. We will let $p_1,\ldots,p_n$ be pairwise distinct $\bbf_q$-rational points of $C$. We will let $D = p_1 + \ldots + p_n$ denote the corresponding divisor, and $G$ will denote another divisor on $C$ such that $\supp D \cap \supp G = \emptyset$.
+
+We will use Riemman-Roch for curves particularly often, so we restate it below.
+
+**Theorem (Riemann-Roch)** For a smooth, projective, connected, irreducible curve $C$ of genus $G$ with canonical divisor $K_C$, and a divisor $D$ on $C$,
+$$
+\ell(D) - \ell(K_C-D) = \deg D + 1 - g
+$$
+
+We can now define the primary object of interest in this post, which is our error correcting code constructed using our theory of algebraic curves.
+
+**Definition (AG Code)** The algebraic geometry (AG) code associated with the curve $C$ and divisors $D,G$ above is denoted $\calc(D,G)$ and is given by
+$$
+\calc(D,G) := \{(f(p_1),\cdots,f(p_n)) : f \in \Gamma(C, \calo_C(G))\} \subseteq \mathbb{F}_q^n
+$$
+
+Note that $f(p_i)$ is well-defined since $\text{div}(f) + G \geq 0$ and $\supp D \cap \supp G = \emptyset$, i.e. if $f$ has a pole at $p_i$ then $\ord_{p_i}(f) < 0$, which would imply $\text{div}(f) + G \not \geq 0$ since $G$ is not supported on $p_i$.
+
+So now having defined AG codes, we can ask ourselves about the properties of such codes, for example, the distance and the message length.
+
+**Theorem** The following hold.
+- $\calc(D,G)$ is a linear $[n,k,d]_q$ code such that 
+$$
+d \geq n- \deg G \quad and \quad k = \ell(G) - \ell(G - D)
+$$
+- If $\deg G < n$ then $k \geq \deg G + 1 - g$. If in addition $2g -2 < \deg G < n$, we have equality. That is,
+$$
+k = \deg G + 1 - g
+$$
+- If $\{f_1,\ldots,f_k\}$ is a basis of $\Gamma(C,\calo_C(G))$ then the $n \times k$ matrix
+$$
+M = \begin{pmatrix}
+            f_1(p_1) &  f_2(p_1) & \ldots & f_k(p_1) \\
+            \vdots & \vdots & \ddots & \vdots \\
+            f_1(p_n) & f_2(p_n) & \ldots & f_k(p_n)
+        \end{pmatrix}
+$$
+is a generator matrix for $\calc(D,G)$.
+
+*Proof.* If we consider the evaluation map, $ev: \Gamma(C,\calo_C(G)) \to \mathbb{F}_q^n$, 
+$$
+ev(f) = (f(p_1),\cdots,f(p_n))
+$$
+we see that $f$ is in the kernel of $ev$ if and only if $\div(f) + G - D \geq 0$, i.e. $f$ has at a zero of order at least $1$ at each $p_i$. Equivalently, $f \in \Gamma(C, \calo_C(G-D))$ and so the kernel of $ev$ has dimension $\ell(G-D)$. By rank-nullity we indeed get
+$$
+k = \dim(\calc(D,G)) = \ell(G) - \ell(G-D)
+$$
+If $\deg G < \deg D = n$ then $\ell(G-D) = 0$ (that is, $ev$ is injective) and $k = \ell(G)$ which can be computed directly using Riemann-Roch, where $K_C$ is the canonical divisor.
+$$
+\ell(G) = \deg(G) + 1 - g + \ell(K_C-G)
+$$
+In particular, $\ell(G) \geq \deg G + 1 - g$ and we have equality iff $2g-2 = \deg(K_C) < \deg(G)$.
+
+For the distance, let us consider a non-zero $f \in \Gamma(C,\calo_C(G))$ such that $ev(f)$ is of weight $d$. This means $f$ vanishes on $n-d$ points $p_{i_1},\cdots, p_{i_{n-d}}$. Then 
+$$
+f \in \Gamma(C,\calo_C( G - (p_{i_1} + \cdots + p_{i_{n-d}})))
+$$
+and so $\ell(G - (p_{i_1} + \cdots + p_{i_{n-d}})) > 0$, so in particular, we must have $\deg G - (n-d) \geq 0$ which implies that $d \geq n - \deg G$.
+
+It's clear that if $f = c_1 f_1 + \ldots + c_k f_k$ then $f(p_i) = c_1 f_1(p_i) + \ldots + c_k f_k(p_i) = [Mf]_i$.
+
+## Dual Codes
+
+We can construct another code using the two divisors $G$,$D$, using another point of view. The AG codes defined above used an evaluation point of view. We can also use the residual point of view to create some linear codes. 
+
+Fix the same notation for $C,D = p_1 + \ldots + p_n$, and $G$ such that $\supp G \cap \supp D = \emptyset$ as in the previous subsection, and recall the notions of the rational differential $1$-form $\omega$ on $C$, canonical divisor $K_C = \div(\omega)$, and canonical bundle $\Omega_C = \calo_C(K_C)$. 
+
+Recall $\Gamma(C, \Omega_C(Z))$ is the space of global rational $1$-forms $\eta$ such that $\div(\eta) - Z \geq 0$. Note that
+$$
+\Gamma(C, \Omega_C(Z)) = \Gamma(C,\calo_C(K_C - Z))
+$$ 
+since giving a rational $f$ such that $\div(f) + K_C - Z = \div(f) + \div(\omega) - Z \geq 0$ is the same as giving a rational $1$-form $\eta = f\omega$ such that $\div(\eta) - Z \geq 0$.
+
+For a rational $1$-form $\eta$, suppose the local component at $p$ is given by $\eta_p = f(z)dz$. If $\eta_p = f(z)dz$, the residue $\res_{p}(\eta)$ of $\eta$ at $p$ is defined as the coefficient of $1/z$ in the Laurent series expansion of $f(z)$ at 0.
+
+**Residue Theorem** Let $\omega$ be a rational differentiable $1$-form on a smooth projective curve $C$. Then
+$$
+\sum_{p \in C} \res_p(\omega) = 0
+$$
+
+This is the analogue of the residue theorem in complex analysis, but the proof is rather involved so we omit it.
+
+**Definition** Let $C,D,G$ be as before with $\supp D \cap \supp G  = \emptyset$. Define the following code.
+$$
+\calc_{\Omega}(D,G) = \{(\res_{p_1}(\eta), \ldots, \res_{p_n}(\eta)) \colon \eta \in \Omega_C(G-D)\} \subseteq \bbf_q^n
+$$
+
+Then we have an analogue of the Theorem in the previous section for AG codes whose proof contains essentially the same ideas.
+
+**Theorem** The following statements hold.
+- $\calc_{\Omega}(D,G)$ is a linear $[n,k',d']_q$ code such that
+$$
+d' \geq \deg G - (2g-2) \quad and \quad k' = 
+        \ell(K_C - G + D) - \ell(K_C - G)
+$$
+- If $2g-2 < \deg G$ then $k' = \ell(K_C-G+D) \geq n - \deg G +g-1$.
+- If $2g-2 < \deg G < n$ we have equality, i.e.
+$$
+k' = n - \deg G + g -1
+$$
+
+*Proof.* Consider the residue map $\res \colon \Omega_C(G-D) \to \bbf_q^n$, defined as
+$$
+\res(\eta) = (\res_{p_1}(\eta), \ldots, \res_{p_n}(\eta))
+$$
+The kernel consists of rational $1$-forms $\eta$ with $0$ residue at each $p_i$. Since $\div(\eta) - G + D \geq 0$, each $\eta$ has a pole of order at most $1$ at every $p_i$ and having residue $0$ implies it has no pole, i.e. $\div(\eta) - G \geq 0$. Thus the kernel is $\Gamma(C,\Omega_C(G)) = \Gamma(C,\calo_C(K_C-G))$ which has dimension $\ell(K_C-G)$. 
+
+Similarly, the domain has dimension $\ell(K_C-G+D)$. By rank-nullity, 
+$$
+k' = \ell(K_C-G+D) - \ell(K_C-G)
+$$
+In particular, if $2g-2 = \deg K_C < \deg G$ then $\ell(K_C-G) = 0$ and by Riemann-Roch
+$$
+\begin{align*}
+k' &= \ell(K_C-G+D) \\
+&= \ell(G-D) - \deg(G-D) + g - 1 \\
+&\geq n - \deg G + g - 1
+\end{align*}
+$$
+If in addition $\deg G < \deg D = n$ then $\ell(G-D) = 0$ and we have equality.
+
+For distance, suppose $n-d'$ residues vanish $p_{i_1},\ldots,p_{i_{n-d}}$ for some $\eta$. Then 
+$$
+\eta \in \Gamma(C,\Omega_C(G-D + p_{i_1} + \ldots + p_{i_{n-d'}}))
+$$ 
+so $\ell(K_C - G+D - (p_{i_1} + \ldots + p_{i_{n-d'}})) > 0$. We must then have $\deg K_C - \deg G + n - (n-d') \geq 0$, i.e. 
+$$
+d' \geq \deg G - (2g-2)
+$$
+
+In the particular case $2g-2 < \deg G < n$, the above theorem and the analogous theorem for AG codes imply
+$$
+k' + k = (n-\deg G + g-1) + (\deg G + 1 - g) = n
+$$
+but it's not too hard to check this holds in general, i.e.
+$$
+k' + k = \ell(K_C-G+D) - \ell(K_C-G) + \ell(G) - \ell(G-D) = n
+$$
+(*Hint: use Riemann-Roch*). There's good reason for this, as we see with the next theorem.
+
+**Theorem (Duality)** The codes $\calc(D,G)$ and $\calc_{\Omega}(D,G)$ are dual to each other;
+$$
+\calc(D,G) = \calc_{\Omega}(D,G)^{\bot}
+$$
+*Proof.* We showed that $k + k' = n$ so it suffices to show any codewords satisfy $\langle ev(f), \res(\eta) \rangle = 0$. Note that since $\div(f) + G \geq 0$ and $\div(\eta) - G + D \geq 0$, we have $\div(f \eta) + D \geq 0$ so $f\eta$ has a pole of order at most $1$ at each $p_i$. The residue of $f\eta$ at $p_i$ is $f(p_i)\res_{p_i}(\eta)$, hence
+$$
+\langle ev(f), \res(\eta) \rangle = \sum_{i=1}^n f(p_i) \res_{p_i}(\eta) = \sum_{i=1}^n \res_{p_i}(f\eta)
+$$
+Note that as $\div(f\eta) + D \geq 0$ these are the only possible poles, i.e. the only points with nonzero residues, hence by the residue theorem
+$$
+\sum_{i=1}^n \res_{p_i}(f\eta) = \sum_{p \in C} \res_{p}(f\eta) = 0
+$$
+## Conclusion
+It turns out that these codes have merits other than this interesting relationship between AG codes and their duals being constructed from the trivial bundle and its Serre dualizing sheaf. 
+
+There is a famouns bound on the rate and distance of error correcting codes called the **Gilbert-Varshamov** (GV) Bound established in 1957, which includes a proof that there are a family of linear codes at or above this bound. The proof was non-constructive and instead selected linear codes at random.
+
+It was an open question for around 30 years as to whether there were a family of codes that could beat the GV bound. AG codes were the first family of codes found to beat the bound, which can be shown using results on counting the maximum number of $\bbf_q$-rational points $N_q(g)$ on curves of genus $g$, similar to the Hasse-Weil bound. Nonetheless, these codes provide interesting mathematical objects outside the realm of coding theory which was my primary motivation in writing this blog post.
