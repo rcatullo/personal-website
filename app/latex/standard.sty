@@ -15,13 +15,14 @@
 \RequirePackage{color}
 \RequirePackage{hyperref}
 \RequirePackage{mdframed}
+\RequirePackage{framed}
 \RequirePackage{fancyhdr}
 \RequirePackage{titleref}
 \RequirePackage{lipsum}
 \RequirePackage{tocloft}
 \RequirePackage{extarrows}
 \RequirePackage{mathtools}
-\RequirePackage{newcomputermodern} % Loads unicode-math
+\RequirePackage{listings}
 \RequirePackage[toc,page]{appendix}
 \RequirePackage[backend=biber,style=alphabetic]{biblatex} 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -75,6 +76,17 @@ innerleftmargin=0pt,innerrightmargin=0pt,roundcorner=0pt, linewidth=0pt}
 %% PARAGRAPH INDENT %%
 \setlength{\parindent}{0pt}
 %%%%%%%%%%%%%%%%%%%%%%
+
+%% LISTINGS ENVIRONMENT %%
+\lstset{basicstyle=\ttfamily,
+escapeinside={||},
+mathescape=true}
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%% SHADED ENVIRONMENT %%
+\definecolor{shadecolor}{gray}{0.95}
+%%%%%%%%%%%%%%%%%%%%%%%%
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%%%%%%%%% THEOREM ENVIRONMENTS %%%%%%%%%%%%%%%%
@@ -292,6 +304,7 @@ innerleftmargin=0pt,innerrightmargin=0pt,roundcorner=0pt, linewidth=0pt}
 \DeclareMathOperator{\Isom}{\mathsf{Isom}}
 \DeclareMathOperator{\Afft}{\mathsf{Aff}^{ft}}
 \DeclareMathOperator{\Aff}{\mathsf{Aff}}
+\DeclareMathOperator{\CommAlg}{\mathsf{CommAlg}}
 \DeclareMathOperator{\Ab}{\mathsf{Ab}}
 \DeclareMathOperator{\Grp}{\mathsf{Grp}}
 \DeclareMathOperator{\Grpd}{\mathsf{Grpd}}
@@ -321,8 +334,6 @@ innerleftmargin=0pt,innerrightmargin=0pt,roundcorner=0pt, linewidth=0pt}
 \DeclareMathOperator{\coker}{coker}
 \DeclareMathOperator{\coim}{coim}
 %% Algebra Tingz %%
-\DeclarePairedDelimiter\Brackets{\lBrack}{\rBrack} % double brackets
-\DeclarePairedDelimiter\Parens{\lParen}{\rParen} % double parentheses
 \DeclareMathOperator{\Ext}{Ext}
 \DeclareMathOperator{\Hom}{Hom}
 \DeclareMathOperator{\Tor}{Tor}
@@ -344,12 +355,13 @@ innerleftmargin=0pt,innerrightmargin=0pt,roundcorner=0pt, linewidth=0pt}
 \DeclareMathOperator{\trdeg}{trdeg}
 \DeclareMathOperator{\orb}{Orb}
 \DeclareMathOperator{\stab}{Stab}
+\DeclareMathOperator{\wt}{wt}
 \newcommand{\rExt}{\cale xt}
 \newcommand{\rHom}{\calh om}
 \newcommand{\ideal}{\trianglelefteq}
 \newcommand{\acts}{\curverightarrow}
 \newcommand{\actson}{\curverightarrow}
-\newcommand{\action}{\curverightarrow}
+\renewcommand{\action}{\curverightarrow}
 \newcommand{\pt}[1]{#1\Parens{t}}
 \newcommand{\bt}[1]{#1\Brackets{t}}
 %% ANT Tings %%
@@ -370,6 +382,7 @@ innerleftmargin=0pt,innerrightmargin=0pt,roundcorner=0pt, linewidth=0pt}
 \newcommand{\inv}[1]{#1^{-1}}
 %% Alg Geo Tingz %%
 \newcommand{\ox}{\calo_X}
+\renewcommand{\div}{\text{div}}
 \DeclareMathOperator{\spec}{Spec}
 \DeclareMathOperator{\mspec}{Max-Spec}
 \DeclareMathOperator{\supp}{Supp}
@@ -407,6 +420,7 @@ innerleftmargin=0pt,innerrightmargin=0pt,roundcorner=0pt, linewidth=0pt}
 \DeclareMathOperator{\rep}{Rep}
 \DeclareMathOperator{\res}{Res}
 \DeclareMathOperator{\sym}{Sym}
+\renewcommand{\O}{\textsc{O}}
 %% Analysis Tingz %%
 \DeclareMathOperator{\grad}{grad}
 \DeclareMathOperator{\curl}{curl}
