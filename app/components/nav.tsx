@@ -23,13 +23,18 @@ export function Navbar() {
           <div className="flex flex-row space-x-0 pr-10">
             {Object.entries(navItems).map(([path, { name }]) => {
               return (
+                <>
                 <Link
                   key={path}
                   href={path}
-                  className="transition-all hover:text-neutral-800 dark:hover:text-neutral-200 flex align-middle relative py-1 px-2 m-1"
+                  className="inline-block flex align-middle relative py-1 px-2 m-1"
                 >
-                  {name}
+                  <span className="group transition duration-500 ease-in-out relative">
+                    <span className="absolute bg-gradient-to-r from-dirty-brown via-aztec-gold to-platinum bg-clip-text text-transparent transition-opacity duration-500 ease-in-out opacity-0 group-hover:opacity-100 cursor-pointer">{name}</span>
+                    <span className="relative text-white transition-opacity duration-500 ease-in-out group-hover:opacity-0 cursor-pointer">{name}</span>
+                  </span>
                 </Link>
+                </>
               )
             })}
           </div>
