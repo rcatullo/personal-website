@@ -1,0 +1,45 @@
+---
+title: 'Exceptional Pullback'
+publishedAt: '2025-03-18'
+summary: 'I give an overview of the exceptional pullback functor in the context of finite flat morphisms of quasicoherent sheaves, which is a natural right adjoint to the pushforward functor.'
+---
+
+This post is going to be a summary of the ideas constructing the exceptional pullback functor $\pi^! \colon \qcoh_Y \to \qcoh_X$ (read "pi shriek") in the case $\pi$ is a finite flat morphism following Vakil's *Foundations of Algebraic Geometry*. The general construction for $\pi^!$ quite heavily relies on derived categories and so we won't go over it here, but the reader can consult *Sheaves on Manifolds* by Kashiwara and Schapira.
+
+The purpose is that $\pi^!$ naturally serves as a right adjoint to the pushforward $\pi_*$, which is strange since normally we think of $\pi_*$ as right adjoint to $\pi^*$. Let $\pi \colon X \to Y$ be a finite flat morphism of locally Noetherian schemes, and let $\fang$ be a quasicoherent sheaf on $Y$. Then
+$$
+\rHom_Y(\pi_* \calo_X, \fang)
+$$
+is also a quasicoherent sheaf on $Y$ as $\pi_* \calo_X$ is locally finitely presented. To see this, take a local finite presentation on $U \subset Y$
+$$
+\calo_U^{\oplus m} \longrightarrow \calo_U^{\oplus n} \longrightarrow \pi_* \calo_X \longrightarrow 0
+$$
+Since $\rHom_U(\cdot, \fang)$ is left-exact,
+$$
+0 \longrightarrow \rHom_U(\pi_* \calo_X, \fang) \longrightarrow \rHom_U(\calo_U^{\oplus n}, \fang) \longrightarrow \rHom_U(\calo_U^{\oplus m}, \fang) 
+$$
+$$
+0 \longrightarrow \rHom_U(\pi_* \calo_X, \fang) \longrightarrow \rHom_U(\calo_U, \fang)^{\oplus n} \longrightarrow \rHom_U(\calo_U, \fang)^{\oplus m}
+$$
+$$
+0 \longrightarrow \rHom_U(\pi_* \calo_X, \fang) \longrightarrow \fang\vert_U^{\oplus n} \longrightarrow \fang\vert_U^{\oplus m}
+$$
+Since $\qcoh_Y$ is an abelian category, this shows $\rHom_Y(\pi_* \calo_X, \fang)$ is quasicoherent on $Y$. Further, $\rHom_Y(\pi_* \calo_X, \fang)$ has the structure of a $\pi_* \calo_X$-module (by $(r\cdot \varphi)(s) := \varphi(rs)$). We show this gives it the structure of a quasicoherent sheaf on $X$. More generally,
+
+**Lemma** Suppose $\fanr$ is a quasicoherent sheaf of algebras on $Y$, and $\pi \colon \underline{\spec}_Y \fanr \longrightarrow Y$ is an affine morphism. Then the category of quasicoherent sheaves on $Y$ with the structure of $\fanr$-modules is equivalent to the category of quasicoherent sheaves on $\underline{\spec}_Y \fanr$.
+
+Let $\fanf$ be a quasicoherent sheaf on $Y$ with the structure of a $\fanr$-module. Since everything is affine-local on the target, it suffices to assume $Y = \spec A$ and hence $\pi \colon \underline{\spec}_Y \fanr = \spec R \to \spec A$ for some $A$-algebra $R$. Then $\fanf \simeq \tilde{M}$ as $\calo_{\spec A}$-modules for some $A$-module $M$ by quasicoherence. By assumption, $M$ has the structure of an $R$-module $M_R$, hence and so we can define the quasicoherent sheaf $\tilde{M_R}$ on $\spec R$. It remains to show this is functorial in $\fanf$, which we omit. 
+
+In the above, we take $\fanr = \pi_* \calo_X$ and note that $\underline{\spec}_Y \pi_* \calo_X \simeq X$ since $\pi$ is affine. Since $\rHom_Y(\pi_* \calo_X, \fang)$ is quasicoherent on $Y$ with the structure of a $\pi_* \calo_X$-module, we get a quasicoherent sheaf on $X$. This is the definition of our covariant exceptional pullback functor
+$$
+\pi^! \colon \qcoh_Y \to \qcoh_X
+$$
+We have natural isomorphisms of functors $\qcoh_Y \to \qcoh_Y$
+$$
+\pi_* \pi^! \xrightarrow{\quad\sim\quad} \rHom_Y(\pi_* \calo_X, -)
+$$
+Further, one can check that for $\fanf \in \qcoh_X$ and $\fang \in \qcoh_Y$ we have a natural isomorphism functorial in $\fanf, \fang$
+$$
+\pi_* \rHom_X(\fanf, \pi^! \fang) \xrightarrow{\quad \sim \quad} \rHom_Y(\pi_* \fanf, \fang)
+$$
+In particular, $(\pi_*, \pi^!)$ form an adjoint pair.
