@@ -43,7 +43,7 @@ export default function Page() {
         {Object.values(projItems).map((proj) => {
           return (
             <li key={proj.title}>
-              <span className="transition-all italic">{proj.title}</span>
+              <span className="italic">{proj.title}</span>
               {`, with ${proj.coauthors}, ${proj.date}, ${proj.institution}, available `}
               <a 
               rel="noopener noreferrer"
@@ -51,9 +51,9 @@ export default function Page() {
               href={proj.link}
               download>
                 <span className="group transition duration-500 ease-in-out relative">
-                  <span className="absolute bg-gradient-to-r from-dirty-brown via-aztec-gold to-platinum bg-clip-text text-transparent transition-opacity duration-500 ease-in-out opacity-0 group-hover:opacity-100 cursor-pointer">here.</span>
-                  <span className="relative text-white transition-opacity duration-500 ease-in-out group-hover:opacity-0 cursor-pointer">here.</span>
-                </span>
+                    <span className="absolute bg-gradient-to-r from-dirty-brown via-aztec-gold to-platinum bg-clip-text text-transparent transition-opacity duration-500 ease-in-out opacity-0 group-hover:opacity-100 cursor-pointer">here.</span>
+                    <span className="relative text-white transition-opacity duration-500 ease-in-out group-hover:opacity-0 cursor-pointer">here.</span>
+                  </span>
               </a>
             </li>
           )
