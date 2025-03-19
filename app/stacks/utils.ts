@@ -1,7 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 
-const standardStyURL = 'https://raw.githubusercontent.com/rcatullo/standard-latex-papers/main/standard.sty'
+const standardStyURL = 'https://raw.githubusercontent.com/rcatullo/standard-latex-papers/refs/heads/main/standard.sty'
 
 type Metadata = {
   title: string
