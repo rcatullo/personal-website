@@ -1,8 +1,8 @@
-# Ryan's Personal Website
+# Ryan Catullo | Personal Website
 
-This is my personal website and porfolio build from a react app template I found on Vercel. I have added support for the following features.
+This is my personal website and porfolio build from a React app template and hosted on Vercel. Features include
 
-- Custom MDX with LaTeX formatting
+- Custom MDX with LaTeX formatting, embedded Quiver commutative diagrams
 - Blog and Projects Pages
 - Optimized for SEO (sitemap, robots, JSON-LD schema)
 - RSS Feed
@@ -14,4 +14,4 @@ This is my personal website and porfolio build from a react app template I found
 
 ## Link
 
-https://portfolio-rcatullos-projects.vercel.app/
+https:/rcatullo.com
