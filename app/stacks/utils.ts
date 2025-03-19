@@ -1,6 +1,8 @@
 import fs from 'fs'
 import path from 'path'
 
+const standardStyURL = 'https://raw.githubusercontent.com/rcatullo/standard-latex-papers/main/standard.sty'
+
 type Metadata = {
   title: string
   publishedAt: string
@@ -8,13 +10,10 @@ type Metadata = {
   image?: string
 }
 
-function getSTYFiles(dir) {
-  return fs.readdirSync(dir).filter((file) => path.extname(file) === '.sty')
-}
-
-function readSTYFile(filePath) {
-  let rawContent = fs.readFileSync(filePath, 'utf-8')
-  return rawContent
+async function readStyFile(): Promise<string> {
+  const response = await fetch(standardStyURL);
+  const fileContent = await response.text();
+  return fileContent
 }
 
 function findBalancedClosing(input: string, start: number) {
@@ -33,7 +32,7 @@ function findBalancedClosing(input: string, start: number) {
   return 0; // No balanced closing brace found (should not happen if braces are balanced)
 }
 
-function parseSTYtoMacros(fileContent: string) {
+function parseStytoMacros(fileContent: string) {
     type CMD = {
       commandString: string, // substring of fileContent containing the command and its arguments
       arg1: string, // first argument (new command)
@@ -72,17 +71,9 @@ function parseSTYtoMacros(fileContent: string) {
     return macros
 }
 
-export function generateMacros() {
-  let styFiles = getSTYFiles(path.join(process.cwd(), 'app', 'latex'))
-  let macros = {}
-  styFiles.forEach((file) => {
-    let content = readSTYFile(path.join(process.cwd(), 'app', 'latex', file))
-    macros = {
-      ...macros,
-      ...parseSTYtoMacros(content)
-    }
-  })
-  return macros
+export async function generateMacros(): Promise<Record<string, string>> { 
+  let content = await readStyFile()
+  return parseStytoMacros(content)
 }
 
 function parseFrontmatter(fileContent: string) {

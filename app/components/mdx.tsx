@@ -9,8 +9,13 @@ import rehypeKatex from 'rehype-katex'
 import { generateMacros } from 'app/stacks/utils'
 
 const katexCSS = '\n <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossOrigin="anonymous"/>'
-const options: KatexOptions = {
-  macros: generateMacros()
+
+function Quiver({ src }) {
+  return (
+    <div className="flex justify-center">
+      <iframe className="relative quiver-embed rounded-lg border-none size-full" src={src}/>
+    </div>
+  )
 }
 
 function Table({ data }) {
@@ -129,9 +134,14 @@ let components = {
   blockquote: Blockquote,
   ol: OrderedList,
   Table,
+  Quiver,
 }
 
 export async function CustomMDX(post) {
+  const macros = await generateMacros();
+  const options: KatexOptions = {
+    macros: macros
+  }
   const { content } = await compileMDX({
       source: post.concat(katexCSS),
       options: {
