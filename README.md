@@ -14,4 +14,4 @@ This is my personal website and porfolio build from a React app template and hos
 
 ## Link
 
-https:/rcatullo.com
+https://rcatullo.com
