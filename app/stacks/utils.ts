@@ -69,7 +69,7 @@ function parseStytoMacros(fileContent: string) {
     }
 
     const customMacros = {
-      "\\gradient": "\\htmlClass{math-gradient h-screen}{#1}"
+      "\\gradient": "\\htmlClass{text-transparent}{#1}"
     };
     return { ...macros, ...customMacros };
 }

@@ -19,7 +19,15 @@ module.exports = {
     linearBorderGradients: [],
   },
   plugins: [
-    require('tailwindcss-border-gradients')()
+    require('tailwindcss-border-gradients')(),
+    function({ addComponents }) {
+      addComponents({
+        '.katex .base': {
+          'background': 'linear-gradient(to right, #a97125, #ca9f55, #e6e5df)',
+          'background-clip': 'text'
+        }
+      })
+    }
   ],
 }
 
