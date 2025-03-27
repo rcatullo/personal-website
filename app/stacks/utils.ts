@@ -68,7 +68,10 @@ function parseStytoMacros(fileContent: string) {
         }
     }
 
-    return macros
+    const customMacros = {
+      "\\gradient": "\\htmlClass{math-gradient h-screen}{#1}"
+    };
+    return { ...macros, ...customMacros };
 }
 
 export async function generateMacros(): Promise<Record<string, string>> { 

@@ -163,3 +163,10 @@ table {
   text-wrap: balance;
 }
 
+.math-gradient {
+  display: inline-block;
+  background: linear-gradient(to right, #a97125, #ca9f55, #e6e5df);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}

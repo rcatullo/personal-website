@@ -140,7 +140,11 @@ let components = {
 export async function CustomMDX(post) {
   const macros = await generateMacros();
   const options: KatexOptions = {
-    macros: macros
+    macros: macros,
+    trust: true,
+    strict: false,
+    throwOnError: false,
+    globalGroup: true
   }
   const { content } = await compileMDX({
       source: post.concat(katexCSS),
