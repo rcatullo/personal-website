@@ -25,21 +25,31 @@ We will describe a *simple recurrent network* (SRN) to illustrate the basic idea
 - $h^t = \sigma_h(W_h x^t + U_h h^{t-1} + b_h)$
 - $\hat y^t = \sigma_y(W_y h^t + b_y)$
 
-The functions $\sigma_h, \sigma_y$ are activation functions (e.g. $\softmax$), $W_h, W_y, U_h$ are the weight matrices, and $b_h, b_y$ are the basies. Collectively, the weights and biases are referred to as the parameters $\theta$. Intuitively, we are just updating our internal memory $h^t$ as a function of the input at time $t$ and our memory at the previous timestep, and our prediction for $y$ at time $t$ is just a function of our memory at time $t$.
+The functions $\sigma_h, \sigma_y$ are activation functions (e.g. $\softmax$), $W_h, W_y, U_h$ are the weight matrices, and $b_h, b_y$ are the biases. Collectively, the weights and biases are referred to as the parameters $\theta$. Intuitively, we are just updating our internal memory $h^t$ as a function of the input at time $t$ and our memory at the previous timestep, and our prediction for $y$ at time $t$ is just a function of our memory at time $t$.
 
 ## Simple Cell RNN Forward Pass
 
-At each timestep $t$, we update our parameters $x^t,h^t,\hat y^t$ in the following fashion. We first randomly initialize $\theta$. For the hidden layer, we use the $\tanh$ activation function to get an output in the range $(-1,1)$, although other activation functions can also be used.
+At each timestep $t$, we update our parameters $x^t,h^t,\hat y^t$ in the following fashion. We first randomly initialize $\theta$. For the hidden layer, we use the $\sigma_h(z) = \tanh(z)$ activation function to get an output in the range $(-1,1)$, although other activation functions can also be used. For a vector $z$ we just take $\sigma_h(z)_i = \sigma_h(z_i)$ coordinate-wise, and we have the following dimensions of the weights and biases (although you can just assume we make everything the correct dimension).
+
+- $W_h \in \bbr^{\ell \times d}$ = input weights for hidden layer
+- $U_h \in \bbr^{\ell \times \ell}$ = hidden layer weights for hidden layer
+- $b_h \in \bbr^{\ell}$ = bias for hidden layer
+- $W_y \in \bbr^{m \times \ell}$ = hidden layer weights for prediction
+- $b_y \in \bbr^{m}$ = bias for prediction
+
+Then just as before,
 $$
-h^t_{\theta} = \tanh(W_{hx} x^t + W_{hh} h^{t-1}_{\theta} + b_h; \theta)
+h^t_{\theta} = \sigma_h(W_{h} x^t + U_{h} h^{t-1}_{\theta} + b_h)
 $$
-Then we compute our prediction for $y^t$ using this hidden layer and the sigmoid function $\sigma(z) = 1/(1+\exp(-z))$.
+We will assume that we are performing binary classification, i.e. $y^t \in \{0,1\}$. Since we are doing binary, $m=1$ and we compute our prediction for $y^t$ using this hidden layer and the sigmoid function $\sigma_y(z) = 1/(1+\exp(-z))$.
+
+Some examples of applications include language modeling problems like sentiment analysis: given an embedding of a sequence of words, determine whether it is positive or negative. It's possible to use other activation functions for different tasks, like the identity for continuous modeling or softmax for multiclass classification.
 $$
-\hat y^t_{\theta} = \sigma(W_{yh} h^t_{\theta} + b_y; \theta)
+\hat y^t_{\theta} = \sigma_y(W_{y} h^t_{\theta} + b_y)
 $$
-We can compute cross-entropy loss at time $t$ by
+We can compute cross-entropy loss at time $t$ with the following formula.
 $$
-J^t(\theta) = - y^t \log(\hat y^t_{\theta})
+J^t(\theta) = - y^t \log(\hat y^t_{\theta}) - (1-y^t) \log(1-\hat y^t_{\theta})
 $$
 
 But which timestep $t$ should we use to compute loss and update the weights? The answer is to compute loss at *each* timestep $t$ according to a sliding context window of a fixed number of previous timesteps, and perform backpropogation. This is referred to as **backpropogation through time**.
@@ -51,50 +61,61 @@ The idea for backpropogation here is to **unfold** the RNN through some timestep
 Fix some $k$ which we will determine later. Starting at $t = k$, set $h^0 = 0$ and foward propogate $x^{t-1},\ldots,x^{0}, h^{0}$ through the unfolded network according to the previous section. That is,
 $$
 \begin{align*}
-h^1_{\theta} &= \tanh(W_{hx} x^1 + W_{hh} h^{0}_{\theta} + b_h; \theta) \\
+h^1_{\theta} &= \sigma_h(W_h x^1 + U_h h^{0}_{\theta} + b_h) \\
 &\vdots \\
-h^t_{\theta} &= \tanh(W_{hx} x^t + W_{hh} h^{t-1}_{\theta} + b_h; \theta) \\
-\hat y^t_{\theta} &= \sigma(W_{yh} h^t_{\theta} + b_y; \theta)
+h^t_{\theta} &= \sigma_h(W_h x^t + U_h h^{t-1}_{\theta} + b_h) \\
+\hat y^t_{\theta} &= \sigma_y(W_y h^t_{\theta} + b_y)
 \end{align*}
 $$
-Then we compute gradient loss and perform usual backpropogation:
+Then we compute gradient loss and perform usual backpropogation (using vectorized notations for the chain rule).
 $$
 \begin{align*}
-\frac{\del J^t(\theta)}{\del W_{yh}} = \frac{\del J^t(\theta)}{\del \hat y^t_{\theta}} \frac{\del \hat y^t_{\theta}}{\del W_{yh}} &= \frac{-y^t}{\hat y^t_{\theta}} \hat y^t_{\theta} (1-\hat y^t_{\theta}) h^t_{\theta} \\
-&= -y^t (1-\hat y^t_{\theta}) h^t_{\theta}
+\frac{\del J^t(\theta)}{\del W_y} = \frac{\del J^t(\theta)}{\del \hat y^t_{\theta}} \frac{\del \hat y^t_{\theta}}{\del W_y} &= \left(-y_t \frac{1}{\hat y^t_{\theta}} + (1-y^t) \frac{1}{1 - \hat y^t_{\theta}}\right) \left(\hat y^t_{\theta} (1-\hat y^t_{\theta})\right) {h^t_{\theta}}^{\top} \\
+&= \left(-y^t(1-\hat y^t_{\theta}) + (1-y^t)\hat y^t_{\theta}\right){h^t_{\theta}}^{\top}  \\
+&= \left(\hat y^t_{\theta} - y^t\right){h^t_{\theta}}^{\top}   \in \bbr^{1 \times \ell}
 \end{align*}
 $$
-and of course
+which implies by a symmetric calculation that
 $$
-\frac{\del J^t(\theta)}{\del b_{y}} = -y^t (1-\hat y^t_{\theta})
+\frac{\del J^t(\theta)}{\del b_{y}} =\hat y^t_{\theta} - y^t \in \bbr
 $$
-Where we used the chain rule and that $g'(z) = \sigma(z)(1-\sigma(z))$. For $W_{hh}$, we have
+For $U_h$, we have
 $$
 \begin{align*}
-\frac{\del J^t(\theta)}{\del W_{hh}} = \frac{\del J^t(\theta)}{\del \hat y^t_{\theta}} \frac{\del \hat y^t_{\theta}}{\del h^t_{\theta}} \frac{\del h^t_{\theta}}{\del W_{hh}} &= \frac{-y^t}{\hat y^t_{\theta}} \hat y^t_{\theta} (1-\hat y^t_{\theta}) W_{yh} \frac{\del h^t_{\theta}}{\del W_{hh}} 
+\frac{\del J^t(\theta)}{\del U_h} = \frac{\del J^t(\theta)}{\del \hat y^t_{\theta}} \frac{\del \hat y^t_{\theta}}{\del h^t_{\theta}} \frac{\del h^t_{\theta}}{\del U_h} &= (\hat y^t_{\theta} - y^t) W_y^{\top} \frac{\del h^t_{\theta}}{\del U_h} \in \bbr^{\ell \times \ell}
 \end{align*}
 $$
-We can use $d/dz(\tanh(z)) = 1 - \tanh^2(z)$ to compute the latter partial, although we get a $W_{hh}h^{t-1}_{\theta}$ term. Since $h^{t-1}_{\theta}$ also depends on $W_{hh}$, we get a recursive formula so the this partial derivative is a little more complicated, but not too hard to compute.
+Note $\sigma_h'(z) = \tanh'(z) = 1 - \tanh^2(z) = 1-\sigma_h(z)^2$ so for 
+$$
+z^t = W_h x^t + U_h h^{t-1}_{\theta} + b_h
+$$
+we have 
+$$
+\sigma_h'(z^t)_i = 1 - \sigma_h(z^t)_i^2 = 1 - [h^t_{i;\theta}]^2
+$$
+We apply $\sigma_h$ entry-wise so when we take the chain rule, we let $\sigma_h'$ denote the entry-wise derivatives which we just showed how to compute, and take the entry-wise (Hadamard) product $\odot$. We compute the transpose of the partial to save a lot of ugly transpose notation.
 $$
 \begin{align*}
-\frac{\del h^t_{\theta}}{\del W_{hh}} &= (1-(h^t_{\theta})^2)\left(h^{t-1}_{\theta} + W_{hh} \frac{\del h^{t-1}_{\theta}}{\del W_{hh}}\right) \\
-&= (1-(h^t_{\theta})^2)\left(h^{t-1}_{\theta} + W_{hh} (1-(h^{t-1}_{\theta})^2) \left[h^{t-2}_{\theta} + W_{hh}\frac{\del h^{t-2}_{\theta}}{\del W_{hh}}\right]\right) \\
-&= \sum_{\gamma=0}^{k-2} W_{hh}^{\gamma} h^{t-\gamma-1}_{\theta} \prod_{i=0}^{\gamma} (1 - (h^{t-i}_{\theta})^2)
+\left[\frac{\del h^t_{\theta}}{\del U_h}\right]^{\top} 
+&= \left[\frac{\del h^t_{\theta}}{\del z^t} \odot \frac{\del z^t}{\del U_h}\right]^{\top} 
+=  \sigma_h'(z^t) \odot \left({h^{t-1}_{\theta}} + U_h\gradient{\left[\frac{\del h^{t-1}_{\theta}}{\del U_h}\right]^{\top}}\right) \\
+&= \sigma_h'(z^t) \odot \left({h^{t-1}_{\theta}} + U_h\gradient{\left[\sigma_h'(z^{t-1}) \odot \left({h^{t-2}_{\theta}} + U_h \left[\frac{\del h^{t-2}_{\theta}}{\del U_h} \right]^{\top}\right)\right]}\right) \\
+&= \sum_{\gamma=0}^{k-2} \left[\bigodot_{i=0}^{\gamma} \sigma_h'(z^{t-i})\right] \odot U_h^{\gamma}{h^{t-\gamma-1}_{\theta}} \in \bbr^{\ell \times 1}
 \end{align*}
 $$
-and similarly for $W_{hx}$ entrywise and $b_h$. Then we just update our parameters, where $\eta$ is our learning rate.
+Similar computations give $W_h$ and $b_h$. Then we just update our parameters, where $\eta$ is our learning rate.
 $$
 \theta \leftarrow \theta - \eta J^t(\theta)
 $$
 Nice! We have successfully perforemd backprop through time. Note we only did this for $t = k$, but the same idea applies for $t \geq k$. That is, start with $t = k$ and input $x^k, \ldots, x^0, h^0 = 0$. Perform the above forward and backward pass to update the parameters $\theta$, and set (with our newly updated parameters)
 $$
-h^1 = h^1_{\theta} = \tanh(W_{hx} x^1 + W_{hh} h^{0} + b_h; \theta)
+h^1 = h^1_{\theta} = \sigma_h(W_h x^1 + U_h h^{0} + b_h)
 $$
-Then perform the passes again with input $x^{k+1}, \ldots, x^1, h^1$ to update $\theta$, etc... until we reach the last iteration on $x^T, \ldots, x^{T-k}, h^{T-k}$. For multiple training samples, we can do the same thing across all of the samples and update our parameters $\theta$ iteratively.
+Then perform the passes again with input $x^{k+1}, \ldots, x^1, h^1$ to update $\theta$, etc... until we reach the last iteration on $x^T, \ldots, x^{T-k}, h^{T-k}$.
 
-A question you might have is what a reasonable choice for $k$ might be? If we pick $k$ large, notice that the contribution of the previous information decays geometrically over time in the above formula for $\del J^t(\theta) / \del W_{hh}$. Thus the gradient becomes too small and the updated parameters aren't able to train effectively. This is known as the **vanishing gradient problem**. The solution to this problem, known as long short-term memory (LSTM), is the subject of the next post.
+A question you might have is what a reasonable choice for $k$ might be? If we pick $k$ large, notice that the contribution of the previous information decays geometrically over time in the above formula for $\del J^t(\theta) / \del U_h$; notice the $U_h^{\gamma}$ factor where $\gamma$ ranges from $0$ to $k-2$. Thus the gradient becomes too small and the updated parameters aren't able to train effectively. This is known as the **vanishing gradient problem**. The solution to this problem, known as long short-term memory (LSTM), is the subject of the next post.
 
-The other possibility is that we implement LSTM, but now the gradients become unreasably large. This is the **exploding gradients problem** and can be solved by defining some threshold such that when the gradient blows up past this threshold, we normalize the gradient to scale it back down. Another approach that could solve both issues at once is to initialize the weight matrix $W_{hh}$ to be orthogonal since products of orthogonal matrices don't explode or vanish, although in our simple cell case this would force $W_{hh} = \pm 1$ so the model likely won't be as good.
+The other possibility is that we implement LSTM, but now the gradients become unreasably large. This is the **exploding gradients problem** and can be solved by defining some threshold such that when the gradient blows up past this threshold, we normalize the gradient to scale it back down. Another approach that could solve both issues at once is to initialize the weight matrix $U_h$ to be orthogonal since products of orthogonal matrices don't explode or vanish, but this limits our weights and leads to more restrictive models.
 
 In practice, usually $k = 8$ or $9$ works well, although one is better off using more advanced RNNs to mitigate this issue.
 
