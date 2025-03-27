@@ -1,0 +1,105 @@
+---
+title: 'Introduction to RNNs'
+publishedAt: '2025-03-26'
+summary: 'A short introduction to recurrent neural networks (RNNs) going over intuition, backprop, implementation, and problems like vanishing/exploding gradient.'
+---
+
+This post is aimed at giving a quick and dirty intro to RNNs, with an emphasis naturally on mathematical formulations, so one has just enough working knowledge to implement a basic model. Traditional neural networks treat each input as independent. But in many real-world scenarios, the order and context of data matter. A sequence of words in a sentence, a time series of stock prices, or a series of sensor readings all have inherent temporal dependencies.
+
+RNNs solve this by introducing a "hidden state" - think of it as the network's working memory. This hidden state acts like a messenger, carrying important information from previous time steps to the current one. 
+
+Recall the traditional feedforward neural network architecture consists of an input layer, some hidden middle layers, and an output layer with connections between each of the layers. The RNN architecture allows memory by adding self-loops at the nodes in the hidden layers, which means that information from previous steps can be fed back into the network.
+
+In particular this makes them much better at sequential classification tasks than feedforward networks, which are better at independent classification tasks (e.g. image classification).
+
+To implement this idea, we have the following steup. Suppose our labeled training data is sequential, i.e. $(x^1, y^1), \ldots, (x^t, y^t)$. We refer to $t^{\text{th}}$ datapoint as the point at timestep $t$.
+
+At each $t$, we have an input given by $x^t$, a hidden vector $h^t$, and an output vector $\hat y^t$ (the hat denotes prediction). The hidden layer represents the information that we want to pass from one timestep to the next, and is a function of the input at time $t$ as well as the information from the previous timestep $t-1$. We can summarize this as follows.
+
+- $x^t \in \bbr^d$ = input vector
+- $h^t \in \bbr^{\ell}$ = hidden vector
+- $y^t \in \bbr^m$ = output vector 
+
+We will describe a *simple recurrent network* (SRN) to illustrate the basic idea. We model the relationship as follows.
+
+- $h^t = \sigma_h(W_h x^t + U_h h^{t-1} + b_h)$
+- $\hat y^t = \sigma_y(W_y h^t + b_y)$
+
+The functions $\sigma_h, \sigma_y$ are activation functions (e.g. $\softmax$), $W_h, W_y, U_h$ are the weight matrices, and $b_h, b_y$ are the basies. Collectively, the weights and biases are referred to as the parameters $\theta$. Intuitively, we are just updating our internal memory $h^t$ as a function of the input at time $t$ and our memory at the previous timestep, and our prediction for $y$ at time $t$ is just a function of our memory at time $t$.
+
+## Simple Cell RNN Forward Pass
+
+At each timestep $t$, we update our parameters $x^t,h^t,\hat y^t$ in the following fashion. We first randomly initialize $\theta$. For the hidden layer, we use the $\tanh$ activation function to get an output in the range $(-1,1)$, although other activation functions can also be used.
+$$
+h^t_{\theta} = \tanh(W_{hx} x^t + W_{hh} h^{t-1}_{\theta} + b_h; \theta)
+$$
+Then we compute our prediction for $y^t$ using this hidden layer and the sigmoid function $\sigma(z) = 1/(1+\exp(-z))$.
+$$
+\hat y^t_{\theta} = \sigma(W_{yh} h^t_{\theta} + b_y; \theta)
+$$
+We can compute cross-entropy loss at time $t$ by
+$$
+J^t(\theta) = - y^t \log(\hat y^t_{\theta})
+$$
+
+But which timestep $t$ should we use to compute loss and update the weights? The answer is to compute loss at *each* timestep $t$ according to a sliding context window of a fixed number of previous timesteps, and perform backpropogation. This is referred to as **backpropogation through time**.
+
+## Backpropogration Through Time (BPTT)
+
+The idea for backpropogation here is to **unfold** the RNN through some timesteps and run backpropogation in the usual sense. That is, we don't just want to run backprop on all the data from time $t$, but also the memory data from times $t-1,t-2,\ldots, t-k$. 
+
+Fix some $k$ which we will determine later. Starting at $t = k$, set $h^0 = 0$ and foward propogate $x^{t-1},\ldots,x^{0}, h^{0}$ through the unfolded network according to the previous section. That is,
+$$
+\begin{align*}
+h^1_{\theta} &= \tanh(W_{hx} x^1 + W_{hh} h^{0}_{\theta} + b_h; \theta) \\
+&\vdots \\
+h^t_{\theta} &= \tanh(W_{hx} x^t + W_{hh} h^{t-1}_{\theta} + b_h; \theta) \\
+\hat y^t_{\theta} &= \sigma(W_{yh} h^t_{\theta} + b_y; \theta)
+\end{align*}
+$$
+Then we compute gradient loss and perform usual backpropogation:
+$$
+\begin{align*}
+\frac{\del J^t(\theta)}{\del W_{yh}} = \frac{\del J^t(\theta)}{\del \hat y^t_{\theta}} \frac{\del \hat y^t_{\theta}}{\del W_{yh}} &= \frac{-y^t}{\hat y^t_{\theta}} \hat y^t_{\theta} (1-\hat y^t_{\theta}) h^t_{\theta} \\
+&= -y^t (1-\hat y^t_{\theta}) h^t_{\theta}
+\end{align*}
+$$
+and of course
+$$
+\frac{\del J^t(\theta)}{\del b_{y}} = -y^t (1-\hat y^t_{\theta})
+$$
+Where we used the chain rule and that $g'(z) = \sigma(z)(1-\sigma(z))$. For $W_{hh}$, we have
+$$
+\begin{align*}
+\frac{\del J^t(\theta)}{\del W_{hh}} = \frac{\del J^t(\theta)}{\del \hat y^t_{\theta}} \frac{\del \hat y^t_{\theta}}{\del h^t_{\theta}} \frac{\del h^t_{\theta}}{\del W_{hh}} &= \frac{-y^t}{\hat y^t_{\theta}} \hat y^t_{\theta} (1-\hat y^t_{\theta}) W_{yh} \frac{\del h^t_{\theta}}{\del W_{hh}} 
+\end{align*}
+$$
+We can use $d/dz(\tanh(z)) = 1 - \tanh^2(z)$ to compute the latter partial, although we get a $W_{hh}h^{t-1}_{\theta}$ term. Since $h^{t-1}_{\theta}$ also depends on $W_{hh}$, we get a recursive formula so the this partial derivative is a little more complicated, but not too hard to compute.
+$$
+\begin{align*}
+\frac{\del h^t_{\theta}}{\del W_{hh}} &= (1-(h^t_{\theta})^2)\left(h^{t-1}_{\theta} + W_{hh} \frac{\del h^{t-1}_{\theta}}{\del W_{hh}}\right) \\
+&= (1-(h^t_{\theta})^2)\left(h^{t-1}_{\theta} + W_{hh} (1-(h^{t-1}_{\theta})^2) \left[h^{t-2}_{\theta} + W_{hh}\frac{\del h^{t-2}_{\theta}}{\del W_{hh}}\right]\right) \\
+&= \sum_{\gamma=0}^{k-2} W_{hh}^{\gamma} h^{t-\gamma-1}_{\theta} \prod_{i=0}^{\gamma} (1 - (h^{t-i}_{\theta})^2)
+\end{align*}
+$$
+and similarly for $W_{hx}$ entrywise and $b_h$. Then we just update our parameters, where $\eta$ is our learning rate.
+$$
+\theta \leftarrow \theta - \eta J^t(\theta)
+$$
+Nice! We have successfully perforemd backprop through time. Note we only did this for $t = k$, but the same idea applies for $t \geq k$. That is, start with $t = k$ and input $x^k, \ldots, x^0, h^0 = 0$. Perform the above forward and backward pass to update the parameters $\theta$, and set (with our newly updated parameters)
+$$
+h^1 = h^1_{\theta} = \tanh(W_{hx} x^1 + W_{hh} h^{0} + b_h; \theta)
+$$
+Then perform the passes again with input $x^{k+1}, \ldots, x^1, h^1$ to update $\theta$, etc... until we reach the last iteration on $x^T, \ldots, x^{T-k}, h^{T-k}$. For multiple training samples, we can do the same thing across all of the samples and update our parameters $\theta$ iteratively.
+
+A question you might have is what a reasonable choice for $k$ might be? If we pick $k$ large, notice that the contribution of the previous information decays geometrically over time in the above formula for $\del J^t(\theta) / \del W_{hh}$. Thus the gradient becomes too small and the updated parameters aren't able to train effectively. This is known as the **vanishing gradient problem**. The solution to this problem, known as long short-term memory (LSTM), is the subject of the next post.
+
+The other possibility is that we implement LSTM, but now the gradients become unreasably large. This is the **exploding gradients problem** and can be solved by defining some threshold such that when the gradient blows up past this threshold, we normalize the gradient to scale it back down. Another approach that could solve both issues at once is to initialize the weight matrix $W_{hh}$ to be orthogonal since products of orthogonal matrices don't explode or vanish, although in our simple cell case this would force $W_{hh} = \pm 1$ so the model likely won't be as good.
+
+In practice, usually $k = 8$ or $9$ works well, although one is better off using more advanced RNNs to mitigate this issue.
+
+## Conclusion
+
+RNNs are a very powerful framework for training neural networks on sequential data and represent an intuitive adaptation of the ideas used to build feedforward neural networks to solve these tasks. In the next post we will discuss some more complex cells that we can choose to solve the vanishing gradients problem. 
+
+Namely, instead of using a simple $\tanh$ activation on input $x^t$ and the previous $h^{t-1}$, we keep track of five different **gates and states**: internal memory of the cell, the hidden state that we output across time, the *input gate* to determine how much input flows to cell memory, the *forget gate* to determine how much input and previous cell memory flows to cell memory, and the *output gate* to determine how much input and prevoius cell memory flows into the output hidden state.
