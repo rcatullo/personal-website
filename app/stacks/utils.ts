@@ -1,7 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 
-const standardStyURL = 'https://raw.githubusercontent.com/rcatullo/standard-latex-papers/refs/heads/main/standard.sty'
+const standardStyURL = "https://raw.githubusercontent.com/rcatullo/standard-latex-papers/refs/heads/main/standard.sty?<?php echo 'v=' . filemtime('app.js'); ?>"
 
 type Metadata = {
   title: string
@@ -45,7 +45,7 @@ function parseStytoMacros(fileContent: string) {
     while (i < fileContent.length) {
         const command = selectCmds.find((cmd) => fileContent.startsWith(cmd, i));
         if (command) {
-          const start = i
+          const start = i;
           i = findBalancedClosing(fileContent, start); // index of the first (balanced) closing brace
           const firstArg = fileContent.slice(fileContent.indexOf('{', start) + 1, i);
           i = fileContent.indexOf('{', i) // move index of the opening brace of the second argument
@@ -72,7 +72,7 @@ function parseStytoMacros(fileContent: string) {
 }
 
 export async function generateMacros(): Promise<Record<string, string>> { 
-  let content = await readStyFile()
+  let content = await readStyFile();
   return parseStytoMacros(content)
 }
 
