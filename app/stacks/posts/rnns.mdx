@@ -107,7 +107,7 @@ Similar computations give $W_h$ and $b_h$. Then we just update our parameters, w
 $$
 \theta \leftarrow \theta - \eta J^t(\theta)
 $$
-Nice! We have successfully perforemd backprop through time. Note we only did this for $t = k$, but the same idea applies for $t \geq k$. That is, start with $t = k$ and input $x^k, \ldots, x^0, h^0 = 0$. Perform the above forward and backward pass to update the parameters $\theta$, and set (with our newly updated parameters)
+Nice! We have successfully performed backprop through time. Note we only did this for $t = k$, but the same idea applies for $t \geq k$. That is, start with $t = k$ and input $x^k, \ldots, x^0, h^0 = 0$. Perform the above forward and backward pass to update the parameters $\theta$, and set (with our newly updated parameters)
 $$
 h^1 = h^1_{\theta} = \sigma_h(W_h x^1 + U_h h^{0} + b_h)
 $$

@@ -28,7 +28,7 @@ Since $\qcoh_Y$ is an abelian category, this shows $\rHom_Y(\pi_* \calo_X, \fang
 
 **Lemma** Suppose $\fanr$ is a quasicoherent sheaf of algebras on $Y$, and $\pi \colon \underline{\spec}_Y \fanr \longrightarrow Y$ is an affine morphism. Then the category of quasicoherent sheaves on $Y$ with the structure of $\fanr$-modules is equivalent to the category of quasicoherent sheaves on $\underline{\spec}_Y \fanr$.
 
-Let $\fanf$ be a quasicoherent sheaf on $Y$ with the structure of a $\fanr$-module. Since everything is affine-local on the target, it suffices to assume $Y = \spec A$ and hence $\pi \colon \underline{\spec}_Y \fanr = \spec R \to \spec A$ for some $A$-algebra $R$. Then $\fanf \simeq \tilde{M}$ as $\calo_{\spec A}$-modules for some $A$-module $M$ by quasicoherence. By assumption, $M$ has the structure of an $R$-module $M_R$, hence and so we can define the quasicoherent sheaf $\tilde{M_R}$ on $\spec R$. It remains to show this is functorial in $\fanf$, which we omit. 
+Let $\fanf$ be a quasicoherent sheaf on $Y$ with the structure of a $\fanr$-module. Since everything is affine-local on the target, it suffices to assume $Y = \spec A$ and hence $\pi \colon \underline{\spec}_Y \fanr = \spec R \to \spec A$ for some $A$-algebra $R$. Then $\fanf \simeq \tilde{M}$ as $\calo_{\spec A}$-modules for some $A$-module $M$ by quasicoherence. By assumption, $M$ has the structure of an $R$-module $M_R$, and so we can define the quasicoherent sheaf $\tilde{M_R}$ on $\spec R$. It remains to show this is functorial in $\fanf$, which we omit. 
 
 In the above, we take $\fanr = \pi_* \calo_X$ and note that $\underline{\spec}_Y \pi_* \calo_X \simeq X$ since $\pi$ is affine. Since $\rHom_Y(\pi_* \calo_X, \fang)$ is quasicoherent on $Y$ with the structure of a $\pi_* \calo_X$-module, we get a quasicoherent sheaf on $X$. This is the definition of our covariant **exceptional pullback functor**
 $$
@@ -40,6 +40,26 @@ $$
 $$
 Further, one can check that for $\fanf \in \qcoh_X$ and $\fang \in \qcoh_Y$ we have a natural isomorphism functorial in $\fanf, \fang$
 $$
-\pi_* \rHom_X(\fanf, \pi^! \fang) \xrightarrow{\quad \sim \quad} \rHom_Y(\pi_* \fanf, \fang)
+\gradient{\pi_* \rHom_X(\fanf, \pi^! \fang) \longrightarrow \rHom_Y(\pi_* \fanf, \fang)}
 $$
 In particular, $(\pi_*, \pi^!)$ form an adjoint pair.
+
+### Application to Frobenius Splitting
+
+One nice application appears in characteristic $p > 0$ geometry. Let $F \colon X \to X$ be the absolute Frobenius morphism. A variety $X$ is called **Frobenius split** if the map
+$$
+\calo_X \to F_* \calo_X
+$$
+splits as $\calo_X$-modules. Using the exceptional pullback, we can reformulate this condition. Consider
+$$
+F^! \calo_X \simeq \rHom_X(F_* \calo_X, \calo_X)
+$$
+Then $X$ is Frobenius split if and only if there exists a morphism $F^! \calo_X \to \calo_X$ inducing the identity on $\calo_X$ via adjunction. When $X$ is smooth, we can identify
+$$
+F^! \calo_X \simeq \omega_X^{1-p}
+$$
+via an extended application of Grothendieck-Serre duality. This gives the classical criterion of $X$ being Frobenius split if and only if there exists a section
+$$
+\sigma \in H^0(X, \omega_X^{1-p})
+$$
+whose residue is 1. This perspective relevant to flag and toric varieties, where explicit Frobenius splittings can be constructed.

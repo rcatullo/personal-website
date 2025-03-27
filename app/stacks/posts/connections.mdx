@@ -55,7 +55,7 @@ $$
 &= \sum_{i=1}^k \left(d\sigma^i + \sum_{j=1}^k \sigma^j \omega_j^i\right) \otimes e_i
 \end{align*}
 $$
-If $\sigma$ is written in column vector notation using the $\sigma^i$'s given by the local frame, then
+If $\sigma is written in column vector notation using the $\sigma^i$'s given by the local frame, then
 $$
 \nabla(\sigma) = d\sigma + \omega \sigma
 $$
@@ -80,8 +80,36 @@ The following are true.
 * For every $e \in E$, $H_e \cap V_e = 0$.
 In fact, we can take this to be the definition of our connection. This is called the Ehresmann connection, and it allows us to generalize the notion to smooth fiber bundles like principal $G$-bundles.
 
-Let $\gamma$ be a smooth curve on $M$ as before, and $\sigma$ a section of $\cale$. Then we say $\sigma$ is parallel along $\gamma$ if 
+## Curvature
+
+The *curvature* of a connection $\nabla$ measures the failure of the connection to be flat, i.e., the failure of parallel transport to be path-independent. Mathematically, it is defined as follows.
+
+**Definition** The *curvature* of a connection $\nabla$ is the $\bbc$-linear map
 $$
-\nabla_{\gamma'(t)} \sigma = 0
+F_{\nabla} \colon \calo_{\cale} \to \Omega^2_M \otimes \calo_{\cale}
 $$
-for all $t$. Equivalently, consider the pullback connection $\gamma^* \nabla$ on the pullback bundle $\gamma^* \cale$. Then a section $\sigma$ of $\gamma^* \cale$ is parallel if and ony if $\gamma^* \nabla(\sigma) = 0$.
+given by $F_{\nabla}(\sigma)(X,Y) = \nabla_X \nabla_Y \sigma - \nabla_Y \nabla_X \sigma - \nabla_{[X,Y]} \sigma$ for vector fields $X,Y$ on $M$.
+
+In terms of a local frame as above, if $\omega$ is the connection form, then the curvature is given by
+$$
+F_{\nabla} = d\omega + \omega \wedge \omega
+$$
+This is sometimes called the *structure equation*.
+
+## Holomorphic Structures
+
+When $M$ is a complex manifold, we can ask for our connection to be compatible with the complex structure. This leads to the notion of a holomorphic structure.
+
+**Definition** A connection $\nabla$ on a complex vector bundle $\cale \to M$ over a complex manifold is called *compatible with the complex structure* if
+$$
+\nabla = \nabla^{1,0} + \nabla^{0,1}
+$$
+where $\nabla^{1,0}$ and $\nabla^{0,1}$ are the $(1,0)$ and $(0,1)$ components respectively.
+
+The key relationship between connections and holomorphic structures is given by the following theorem:
+
+**Theorem** Let $\cale \to M$ be a complex vector bundle over a complex manifold. Then $\cale$ admits a holomorphic structure if and only if there exists a connection $\nabla$ such that $F_{\nabla}^{0,2} = 0$.
+
+This is part of the Newlander-Nirenberg theorem and shows that the existence of holomorphic structures is fundamentally a differential-geometric question.
+
+Finally, we note that on a Kähler manifold, the Levi-Civita connection provides a canonical way to study the geometry through parallel transport, and its curvature gives rise to important invariants like the Ricci curvature.
