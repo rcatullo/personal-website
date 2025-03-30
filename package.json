@@ -22,7 +22,7 @@
     "react-dom": "18.2.0",
     "rehype-katex": "^7.0.1",
     "remark-math": "^6.0.0",
-    "sugar-high": "^0.6.0",
+    "sugar-high": "^0.6.1",
     "tailwindcss-border-gradients": "^2.0.3",
     "typescript": "5.3.3",
     "vfile": "^5.3.7",
