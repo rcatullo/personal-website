@@ -1,7 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 
-const standardStyURL = "https://raw.githubusercontent.com/rcatullo/standard-latex-papers/refs/heads/main/standard.sty?<?php echo 'v=' . filemtime('app.js'); ?>"
+const standardStyURL = "https://raw.githubusercontent.com/rcatullo/standard-latex-papers/refs/heads/main/standard-operators.sty?<?php echo 'v=' . filemtime('app.js'); ?>"
 
 type Metadata = {
   title: string
