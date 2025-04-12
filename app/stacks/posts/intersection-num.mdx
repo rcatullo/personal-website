@@ -1,0 +1,112 @@
+---
+title: 'Intersection Numbers of Varieties'
+publishedAt: '2025-04-11'
+summary: 'Chapter 1 of Debarre's Higher-Dimensional Algebraic Geometry'
+---
+
+We adopt an alternative definition of Cartier divisors than seen for example in Vakil's FOAG. Let $X$ be a scheme, and define the sheaf of total quotient rings $\fank_X$ as the sheaf whose $U$-points $\fank_X(U)$ is the localization of $\ox(U)$ by the multiplicative set of non zero divisors. We can define a **Cartier divisor** as a global section of the sheaf $\fank_X^*/\ox^*$, where $\fank_X^*(U)$ is the group of invertible elements in $\fank_X(U)$.
+
+Perhaps more concretely, a Cartier divisor is a collection of tuples $(U_i, f_i)$ where $U_i$ is an open cover of $X$ and $f_i$ is a unit in $\fank_X(U_i)$, such that for any other tuple $(U_j, f_j)$ we have $f_i/f_j \in \calo_X^*(U_i \cap U_j)$. 
+
+Note that if $X$ is reduced then we may take a cover by integral (=reduced + irreducible) $U_i$ such that $\fank_X(U_i) = K(U_i)$ is just the field of fractions of $\ox(U_i)$. Then $f_i$ is merely a nonzero rational function on $U_i$ such that $f_i/f_j$ is a nonvanishing regular function on $U_i \cap U_j$.
+
+We say a Cartier divisor is *principal* if it is the image of the natural map
+$$
+H^0(X, \fank^*_X) \to H^0(X, \fank^*_X/\ox^*).
+$$
+That is, it can be defined by a global nonzero rational function on $X$. Two Cartier divisors $D,D'$ are *linearly equivalent* if $D-D'$ is principal, in which case we write $D \equiv D'$. We say $D$ is *effective* if for all tuples $(U_i, f_i)$, the $f_i$ are not zero divisors in $\ox(U_i)$; the $f_i$ cut out a codimension $1$ subscheme of $X$ whose reduction is the *support* of $D$.
+ 
+This means we have a natural bijection between effective Cartier divisors $D$ and subschemes of $X$ which are locally cut out by a single non zero divisor. For this reason, effective Cartier divisor may refer to either the algebraic or geometric definition depending on context.
+
+## Hilbert Functions
+
+Fix a field $k$. For this section we will assume all schemes are finite type over $k.$
+
+Let $X$ be a proper scheme and $\fanf$ a coherent sheaf on $X.$ Recall the Euler characteristic is defined as the alternating sum
+$$
+\chi(X, \fanf) := \sum_{i=0}^{\infty} (-1)^i h^i(X, \fanf^{i}).
+$$
+Let $X$ be a subscheme of $\bbp^N_k$ of dimension $n$ (which is projective hence proper), and recall we have the Serre twisting sheaf $\ox(m)$ restricted to $X.$ For a more general coherent sheaf $\fanf$, we defined $\fanf(m) := \fanf \otimes \ox(m).$ Then the function
+$$
+h_{\fanf}(m) := \chi(X, \fanf(m))
+$$
+is a polynomial of degree $\dim \supp \fanf$, called the **Hilbert function** of $\fanf.$ By Serre vanishing, this implies 
+$$
+p_{\fanf}(m) := h^0(X, \fanf(m))
+$$
+is a polynomial for $m \gg 0$ called the **Hilbert polynomial** of $\fanf.$ In particular, if $\fanf = \ox$ then we define $p_X(m) = p_{\ox}(m)$ as the Hilbert polynomial of $X$, which has degree $\dim X$. 
+
+We make a somewhat unintuitive definition of the degree of $X$, which is $n!$ times the leading coefficient of $p_X(m)$. That is, $p_X(m) = (\deg(X)/n!) m^n + \ldots$ We can give some justification as for why this is a good notion of degree. 
+
+1) The degree of a hypersurface $H$ in $\bbp^N_k$ is the degree of the single nonzero homogeneous polynomial that cuts out $H.$ Show that this definition coincides with the above.
+2) Suppose a regular curve $C$ is embedded in $\bbp^N_k$ via an invertible sheaf (line bundle) of degree $d$. Show that the degree of the embedded curve with the above definition is also $d$.
+
+Now we return to the world of Cartier divisors and attempt to define the *intersection product*. Let $D_1, \ldots, D_r$ be Cartier divisors on a proper scheme $X,$ and let $\fanf$ be a coherent sheaf on $X.$ Consider the generalized Hilbert function
+$$
+h_{\fanf}(m_1,\ldots,m_r) := \chi(X, \fanf(m_1 D_1 + \ldots + m_r D_r)).
+$$
+Then this function takes the same values on $\bbz^r$ as a polynomial with rational coefficients of degree at most $\dim \supp \fanf$.
+
+Throughout the proof we will use the fact that, for a short exact sequence 
+$$
+0 \to \fang \to \fanf \to \fanh \to 0,
+$$
+if the result holds for $\fanh, \fang$ then it holds for $\fanf$ to reduce the problem to simpler statements.
+
+Any coherent sheaf $\fanf$ on a Noetherian scheme $X$ admits a filtration
+$$
+\fanf = \fanf_0 \supset \fanf_1  \supset \ldots \supset \fanf_m = 0
+$$
+such that $\fanf_i/\fanf_{i+1}$ is torsion free on an integral subscheme of $X.$ We'll give a slightly nonrigorous justification. Let $\xi$ be an associated point of $\fanf$ and suppose $Z = \overline{\{\xi\}}$ is an integral closed subscheme of $X$ which is the closure of $\xi.$ Since $\supp \fanf$ is the closure of the (finitely many) associated points of $\fanf$, $Z$ must be contained in the support. The embedding $Z \to X$ yields a short exact sequence
+$$
+0 \to \fani_{X/Z} \otimes \fanf \to \fanf \to \fanf\vert_Z \to 0
+$$
+of coherent sheaves. Let $\fanf_1 := \fani_{X/Z} \otimes \fanf$ such that $\fanf/\fanf_1 = \fanf\vert_Z.$ Since $\fanf_1$ is the sheaf of sections of $\fanf$ that are annihilated by $\xi,$ this quotient is torsion free along $Z.$ This also implies $\supp \fanf_1$ is strictly contained in $\supp \fanf,$ so by the Noetherian condition this filtration must be finite.
+
+Back to the Theorem at hand. The existence of the filtration implies it suffices to show the result for $X$ integral and $\fanf$ torsion-free. Then there exists a dense open $U$ of $X$ over which $\fanf$ is free of rank $r$. The choice of isomorphism $\fanf \otimes \calo_U \simeq \calo_U^{\oplus r}$ determines an embedding of the following form.
+$$
+\fanf \hookrightarrow \fank_X^{\oplus r}
+$$
+Let $\fang = \fanf \cap \ox^{\oplus r}$ and note that in the sequences
+$$
+0 \to \fang \to \fanf \to \fang_1 \to 0
+$$
+$$
+0 \to \fang \to \ox^{\oplus r} \to \fang_2 \to 0
+$$
+the sheaves $\fang_1, \fang_2$ are not supported on $U$, hence their supports are strictly contained in $X$. By induction on the dimension of $X$, we can reduce to the case $\fanf = \calo_X$ and $X$ integral.
+
+The rest of the proof can be found in Debarre's Higher-Dimensional Algebraic Geometry, but the gist is that this is a generalization of the fact that the Hilbert function in one variable is a polynomial. That is,
+$$
+h_{\fanf}(m_1,\ldots,m_r) = P(m_1,\ldots,m_r)
+$$
+is a polynomial where $P \in \bbq[T_1,\ldots,T_r]$. Let $d$ be the total degree of $P$, and let $n_1,\ldots,n_r$ be integers such that 
+$$
+Q(T) = P(n_1 T, \ldots, n_r T)
+$$
+still has degree $d$. Then since $Q(m) = \chi(X,m(n_1D_1 + \ldots + n_r d_r))$ it follows that $d \leq \dim X$. 
+
+## Intersection Numbers
+
+The **intersection number**
+$$
+D_1 \cdots D_r
+$$
+of a collection of $r \geq \dim X$ Cartier divisors $D_1,\ldots,D_r$ on a proper scheme $X$ is defined as the coefficient of $m_1 \cdots m_r$ in the polynomial 
+$$
+\chi(X, m_1D_1 + \ldots + m_r D_r)
+$$
+In particular, we can show that this number is an integer and that it vanishes for $r > \dim X$. If the $D_i$ are effective and meet properly in a finite number of points, it has a nice geometric interpretation as the number of points contained in the intersection $D_1 \cap \ldots \cap D_r$ counted with multiplicity. 
+
+For $Y$ a subscheme of $X$, we can define
+$$
+D_1 \cdots D_r \cdot Y = D_1 \vert_Y \cdots D_r \vert_Y
+$$
+and similarly for $\fanf$ a coherent sheaf on $X$ with $\dim \supp \fanf \leq r$, we can define
+$$
+D_1 \cdots D_r \cdot \fanf
+$$
+as the coefficient of $m_1 \cdots m_r$ in
+$$
+\chi(X, \fanf(m_1 D_1 + \ldots + m_rD_r))
+$$

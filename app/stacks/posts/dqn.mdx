@@ -23,7 +23,7 @@ The issue with tabular $Q$-learning, where we have a table data structure the ma
 According to the Bellman equation, notice that optimizing $Q$ is equivalent to minimizing the TD error $R(s,a) + \gamma \max_{a'} Q(s',a') - Q(s,a)$. Thus we can use this to define the loss function for our neural network. Let's take a stab at defining our main training loop for updating the parameters at every step.
 
 Training Loop (Take 1):
-- Compute $Q(s,a;\theta)$ for every action $a$ using the network and pick an action $a$ using the $\eps$-greedy strategy.
+- Compute $Q(s,a;\theta)$ for every action $a$ using the network and pick an action $a$ using the $\veps$-greedy strategy.
 - Compute the target $Q$-value for the transition $(s,a,r,s')$, where $r = R(s,a)$ and $s'$ is the state given by the world for taking action $a$ at state $s$ (might be deterministic or stochastic).
 $$
 \text{target} = r + \gamma \max_{a'} Q(s',a'; \theta)
@@ -33,7 +33,7 @@ $$
 \delta(\theta) := r + \gamma \max_{a'} Q(s',a'; \theta) - Q(s,a;\theta)
 $$ 
 
-Recall the $\eps$-greedy strategy, which is a way to balance exploration/exploitation. We choose the optimal action with probability $1-\eps$, and a random action with probability $\eps$. As training progresses, $\eps$ exponentially decays so we learn the optimal policy.
+Recall the $\veps$-greedy strategy, which is a way to balance exploration/exploitation. We choose the optimal action with probability $1-\veps$, and a random action with probability $\veps$. As training progresses, $\veps$ exponentially decays so we learn the optimal policy.
 
 The above training loop suffers from the *moving target problem*, which is that the parameters $\theta$ being trained are used to calculate both the prediction and the target value for the next pass. The solution is to instead keep track of two networks.
 
@@ -44,7 +44,7 @@ We will have two neural networks, an online network and a target network. The ta
 We will denote the target $Q$-function by $Q_{\text{target}}$ with parameters $\theta_{\text{target}}$, and the online $Q$-function by $Q_{\text{online}}$ with parameters $\theta_{\text{online}}$.
 
 Training Loop, Online Network (Take 2):
-- Compute $Q_{\text{online}}(s,a; \theta)$ for every action $a$ using the online network and pick $a$ using the $\eps$-greedy strategy.
+- Compute $Q_{\text{online}}(s,a; \theta)$ for every action $a$ using the online network and pick $a$ using the $\veps$-greedy strategy.
 - For the transition $(s,a,r,s')$, compute 
 $$
 \text{target} = r + \gamma \max_{a'}Q_{\text{target}}(s', a'; \theta_{\text{target}})
@@ -77,7 +77,7 @@ The action we choose $a$ in $(s,a,r,s')$ depends on our $Q_{\text{online}}$ func
 Since our online agent is no longer training along an episode path, instead of updating the weights at every step we can now learn in **batches** of transitions $\calb$ randomly sampled from replay $\calm$. These measures prevent the network from overfitting to recent experiences and contribute to more stable convergence. The diversity in training samples from the replay buffer also ensures that the network learns a more generalized policy, rather than a policy that is overly tuned to recent experiences.
 
 Training Loop, Online Network (Final Take):
-- Given our current state $s_i$, compute $Q_{\text{online}}(s_i,a; \theta)$ for every action $a$ using the online network and pick $a_i$ using the $\eps$-greedy strategy. Add the transition $(s_i,a_i,r_i,s_{i+1})$ to replay memory buffer $\calm$.
+- Given our current state $s_i$, compute $Q_{\text{online}}(s_i,a; \theta)$ for every action $a$ using the online network and pick $a_i$ using the $\veps$-greedy strategy. Add the transition $(s_i,a_i,r_i,s_{i+1})$ to replay memory buffer $\calm$.
 - Randomly sample a batch $\calb$ from replay memory $\calm$, and for each $(s,a,r,s') \in \calb$ compute 
 $$
 \text{target} = r + \gamma \max_{a'}Q_{\text{target}}(s', a'; \theta_{\text{target}})
@@ -221,9 +221,9 @@ Adam and AMSGrad are adaptive learning optimizers that adjust learning rates on 
 
 There might be convergence issues with Adam in some RL applications due to exploding learning rates so the upside of AMSGrad is that we get certain convergence guarantees. 
 
-Now we implement the $\eps$-greedy strategy, where we decay our epsilon threshold for choosing a random action according to
+Now we implement the $\veps$-greedy strategy, where we decay our epsilon threshold for choosing a random action according to
 $$
-\eps\text{-threshold} = A + (B - A) e^{-s/D}
+\veps\text{-threshold} = A + (B - A) e^{-s/D}
 $$
 where $B$ is the starting threshold, $A$ is the lowest threshold, $D$ is the decay rate, and $s$ is the number of learning steps we have done so far.
 
