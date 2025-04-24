@@ -11,7 +11,12 @@ module.exports = {
       colors: {
         'dirty-brown': '#a97125',
         'aztec-gold': '#ca9f55',
-        'platinum': '#e6e5df'
+        'platinum': '#e6e5df',
+        'light-dirty-brown': '#daa458',
+        'light-aztec-gold': '#ae8337',
+        'light-platinum': '#1d1c16'
+
+        
       }
     },
   },

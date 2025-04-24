@@ -10,7 +10,7 @@ export default function Page() {
     <section>
       <h1 className="font-semibold text-2xl mb-1 tracking-tighter">The Stacks</h1>
       <div className='mb-8'>
-        <strong className="font-semibold bg-clip-text text-transparent bg-gradient-to-r from-dirty-brown to-platinum via-aztec-gold">pure mathematics blog</strong>
+        <strong className="font-semibold bg-clip-text text-transparent bg-gradient-to-r from-light-platinum via-light-aztec-gold to-light-dirty-brown dark:from-dirty-brown dark:via-aztec-gold dark:to-platinum">pure mathematics blog</strong>
       </div>
       <BlogPosts />
     </section>

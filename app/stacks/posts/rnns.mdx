@@ -98,8 +98,8 @@ $$
 \begin{align*}
 \left[\frac{\del h^t_{\theta}}{\del U_h}\right]^{\top} 
 &= \left[\frac{\del h^t_{\theta}}{\del z^t} \odot \frac{\del z^t}{\del U_h}\right]^{\top} 
-=  \sigma_h'(z^t) \odot \left({h^{t-1}_{\theta}} + U_h\gradient{\left[\frac{\del h^{t-1}_{\theta}}{\del U_h}\right]^{\top}}\right) \\
-&= \sigma_h'(z^t) \odot \left({h^{t-1}_{\theta}} + U_h\gradient{\left[\sigma_h'(z^{t-1}) \odot \left({h^{t-2}_{\theta}} + U_h \left[\frac{\del h^{t-2}_{\theta}}{\del U_h} \right]^{\top}\right)\right]}\right) \\
+=  \sigma_h'(z^t) \odot \left({h^{t-1}_{\theta}} + U_h\left[\frac{\del h^{t-1}_{\theta}}{\del U_h}\right]^{\top}\right) \\
+&= \sigma_h'(z^t) \odot \left({h^{t-1}_{\theta}} + U_h\left[\sigma_h'(z^{t-1}) \odot \left({h^{t-2}_{\theta}} + U_h \left[\frac{\del h^{t-2}_{\theta}}{\del U_h} \right]^{\top}\right)\right]\right) \\
 &= \sum_{\gamma=0}^{k-2} \left[\bigodot_{i=0}^{\gamma} \sigma_h'(z^{t-i})\right] \odot U_h^{\gamma}{h^{t-\gamma-1}_{\theta}} \in \bbr^{\ell \times 1}
 \end{align*}
 $$

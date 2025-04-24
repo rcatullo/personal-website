@@ -28,7 +28,7 @@ export default function Footer() {
           >
             <ArrowIcon />
             <span className="group transition duration-500 ease-in-out relative ml-2 h-7">
-              <span className="absolute bg-gradient-to-r from-dirty-brown via-aztec-gold to-platinum bg-clip-text text-transparent transition-opacity duration-500 ease-in-out opacity-0 group-hover:opacity-100 cursor-pointer">email</span>
+              <span className="absolute bg-gradient-to-r from-light-platinum via-light-aztec-gold to-light-dirty-brown dark:from-dirty-brown dark:via-aztec-gold dark:to-platinum bg-clip-text text-transparent transition-opacity duration-500 ease-in-out opacity-0 group-hover:opacity-100 cursor-pointer">email</span>
               <span className="relative transition-opacity duration-500 ease-in-out group-hover:opacity-0 cursor-pointer">email</span>
             </span>
           </a>
@@ -42,7 +42,7 @@ export default function Footer() {
             download="resume.pdf">
               <ArrowIcon />
             <span className="group transition duration-500 ease-in-out relative ml-2 h-7">
-              <span className="absolute bg-gradient-to-r from-dirty-brown via-aztec-gold to-platinum bg-clip-text text-transparent transition-opacity duration-500 ease-in-out opacity-0 group-hover:opacity-100 cursor-pointer">resume</span>
+              <span className="absolute bg-gradient-to-r from-light-platinum via-light-aztec-gold to-light-dirty-brown dark:from-dirty-brown dark:via-aztec-gold dark:to-platinum bg-clip-text text-transparent transition-opacity duration-500 ease-in-out opacity-0 group-hover:opacity-100 cursor-pointer">resume</span>
               <span className="relative transition-opacity duration-500 ease-in-out group-hover:opacity-0 cursor-pointer">resume</span>
             </span>
           </a>
@@ -56,7 +56,7 @@ export default function Footer() {
           >
             <ArrowIcon />
             <span className="group transition duration-500 ease-in-out relative ml-2 h-7">
-              <span className="absolute bg-gradient-to-r from-dirty-brown via-aztec-gold to-platinum bg-clip-text text-transparent transition-opacity duration-500 ease-in-out opacity-0 group-hover:opacity-100 cursor-pointer">github</span>
+              <span className="absolute bg-gradient-to-r from-light-platinum via-light-aztec-gold to-light-dirty-brown dark:from-dirty-brown dark:via-aztec-gold dark:to-platinum bg-clip-text text-transparent transition-opacity duration-500 ease-in-out opacity-0 group-hover:opacity-100 cursor-pointer">github</span>
               <span className="relative transition-opacity duration-500 ease-in-out group-hover:opacity-0 cursor-pointer">github</span>
             </span>
           </a>

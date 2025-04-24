@@ -109,7 +109,7 @@ function createHeading(level) {
 }
 
 function Strong(props) {
-  return <strong className="font-semiboldfont-bold bg-clip-text text-transparent bg-gradient-to-r from-dirty-brown to-platinum via-aztec-gold" {...props} />
+  return <strong className="font-semiboldfont-bold bg-clip-text text-transparent bg-gradient-to-r from-light-platinum via-light-aztec-gold to-light-dirty-brown dark:from-dirty-brown dark:via-aztec-gold dark:to-platinum" {...props} />
 }
 
 function Blockquote(props) {
