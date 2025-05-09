@@ -1,0 +1,87 @@
+---
+title: 'Word2vec'
+publishedAt: '2025-05-09'
+summary: 'Summary of the Word2vec paper.'
+---
+
+Word2vec refers to a model introduced in the 2013 paper ["Efficient Estimation of Word Representations in Vector Space"](https://arxiv.org/abs/1301.3781) and refined in ["Distributed Representations of Words and Phrases and their Compositionality"](https://arxiv.org/abs/1310.4546) by a team of researchers (Mikolov et al.) at Google capable of generating **word embeddings** based on context of words appearing nearby.
+
+There are two approaches described in the paper, Continuous Bag of Words (CBOW) and Skip-Gram. Each have benefits and drawbacks which I will describe in more detail.
+
+## CBOW
+
+Bag of Words is the method by which we generate probabilities over tokens by counting how many times they appear in our corpus of text. The major drawback is that it makes no use of words appearing nearby or ordering of words in the corpus. This is where Continuous Bag of Words comes in.
+
+For each target word $w_t$ in our corpus $C$, we consider its neighbors $w_n$ for $n \in N(t) = \{t-c, t-c+1, \ldots, t-1, t+1, \ldots, t+c-1, t+c\}$ where $c$ is the size of the *context window*. 
+
+For example, suppose our corpus is just the sentence 
+
+<center>"The cat in the hat."</center>
+
+Our target word $w_2$ = "in", and our context window is $1$ so $N(2)$ = \{$w_1$ = "cat", $w_3$ = "the"\}.
+
+The training objective is the average probability of seeing the target word $w_t$ given every word in the context window, according to some probability model of the words which we will define later.
+$$
+\left(\prod_{t =1}^T p(w_t \mid w_n \colon n \in N(t))\right)^{1/T}
+$$
+Since products are unstable we take the logarithm.
+$$
+\frac{1}{T}\sum_{t=1}^T \log p(w_t \mid w_n \colon n \in N(t))
+$$
+We represent every word $w$ in the vocabulary $V$ by a vector $v_w$, which we will learn via this training objective. Specifically, for a given target word $w_t$ and context $N(t)$, we take the vector sum of the context $c_t = \sum_{n \in N(t)} v_{w_n}$ and then the softmax of the dot product with every other word in the vocabulary. 
+$$
+p(w_t \mid w_n \colon n \in N(t)) := \frac{\exp(v_{w_t} \cdot c_t)}{\sum_{w \in V} \exp(v_w \cdot c_t)}
+$$
+Thus by maximizing the log probability, we are really maximizing the **cosine-similarity** of the embedded vectors for words that frequently appear near each other in our corpus. 
+
+Substituting this back into our objective and simplifying, we get the following training objective.
+$$
+\frac{1}{T}\sum_{t=1}^T v_{w_t} \cdot c_t - \log\sum_{w \in V} \exp(v_w \cdot c_t)
+$$
+Of the two presented, CBOW is regarded as the faster algorithm. 
+
+## Skip-gram
+
+The idea of skip gram is to flip the objective in CBOW. That is, we want to use the target word $w_t$ to predict the context words $w_n$ for $n \in N(t)$. We predict each neighbor independently, so our training objective is
+$$
+\frac{1}{T}\sum_{t=1}^T \sum_{n \in N(t)} \log p(w_n \mid w_t)
+$$
+We use the same softmax of dot products probability model, except now we just use $v_{w_t}$ as our context vector $c_t$. Our simplified objective becomes
+$$
+\frac{1}{T}\sum_{t=1}^T \sum_{n \in N(t)} v_{w_n} \cdot v_{w_t} - \log \sum_{w \in V} \exp(v_w \cdot v_{w_t})
+$$
+Skip-gram has the benefit of being better at embedding infrequent words.
+
+Both, however, suffer from the major drawback that for large vocabularies computing the softmax is very computationally expensive. To avoid this, we can use the following approach.
+
+## Negative Sampling
+
+Negative sampling is a technique that comes from **Noise Contrastive Estimation (NCE)**, which posits that good models should be able to differentiate data from noise by logistic regression. 
+
+The simplified idea of NCE here is to approximate the normalization by converting the original multiclass task into several binary logistic regression tasks. Each task classifies a word pair as observed (positive) or sampled from a noise distribution (negative). We will assume we are using skip-gram with negative sampling.
+
+For a target word $w_t$ and context word $w_n$, negative sampling defines the objective for one positive pair plus $k$ negative samples $\{w_i\}$ drawn from a noise distribution $P_n(w)$.
+$$
+\log p(w_n \mid w_t) \approx \log \sigma(v_{w_n} \cdot v_{w_t}) + \sum_{i=1}^k \bbe_{w_i \sim P_n(w)} \log \sigma(-v_{w_i} \cdot v_{w_t})
+$$
+Here, $\sigma(z) = 1/(1 + e^{-z})$ is the sigmoid function which compresses real numbers into a probability value in the range $(0,1)$. The first term then encourages the model to push the dot product $v_{w_n} \cdot v_{w_t}$ to large positive values, and the latter noise minimizes the dot product of noise pairs.
+ 
+The word2vec paper recommends using the *unigram distribution* raised to the $3/4$ power, i.e.
+$$
+P_n(w) = \text{freq}(w)^{3/4}
+$$
+
+## Conclusion
+
+We went over two techniques for creating word vector embeddings to encode contextual relationships within a corpora of text. They are
+1. Continuous Bag of Words, which learns to predict the target word $w$ given a context window of nearby words.
+2. Skip-gram, which learns to predict nearby context words given a target word.
+
+Both have benefits and drawbacks. On one hand CBOW is faster, whereas skip-gram is better at embedding infrequent words in the corpora. Both suffer from the computational drawback of computing softmaxes, for which the authors proposed a couple of remedies. 
+
+One was negative sampling, which simplifies the probability model by training to distinguish context-target word pairs over noise-target word pairs (in skip-gram). The authors also defined Hierarchical softmax which we did not cover, but which is another technique to try and overcome this challenge.
+
+The reason word2vec has been surpassed is that it is hard to parallelize a lot of the computation in training since it doesn't utilize a lot of matrix math (which is the bread and butter of GPUs). As of the 2017 landmark paper ["Attention is all you need"](https://arxiv.org/abs/1706.03762) this method is considered outdated in NLP, as Transformers are much more effective at word embeddings and scaling due to the ease with which one can parallelize matrix multiplication (for multi-headed attentioin mechanisms). 
+
+However, I hope this article helps in understanding the development and iterations that led to this innovation, since I believe it remains important as foundational knowledge.
+
