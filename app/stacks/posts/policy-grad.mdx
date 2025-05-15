@@ -1,0 +1,193 @@
+---
+title: 'Policy Gradients'
+publishedAt: '2025-05-14'
+summary: 'Overview of policy gradients in Reinforcement Learning, based on CS 224R Lecture 4/9/2025.'
+---
+
+Online RL Outline
+1. Initialize the policy (randomly, IL, heuristics)
+2. Run policy to collect batch of data
+3. Improve policy using batch of data
+
+We have a reinforcement learning policy $\pi$, and we want to evaluate how *good* that policy actually is. How do we evaluate the RL objective?
+
+Recall we denote a trajectory by $\tau$, which is short for an ordered tuple $(\mathbf{s}_1, \mathbf{a}_1, r_1, \mathbf{s}_2, \mathbf{a}_2, \ldots, \mathbf{a}_{T-1}, \mathbf{s}_T, r_T)$ where $\mathbf{s}_T$ is a terminal state. 
+
+We denote our *stochastic* policy by $\pi_{\theta}(\cdot \mid \mathbf{s}_t)$, such that $\pi_{\theta}(\mathbf{a}_t \mid \mathbf{s}_t)$ is the probability our policy chooses action $\mathbf{a}_t$ at state $\mathbf{s}_t$. 
+
+We can use this to define a probability distribution over our trajectores.
+$$
+p_{\theta}(\tau) = p(\mathbf{s}_1) \prod_{t=1}^T \pi_{\theta}(\mathbf{a}_t \mid \mathbf{s}_t) p(\mathbf{s}_{t+1} \mid \mathbf{s}_t, \mathbf{a}_t)
+$$
+Here, the last $p(\mathbf{s}_{t+1} \mid \mathbf{s}_t, \mathbf{a}_t)$ represents the probability our world transitions to state $\mathbf{s}_{t+1}$ from state $\mathbf{s}_t$ given the action $\mathbf{a}_t$.
+
+Then our objective is to find
+$$
+\theta^* = \argmin_{\theta} \underbrace{-\bbe_{\tau \sim p_{\theta}(\tau)}\left[\sum_{t=1}^T r(\mathbf{s}_t, \mathbf{a}_t)\right]}_{\fanl(\theta)}
+$$
+where $\fanl(\theta) = -\bbe_{\tau \sim p_{\theta}(\tau)}\left[\sum_{t=1}^T r(\mathbf{s}_t, \mathbf{a}_t)\right]$ is the expected future cost (loss) of our policy. The way we evaluate it is by approximation via sampling a bunch of trajectories and taking the average of the rewards. That is,
+$$
+\fanl(\theta) \approx -\frac{1}{N} \sum_{i=1}^N \sum_{t=1}^T r(\mathbf{s}_t, \mathbf{a}_t)
+$$
+
+We use the shorthand $r(\tau) = \sum_{t=1}^T r(\mathbf{s}_t, \mathbf{a}_t)$. This is kind of a hard expectation to evaluate the gradient of, so we do the following.
+$$
+\nabla_{\theta} \fanl(\theta) = -\nabla_{\theta}\int p_{\theta}(\tau)r(\tau)\dtau
+$$
+$$
+= -\int \nabla_{\theta} p_{\theta}(\tau) r(\tau) \dtau
+$$
+$$
+= -\int p_{\theta}(\tau) \nabla_{\theta} \log p_{\theta}(\tau) r(\tau) \dtau
+$$
+$$
+= -\bbe_{\tau \sim p_{\theta}(\tau)} \left[\nabla_{\theta} \log p_{\theta}(\tau) r(\tau)\right]
+$$
+Now we can simplify the gradient term on the inside.
+$$
+\nabla_{\theta} \log p_{\theta}(\tau) r(\tau)
+$$
+$$
+\nabla_{\theta}\left( \log p(\mathbf{s}_1) + \sum_{t=1}^T\left[ \log\pi_{\theta}(\mathbf{a}_t \mid \mathbf{s}_t) + \log p(\mathbf{s}_{t+1} \mid \mathbf{s}_t, \mathbf{a}_t)\right]\right) \left(\sum_{t=1}^T r(\mathbf{s}_t, \mathbf{a}_t)\right)
+$$
+$$
+\left(\sum_{t=1}^T \nabla_{\theta}\log\pi_{\theta}(\mathbf{a}_t \mid \mathbf{s}_t) \right) \left(\sum_{t=1}^T r(\mathbf{s}_t, \mathbf{a}_t)\right)
+$$
+and so we have the following final form of the policy gradient with respect to $\theta$.
+$$
+\nabla_{\theta} \fanl(\theta) = -\bbe_{\tau \sim p_{\theta}(\tau)} \left[\left(\sum_{t=1}^T \nabla_{\theta}\log\pi_{\theta}(\mathbf{a}_t \mid \mathbf{s}_t) \right) \left(\sum_{t=1}^T r(\mathbf{s}_t, \mathbf{a}_t)\right)\right]
+$$
+Thus we can estimate it as an expectation in the same way we estimates $\fanl(\theta)$.
+$$
+\nabla_{\theta} \fanl(\theta) \approx -\frac{1}{N} \sum_{i=1}^N \left[ \left(\sum_{t=1}^T \nabla_{\theta}\log\pi_{\theta}(\mathbf{a}_t \mid \mathbf{s}_t) \right) \left(\sum_{t=1}^T r(\mathbf{s}_t, \mathbf{a}_t)\right)\right]
+$$
+Then we can formulate the **REINFORCE** or vanilla policy gradient algorithm.
+1. Sample trajectories $\{\tau^i\}$ from $\pi_{\theta}(\mathbf{a}_t \mid \mathbf{s}_t)$.
+2. Approximate $\nabla_{\theta} \fanl(\theta)$ as above using sampled trajectories.
+3. Update $\theta \leftarrow \theta - \eta \nabla_{\theta} \fanl(\theta)$. Go back to (1).
+
+Intuition:
+1. **Increase** likelihood of actions you took in high reward trajectories.
+2. **Decrease** likeloohod of actions you took in negative reward trajectories.
+
+## Improving the Gradient
+
+Suppose we have a humanoid robot learning to walk forward, and we let the reward be given by the forward velocity of the robot. In the initial traning, we have the following trajectores.
+- $\tau^1$: falls backwards ❌
+- $\tau^2$: falls forwards ✅️✅ 
+- $\tau^3$: manages to stand still ✅
+- $\tau^4$: one small step forward then falls backwards ❌
+- $\tau^5$: one large step backwards then small step forwards ❌
+
+Q: What will the gradient encourage the policy to do?
+
+A: It will encourage the policy to fall forward, not to take a step forward.
+
+So what's the issue? The issue is that the robot doesn't have a sense of **causality** because the current policy gradient treats current actions as if they have influence on previous states.
+
+The current gradient is
+$$
+\nabla_{\theta} \fanl(\theta) \approx - \frac{1}{N} \sum_{i=1}^N \left(\sum_{t=1}^T \nabla_{\theta} \log \pi_{\theta}(\mathbf{a}_t \mid \mathbf{s}_t) \sum_{t'=1}^T r(\mathbf{s}_{t'}, \mathbf{a}_{t'})\right)
+$$
+but what we can do is change the inner sum to start at $t' = t$ rather than $t' = 1$ to encode causality into our gradient calculation.
+$$
+\nabla_{\theta} \fanl(\theta) \approx - \frac{1}{N} \sum_{i=1}^N \left(\sum_{t=1}^T \nabla_{\theta} \log \pi_{\theta}(\mathbf{a}_t \mid \mathbf{s}_t) \sum_{t'=t}^T r(\mathbf{s}_{t'}, \mathbf{a}_{t'})\right)
+$$
+Now with our updated gradient, we observe the following behavior.
+- $\tau^1$: falls forwards ✅
+- $\tau^2$: slowly stumbles forward ✅️✅ 
+- $\tau^3$: steadily walks forwards ✅✅✅
+- $\tau^4$: runs forwards ✅✅✅✅
+
+Q: What will the gradient encourage the policy to do?
+
+A: The robot will be encouraged to run, but will still stumble or fall forward some of the time.
+
+The issue is that the robot is still gaining positive reward from stumbling or falling. Thus, instead we want to encourage the robot to get more reward than the *average* for every batch of policy rollouts.
+
+In our original expected loss, we had
+$$
+\nabla_{\theta} \fanl(\theta) = -\bbe_{\tau \sim p_{\theta}(\tau)} \left[\nabla_{\theta} \log p_{\theta}(\tau) r(\tau)\right]
+$$
+but what we want to do is *subtract a constant* $b$ from the reward of the trajectory $\tau$ given by the average reward across $N$ rollouts.
+$$
+\nabla_{\theta} \fanl(\theta) = -\bbe_{\tau \sim p_{\theta}(\tau)} \left[\nabla_{\theta} \log p_{\theta}(\tau) (r(\tau)-b)\right]
+$$
+where
+$$
+b = \frac{1}{N} \sum_{i=1}^N r(\tau)
+$$
+is the **baseline** reward. It turns out this actually has no effect on the gradient of loss in expectation, so this is mathematically consistent.
+$$
+\bbe_{\tau \sim p_{\theta}(\tau)}\left[\nabla_{\theta} \log p_{\theta}(\tau) b\right] = \int p_{\theta}(\tau) \nabla_{\theta} \log p_{\theta}(\tau) b \dtau
+$$
+$$
+= \int \nabla_{\theta} p_{\theta}(\tau) b \dtau
+$$
+$$
+= b \nabla_{\theta} \int p_{\theta}(\tau) \dtau
+$$
+$$
+= b \nabla_{\theta} 1 = 0
+$$
+Therefore subtracting the constant baseline is *unbiased* and reduces the *variance* of the gradient. Average reward is a pretty good baseline, but there is an optimal baseline one can derive by analyzing the variance of the gradient. 
+
+The reason we have to optimize the variance a lot is because policy gradient is still **noisy and high-variance**, which means that it works best with **dense rewards** and **large batches**.
+
+## Implementing Policy Gradients
+
+Recall our current version of the gradient is
+$$
+\nabla_{\theta} \fanl(\theta) \approx - \frac{1}{N} \sum_{i=1}^N \left(\sum_{t=1}^T \nabla_{\theta} \log \pi_{\theta}(\mathbf{a}_t \mid \mathbf{s}_t) \left(\sum_{t'=t}^T r(\mathbf{s}_{t'}, \mathbf{a}_{t'}) - b\right)\right)
+$$
+but computing the gradient is currently very expensive since we have to do $N*T$ backward passes. There is a solution which is to implement a **surrogate objective** whose gradient is the same as $\nabla_{\theta} \fanl(\theta)$. 
+
+We do this by replacing the "log probability" term in the policy gradient by something like cross-entropy loss for discrete action policies, or squared error for Gaussian policies.
+
+## Importance Sampling
+
+The obvious bottleneck in our implementation is that we need to recollect data at every gradient step! In other words, vanilla policy gradient is **on-policy** rather than **off-policy**, which means it updates based on data from the current policy rather than previous policies (e.g. sampling from replay memory).
+
+Can we come up with an off-policy version? Yes, using **importance sampling**. Currently we calculate loss via
+$$
+\fanl(\theta) = -\bbe_{\tau \sim p_{\theta}(\tau)}[r(\tau)]
+$$
+What if we want to use samples from $\bar{p}(\tau)$ (the previous policy)? The idea of importance sampling is, given a proposal distribution $q$,
+$$
+\bbe_{x \sim p(x)}[f(x)] = \int p(x) f(x) dx
+$$
+$$
+= \int \frac{q(x)}{q(x)} p(x)f(x)dx
+$$
+$$
+= \int q(x)\frac{p(x)}{q(x)} f(x)dx
+$$
+$$
+= \bbe_{x \sim q(x)}\left[\frac{p(x)}{q(x)}f(x)\right]
+$$
+However, note it is important for $q$ to have nonzero support for nonzero probability $p(x)$ as otherwise the ratio is undefined. 
+
+Applying this idea to our loss function,
+$$
+\fanl(\theta) = -\bbe_{\tau \sim \bar{p}(\tau)} \left[\frac{p_{\theta}(\tau)}{\bar{p}(\tau)} r(\tau)\right]
+$$
+Let's expand out this ratio.
+$$
+\frac{p_{\theta}(\tau)}{\bar{p}(\tau)}= \frac{p(\mathbf{s}_1) \prod_{t=1}^T \pi_{\theta}(\mathbf{a}_t \mid \mathbf{s}_t) p(\mathbf{s}_{t+1} \mid \mathbf{s}_t, \mathbf{a}_t)}{p(\mathbf{s}_1) \prod_{t=1}^T \bar{\pi}(\mathbf{a}_t \mid \mathbf{s}_t) p(\mathbf{s}_{t+1} \mid \mathbf{s}_t, \mathbf{a}_t)}
+$$
+$$
+=\frac{\prod_{t=1}^T \pi_{\theta}(\mathbf{a}_t \mid \mathbf{s}_t) }{ \prod_{t=1}^T \bar{\pi}(\mathbf{a}_t \mid \mathbf{s}_t) }
+$$
+If we go through the motions of computing the gradient again, we find that the importance sampling version of our gradient objective given our current policy $\pi_{\theta}$ where we use sampled trajectories from a previous policy $\pi_{\theta'}$ is
+$$
+\nabla_{\theta} \fanl(\theta) = -\bbe_{\tau \sim p_{\theta}(\tau)}\left[\prod_{t=1}^T\frac{ \pi_{\theta}(\mathbf{a}_t \mid \mathbf{s}_t) }{ \pi_{\theta'}(\mathbf{a}_t \mid \mathbf{s}_t) } \left(\sum_{t=1}^T \nabla_{\theta} \log \pi_{\theta}(\mathbf{a}_t \mid \mathbf{s}_t)\left(\sum_{t=t'}^T r(\mathbf{s}_{t'}, \mathbf{a}_{t'}) - b\right)\right)\right]
+$$
+Since products are unstable, the product of the ratios of policies can become very small or very large, for larger $T$. What if we consider the expectation *over timesteps* instead of trajectories? Note in the below, we replace the ratio of $\pi_{\theta}(\mathbf{a}_t \mid \mathbf{s}_t)$ with $\pi_{\theta}(\mathbf{s}_t, \mathbf{a}_t)$ and for $\theta'$, the joint distribution over states and actions.
+$$
+\nabla_{\theta} \fanl(\theta) \approx -\frac{1}{N} \sum_{i=1}^N \sum_{t=1}^T \frac{ \pi_{\theta}(\mathbf{s}_t, \mathbf{a}_t) }{ \pi_{\theta'}(\mathbf{s}_t, \mathbf{a}_t) } \nabla_{\theta} \log \pi_{\theta}(\mathbf{a}_t \mid \mathbf{s}_t)\left(\sum_{t=t'}^T r(\mathbf{s}_{t'}, \mathbf{a}_{t'}) - b\right)
+$$
+This joint can be hard to compute, so $\pi_{\theta}(\mathbf{s}_t)/\pi_{\theta'}(\mathbf{s}_t)$ is often approximated as $1$ to obtain the following common final form.
+$$
+\nabla_{\theta} \fanl(\theta) \approx -\frac{1}{N} \sum_{i=1}^N \sum_{t=1}^T \frac{ \pi_{\theta}(\mathbf{a}_t \mid \mathbf{s}_t) }{ \pi_{\theta'}(\mathbf{a}_t \mid \mathbf{s}_t) } \nabla_{\theta} \log \pi_{\theta}(\mathbf{a}_t \mid \mathbf{s}_t)\left(\sum_{t=t'}^T r(\mathbf{s}_{t'}, \mathbf{a}_{t'}) - b\right)
+$$
+These ratios are called the **importance weights** for our *off-policy* policy gradient. The full REINFORCE algorithm is the same but now we can take multiple gradient steps per batch.

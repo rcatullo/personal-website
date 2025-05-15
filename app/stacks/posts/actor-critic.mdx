@@ -1,0 +1,69 @@
+---
+title: 'Actor Critic Methods'
+publishedAt: '2025-05-14'
+summary: 'Overview of actor critic methods in Reinforcement Learning, based on CS 224R Lecture 4/9/2025.'
+---
+
+Recall the notion of importance weights from the previous post. One drawback of this approach that I didn't discuss is that this method is only suitable when policies are very similar to one another.
+
+If the policies are very different then the importance weights might blow up or vanish, giving us a worse estimate of the gradient of the loss function.
+
+There is also the issue demonstrated in the example of the last post that policy gradients don't make efficient use of data! If a robot rewarded for forward velocity takes one small step forward and then falls backward, it pushes down the likelihood of a step forward.
+
+For sparse rewards, actions with partially correct results aren't utilized by policy gradients since no actual reward is received.
+
+In this post we'll discuss an alternative class of algorithms called **Actor Critic Methods**. 
+
+## Value Functions
+
+Let's revisit some useful functions related to Markov Decision Processes (MDPs). 
+- The (on-policy) *value function* $V^{\pi}(\mathbf{s})$ - future expected rewards starting at $\mathbf{s}$ and following $\pi$.
+$$
+V^{\pi}(\mathbf{s}) = \bbe_{\tau \sim p_{\theta}(\tau)}\left[r(\tau) \mid \mathbf{s}_0 = \mathbf{s}\right]
+$$
+- The (on-policy) *action-value function* $Q^{\pi}(\mathbf{s}, \mathbf{a})$ - future expected rewards starting at $\mathbf{s}$, taking $\mathbf{a}$, then following $\pi$.
+$$
+Q^{\pi}(\mathbf{s}, \mathbf{a}) = \bbe_{\tau \sim p_{\theta}(\tau)} \left[r(\tau) \mid \mathbf{s}_0 = \mathbf{s}, \mathbf{a}_0 = \mathbf{a}\right]
+$$
+
+One useful relation between these is that
+$$
+V^{\pi}(\mathbf{s}) = \bbe_{\mathbf{a} \sim \pi(\cdot \mid \mathbf{s})} \left[Q^{\pi}(\mathbf{s}, \mathbf{a})\right]
+$$
+i.e. if we choose the action in the $Q$-function according to its distribution given by the policy $\pi$, then we just end up with the value of the state. There is yet a third value function.
+- The (on-policy) *advantage function* $A^{\pi}(\mathbf{s}, \mathbf{a})$ - how much better it is to take $\mathbf{a}$ than to follow $\pi$ at state $\mathbf{s}$.
+$$
+A^{\pi}(\mathbf{s}, \mathbf{a}) = Q^{\pi}(\mathbf{s}, \mathbf{a}) - V^{\pi}(\mathbf{s})
+$$
+
+## Revisiting Policy Gradient
+Recall our policy gradient had the (non-final) form
+$$
+\nabla_{\theta} \fanl(\theta) \approx -\frac{1}{N} \sum_{i=1}^N \sum_{t=1}^T \nabla_{\theta} \log \pi_{\theta}(\mathbf{a}_t \mid \mathbf{s}_t)\underbrace{\left(\sum_{t=t'}^T r(\mathbf{s}_{t'}, \mathbf{a}_{t'})\right)}_{\text{reward to go}}
+$$
+The term on the right is the estimate of future rewards if we take action $\mathbf{a}_t$ in state $\mathbf{s}_t$. Can we get a better estimate? 
+$$
+\sum_{t=t'}^T \bbe_{\pi_{\theta}}\left[r(\mathbf{s}_{t'}, \mathbf{a}_{t'}) \mid \mathbf{s}_t, \mathbf{a}_t\right] = Q^{\pi_{\theta}}(\mathbf{s}_t, \mathbf{a}_t)
+$$
+can be seen as the *true* expected rewards to go. This would be way better!
+$$
+\nabla_{\theta} \fanl(\theta) \approx -\frac{1}{N} \sum_{i=1}^N \sum_{t=1}^T \nabla_{\theta} \log \pi_{\theta}(\mathbf{a}_t \mid \mathbf{s}_t)Q^{\pi_{\theta}}(\mathbf{s}_{t}, \mathbf{a}_{t})
+$$
+Should we use baselines like before? Our average $Q$-value would look like
+$$
+b = \frac{1}{N} \sum_{i=1}^N Q^{\pi_{\theta}}(\mathbf{s}_{t}, \mathbf{a}_t)
+$$
+This looks awfully familiar to the expected value of the $Q$-value function across actions distributed according to our policy. This intuitively suggests a good baseline would actually be our *value function* $V^{\pi_{\theta}}(\mathbf{s}_t)$.
+
+Recall $A^{\pi}(\mathbf{s}, \mathbf{a}) = Q^{\pi}(\mathbf{s}, \mathbf{a}) - V^{\pi}(\mathbf{s})$ is the definition of our advantage function. Thus, naturally we should make our policy gradient
+$$
+\nabla_{\theta} \fanl(\theta) \approx -\frac{1}{N} \sum_{i=1}^N \sum_{t=1}^T \nabla_{\theta} \log \pi_{\theta}(\mathbf{a}_t \mid \mathbf{s}_t)A^{\pi_{\theta}}(\mathbf{s}_{t}, \mathbf{a}_{t})
+$$
+The key is that better estimates of $A$ lead to less noisy gradients! How can we estimate the advantage function?
+
+## Estimating Value
+Since advantage is a function of both value and state-action value, one might think we have to estimate both well to estimate advantage. However, there is actually a way to compute all three value functions as a function of $V$.
+
+$$
+Q^{\pi}(\bfs)
+$$
