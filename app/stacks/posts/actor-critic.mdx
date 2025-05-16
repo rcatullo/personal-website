@@ -1,6 +1,6 @@
 ---
-title: 'Actor Critic Methods'
-publishedAt: '2025-05-14'
+title: 'Actor-Critic Methods'
+publishedAt: '2025-05-16'
 summary: 'Overview of actor critic methods in Reinforcement Learning, based on CS 224R Lecture 4/9/2025.'
 ---
 
@@ -19,11 +19,11 @@ In this post we'll discuss an alternative class of algorithms called **Actor Cri
 Let's revisit some useful functions related to Markov Decision Processes (MDPs). 
 - The (on-policy) *value function* $V^{\pi}(\mathbf{s})$ - future expected rewards starting at $\mathbf{s}$ and following $\pi$.
 $$
-V^{\pi}(\mathbf{s}) = \bbe_{\tau \sim p_{\theta}(\tau)}\left[r(\tau) \mid \mathbf{s}_0 = \mathbf{s}\right]
+V^{\pi}(\mathbf{s}) = \bbe_{\tau \sim p_{\theta}(\tau)}\left[r(\tau) \mid \mathbf{s}_1 = \mathbf{s}\right]
 $$
 - The (on-policy) *action-value function* $Q^{\pi}(\mathbf{s}, \mathbf{a})$ - future expected rewards starting at $\mathbf{s}$, taking $\mathbf{a}$, then following $\pi$.
 $$
-Q^{\pi}(\mathbf{s}, \mathbf{a}) = \bbe_{\tau \sim p_{\theta}(\tau)} \left[r(\tau) \mid \mathbf{s}_0 = \mathbf{s}, \mathbf{a}_0 = \mathbf{a}\right]
+Q^{\pi}(\mathbf{s}, \mathbf{a}) = \bbe_{\tau \sim p_{\theta}(\tau)} \left[r(\tau) \mid \mathbf{s}_1 = \mathbf{s}, \mathbf{a}_1 = \mathbf{a}\right]
 $$
 
 One useful relation between these is that
@@ -43,7 +43,7 @@ $$
 $$
 The term on the right is the estimate of future rewards if we take action $\mathbf{a}_t$ in state $\mathbf{s}_t$. Can we get a better estimate? 
 $$
-\sum_{t=t'}^T \bbe_{\pi_{\theta}}\left[r(\mathbf{s}_{t'}, \mathbf{a}_{t'}) \mid \mathbf{s}_t, \mathbf{a}_t\right] = Q^{\pi_{\theta}}(\mathbf{s}_t, \mathbf{a}_t)
+\sum_{t'=t}^T \bbe_{\pi_{\theta}}\left[r(\mathbf{s}_{t'}, \mathbf{a}_{t'}) \mid \mathbf{s}_t, \mathbf{a}_t\right] = Q^{\pi_{\theta}}(\mathbf{s}_t, \mathbf{a}_t)
 $$
 can be seen as the *true* expected rewards to go. This would be way better!
 $$
@@ -65,5 +65,138 @@ The key is that better estimates of $A$ lead to less noisy gradients! How can we
 Since advantage is a function of both value and state-action value, one might think we have to estimate both well to estimate advantage. However, there is actually a way to compute all three value functions as a function of $V$.
 
 $$
-Q^{\pi}(\bfs)
+\begin{align*}
+Q^{\pi}(\bfs_t, \bfa_t) &= \sum_{t'=t}^T \bbe_{\pi_{\theta}}\left[r(\bfs_{t'}, \bfa_{t'}) \mid \bfs_t, \bfa_t\right] \\[15pt]
+&= r(\bfs_t, \bfa_t) + \sum_{t'=t+1}^T \bbe_{\pi_{\theta}}\left[r(\bfs_{t'}, \bfa_{t'}) \mid \bfs_t, \bfa_t\right] \\[15pt]
+&= r(\bfs_t, \bfa_t) + \bbe_{\bfs_{t+1} \sim p(\cdot \mid \bfs_t, \bfa_t)}\left[V^{\pi}(\bfs_{t+1})\right] \\[15pt]
+&\approx r(\bfs_t, \bfa_t) + V^{\pi}(\bfs_{t+1}) \quad \text{(use the sampled } \bfs_{t+1} \text{)} \\[15pt]
+A^{\pi}(\bfs_t, \bfa_t) &\approx r(\bfs_t, \bfa_t) + V^{\pi}(\bfs_{t+1}) - V^{\pi}(\bfs_t)
+\end{align*}
 $$
+Thus we can actually just fit $V^{\pi}$.
+
+*Version 1: Monte Carlo*
+
+Our original single sample estimate is
+$$
+V^{\pi}(\bfs_t) \approx r(\tau)
+$$
+where $\tau \sim p_{\theta}(\tau \mid \bfs_1 = \bfs)$. We can aggregate this into a labeled dataset of states $\bfs$ along with their single sample estimates
+$$
+\left\{\left(\bfs^{(i)}_t, r\big(\tau^{(i)}\big)\right)\right\}
+$$
+where $\tau^{(i)} \sim p_{\theta}(\tau \mid \bfs^{(i)}_t)$ is one of the $N$ rollouts. Then we do supervised learning to fit the estimated value function.
+$$
+\fanl(\phi) = \frac{1}{2} \sum_{i=1}^N \norm{\hat{V}^{\pi_{\theta}}_{\phi}\big(\bfs^{(i)}_t\big) - r\big(\tau^{(i)}\big)}^2
+$$
+
+*Version 2: Bootstrapping*
+
+Our Monte Carlo target is $r\big(\tau\big)$ and our ideal target is 
+$$
+\begin{align*}
+y &= \bbe_{\tau \sim p_{\theta}(\tau \mid \bfs_t)}\left[r\big(\tau\big) \mid \bfs_t\right] \\[15pt]
+&= \sum_{t'=t}^T \bbe_{\tau \sim p_{\theta}(\tau \mid \bfs_t)}\left[r\big(\bfs_{t'}, \bfa_{t'}\big) \mid \bfs_t\right] \\[15pt]
+&\approx r\big(\bfs_t, \bfa_t\big) + \sum_{t'=t+1}^T \bbe_{\tau \sim p_{\theta}(\tau \mid \bfs_{t+1})}\left[r\big(\bfs_{t'}, \bfa_{t'}\big) \mid \bfs_{t+1}\right]\\[15pt]
+&\approx r\big(\bfs_t, \bfa_t\big) + V^{\pi_{\theta}}\big(\bfs_{t+1}\big) \\[15pt]
+&\approx r\big(\bfs_t, \bfa_t\big) + \hat{V}^{\pi_{\theta}}_{\phi}\big(\bfs_{t+1}\big)
+\end{align*}
+$$
+where $\bfs_{t+1}$ is a next state sampled from the world given the state $\bfs_t$ and action $\bfa_t$ sampled from $\pi_{\theta}(\cdot \mid \bfs_t)$.
+
+We can aggregate the dataset of "bootstrapped" estimates
+$$
+\bigg\{\bigg(\bfs^{(i)}_t, r\big(\bfs^{(i)}_t, \bfa^{(i)}_t\big) + \hat{V}^{\pi_{\theta}}_{\phi}\big(\bfs^{(i)}_{t+1}\big)\bigg)\bigg\}
+$$
+and then run supervised learning to fit the estimated value function
+$$
+\fanl(\phi) = \frac{1}{2} \sum_{i=1}^N \norm{ r\big(\bfs^{(i)}_t, \bfa^{(i)}_t\big) + \hat{V}^{\pi_{\theta}}_{\phi}\big(\bfs^{(i)}_{t+1}\big) - 
+\hat{V}^{\pi_{\theta}}_{\phi}\big(\bfs^{(i)}_t\big)
+}^2
+$$
+This is sometimes referred to as a version of **temporal difference (TD) learning**. Each term
+$$
+r\big(\bfs_t, \bfa_t\big) + \hat{V}^{\pi_{\theta}}_{\phi}\big(\bfs_{t+1}\big) - 
+\hat{V}^{\pi_{\theta}}_{\phi}\big(\bfs_t\big)
+$$
+is known as the TD error.
+
+We can also do the same with the *discounted* state value function with discount factor $\gamma \in (0,1)$ (usually $0.99$). Namely 
+$$
+V^{\pi}(\bfs) = \bbe_{\bfa \sim \pi(\cdot\mid \bfs)}\left[\sum_{t=0}^{\infty} \gamma^t r(\bfs_t, \bfa_t) \mid s_0 = \bfs\right]
+$$
+and the discounted TD error becomes
+$$
+r\big(\bfs_t, \bfa_t\big) + \gamma \hat{V}^{\pi_{\theta}}_{\phi}\big(\bfs_{t+1}\big) - 
+\hat{V}^{\pi_{\theta}}_{\phi}\big(\bfs_t\big)
+$$
+
+Then the complete algorithm is as below.
+
+1. Sample batch of data $\{(\bfs^{(i)}_1, \bfa^{(i)}_1, \ldots, \bfs^{(i)}_T, \bfa^{(i)}_T)\}$ from $\pi_{\theta}$.
+2. Fit $\hat{V}^{\pi_{\theta}}_{\phi}$ to summed rewards in data.
+3. Evaluate $\hat{A}^{\pi_{\theta}}(\bfs^{(i)}_t, \bfa^{(i)}_t) = r(\bfs^{(i)}_t, \bfa^{(i)}_t) + \gamma \hat{V}^{\pi_{\theta}}_{\phi}(\bfs^{(i)}_{t+1}) - \hat{V}^{\pi_{\theta}}_{\phi}(\bfs^{(i)}_{t})$ for all $t,i$.
+4. Evaluate $\nabla_{\theta} \fanl(\theta) \approx - \frac{1}{N}\sum_{t, i} \nabla_{\theta} \log \pi_{\theta}(\bfa^{(i)}_t \mid \bfs^{(i)}_t) \hat{A}^{\pi_{\theta}}(\bfs^{(i)}_t, \bfa^{(i)}_t)$.
+5. Update $\theta \leftarrow \theta - \eta \nabla_{\theta} \fanl(\theta)$.
+
+## Off-Policy Actor-Critic
+
+Currently the above algorithm is on-policy since we have to rerun the policy to generate training samples for every gradient step. 
+
+The first thing we can do is to use the same idea of importance sampling as before to enable resampling from old policies. Step 4 above would become
+$$
+\nabla_{\theta} \fanl(\theta) \approx - \frac{1}{N}\sum_{t, i} \underbrace{\frac{\pi_{\theta}(\bfa^{(i)}_t \mid \bfs^{(i)}_t)}{\pi_{\theta'}(\bfa^{(i)}_t \mid \bfs^{(i)}_t)}}_{\text{importance weights}}
+
+\nabla_{\theta} \log \pi_{\theta}(\bfa^{(i)}_t \mid \bfs^{(i)}_t) \underbrace{\hat{A}^{\pi_{\theta'}}(\bfs^{(i)}_t, \bfa^{(i)}_t)}_{\text{old policy advantage}}
+$$
+
+Some nasty issues can arise though. In RL, off-policy learning + function approximation + bootstrapping is reffered to as the **deadly triad**.  
+
+Over-iterating on the same data without fresh on‐policy coverage breaks the contraction guarantees your Bellman‐style updates rely on. The result is classic RL divergence rather than convergence to a sensible value function.
+
+*Idea 1*: Use KL divergence constraint on policy.
+$$
+\bbe_{\bfs \sim \pi_{\theta'}}\left[D_{KL}(\pi_{\theta}(\cdot \mid \bfs) || \pi_{\theta'}(\cdot \mid \bfs))\right] \leq \delta
+$$
+We see this in LLM preference optimization (RLHF).
+
+*Idea 2*: Can we bound the importance weights? This doesn't directly constrain the policy, but removes incentives. This is the key idea being proximal policy optimization (PPO).
+
+We will talk about these ideas later, but for now our solution will be **replay buffers**. The idea of the replay buffer is to store the recent history of transitions that we saw in prior timesteps. By a transition we mean state-action-reward-nextstate (SARS). 
+
+We then sample transitions from the buffer in mini batches and use this to estimate our state-value function and do gradient steps.
+
+The overview of the *broken* algorithm is as follows.
+
+1. Collect experience $\{\bfs_i, \bfa_i\}$ from $\pi_{\theta}(\bfa \mid \bfs)$. Add this to the replay buffer $\calr$.
+2. Sample a minibatch $\{(\bfs_i, \bfa_i, r_i, \bfs_i')\}$ from buffer $\calr$.
+3. Update $\hat{V}^{\pi}_{\phi}(\bfs)$ using targets $y_i = r_i + \gamma \textcolor{red}{\hat{V}^{\pi}_{\phi}(\bfs_i')}$ for each $\bfs_i$.
+4. Evaluate $\hat{A}^{\pi}(\bfs_i, \bfa_i) = r_i + \gamma \hat{V}^{\pi}_{\phi}(\bfs_i') - \hat{V}_{\phi}(\bfs_i)$.
+5. $\nabla_{\theta}\fanl(\theta) \approx -\frac{1}{N}\sum_i \nabla_{\theta} \textcolor{red}{\log \pi_{\theta}(\bfa_i \mid \bfs_i)} \hat{A}^{\pi}(\bfs_i, \bfa_i)$
+6. $\theta \leftarrow \theta - \eta \nabla_{\theta}\fanl(\theta)$
+
+Steps 3 through 6 are carried out on the minibatches sampled from replay memory. Why is this algorithm broken? Note that in step 3 the TD target is not correct, and therefore the action taken in step 5 is not correct!
+
+Why? Note that we are using trajectories from previous policies to fit the value function for our current policy. The actions taken and therefore the next state are not necessarily the same as the actions our policy would have taken.
+
+What if we fit $Q(\bfs, \bfa)$ instead of $V(\bfs)$? Now we can take into account the action taken instead of assuming our action is distributed according to our current policy.
+
+I will spare you the math and just say that our new targets are
+$$
+y_i = r_i + \gamma \textcolor{green}{\hat{Q}^{\pi_{\theta}}_{\phi}(\bfs'_i, {\bfa'}^{\pi}_i)}
+$$
+where ${\bfa'}^{\pi}_i \sim \pi_{\theta}(\cdot \mid \bfs'_i)$. This is the same as our actual intended target as it provides an unbiased single-sample estimate of the state-value function via
+$$
+\hat{V}^{\pi_{\theta}}_{\phi}(\bfs_i) = \bbe_{\bfa \sim \pi_{\theta}(\cdot \mid \bfs_i)}\left[\hat{Q}^{\pi_{\theta}}_{\phi}(\bfs_i, \bfa)\right]
+$$
+
+Similarly, in step 5 the given action $\bfa_i$ is not the action our policy $\pi_{\theta}$ would have taken. We can use the same trick, but this time with $\bfa_i$ instead of $\bfa_i'$, i.e. we sample $\bfa_i^{\pi} \sim \pi_{\theta}(\cdot \mid \bfs_i)$ and set
+$$
+\nabla_{\theta}\fanl(\theta) \approx -\frac{1}{N}\sum_i \nabla_{\theta}\log \pi_{\theta}(\textcolor{green}{\bfa^{\pi}_i} \mid \bfs_i)\hat{A}^{\pi}(\bfs_i, \bfa_i)
+$$
+
+## Conclusion
+
+This is a nice overview of actor-critic methods with efficient bootstrapping and sampling techinques that are used in modern RL. It is also a doorway to more standard algorithsm like PPO (proximal policy optimization) and RLHF for LLMs which I will discuss in subsequent posts. 
+
+There are some more interesting techniques for approximating the $V$ and $Q$ functions that I also plan to write about, which is referred to and popularly known as Deep $Q$-learning or Deep $Q$-networks (DQNs). I have a previous post but I intend to delve more into the math in line with this series of posts on topics within RL.

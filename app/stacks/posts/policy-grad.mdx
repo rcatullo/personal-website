@@ -180,14 +180,14 @@ $$
 $$
 If we go through the motions of computing the gradient again, we find that the importance sampling version of our gradient objective given our current policy $\pi_{\theta}$ where we use sampled trajectories from a previous policy $\pi_{\theta'}$ is
 $$
-\nabla_{\theta} \fanl(\theta) = -\bbe_{\tau \sim p_{\theta}(\tau)}\left[\prod_{t=1}^T\frac{ \pi_{\theta}(\mathbf{a}_t \mid \mathbf{s}_t) }{ \pi_{\theta'}(\mathbf{a}_t \mid \mathbf{s}_t) } \left(\sum_{t=1}^T \nabla_{\theta} \log \pi_{\theta}(\mathbf{a}_t \mid \mathbf{s}_t)\left(\sum_{t=t'}^T r(\mathbf{s}_{t'}, \mathbf{a}_{t'}) - b\right)\right)\right]
+\nabla_{\theta} \fanl(\theta) = -\bbe_{\tau \sim p_{\theta}(\tau)}\left[\prod_{t=1}^T\frac{ \pi_{\theta}(\mathbf{a}_t \mid \mathbf{s}_t) }{ \pi_{\theta'}(\mathbf{a}_t \mid \mathbf{s}_t) } \left(\sum_{t=1}^T \nabla_{\theta} \log \pi_{\theta}(\mathbf{a}_t \mid \mathbf{s}_t)\left(\sum_{t'=t}^T r(\mathbf{s}_{t'}, \mathbf{a}_{t'}) - b\right)\right)\right]
 $$
 Since products are unstable, the product of the ratios of policies can become very small or very large, for larger $T$. What if we consider the expectation *over timesteps* instead of trajectories? Note in the below, we replace the ratio of $\pi_{\theta}(\mathbf{a}_t \mid \mathbf{s}_t)$ with $\pi_{\theta}(\mathbf{s}_t, \mathbf{a}_t)$ and for $\theta'$, the joint distribution over states and actions.
 $$
-\nabla_{\theta} \fanl(\theta) \approx -\frac{1}{N} \sum_{i=1}^N \sum_{t=1}^T \frac{ \pi_{\theta}(\mathbf{s}_t, \mathbf{a}_t) }{ \pi_{\theta'}(\mathbf{s}_t, \mathbf{a}_t) } \nabla_{\theta} \log \pi_{\theta}(\mathbf{a}_t \mid \mathbf{s}_t)\left(\sum_{t=t'}^T r(\mathbf{s}_{t'}, \mathbf{a}_{t'}) - b\right)
+\nabla_{\theta} \fanl(\theta) \approx -\frac{1}{N} \sum_{i=1}^N \sum_{t=1}^T \frac{ \pi_{\theta}(\mathbf{s}_t, \mathbf{a}_t) }{ \pi_{\theta'}(\mathbf{s}_t, \mathbf{a}_t) } \nabla_{\theta} \log \pi_{\theta}(\mathbf{a}_t \mid \mathbf{s}_t)\left(\sum_{t'=t}^T r(\mathbf{s}_{t'}, \mathbf{a}_{t'}) - b\right)
 $$
 This joint can be hard to compute, so $\pi_{\theta}(\mathbf{s}_t)/\pi_{\theta'}(\mathbf{s}_t)$ is often approximated as $1$ to obtain the following common final form.
 $$
-\nabla_{\theta} \fanl(\theta) \approx -\frac{1}{N} \sum_{i=1}^N \sum_{t=1}^T \frac{ \pi_{\theta}(\mathbf{a}_t \mid \mathbf{s}_t) }{ \pi_{\theta'}(\mathbf{a}_t \mid \mathbf{s}_t) } \nabla_{\theta} \log \pi_{\theta}(\mathbf{a}_t \mid \mathbf{s}_t)\left(\sum_{t=t'}^T r(\mathbf{s}_{t'}, \mathbf{a}_{t'}) - b\right)
+\nabla_{\theta} \fanl(\theta) \approx -\frac{1}{N} \sum_{i=1}^N \sum_{t=1}^T \frac{ \pi_{\theta}(\mathbf{a}_t \mid \mathbf{s}_t) }{ \pi_{\theta'}(\mathbf{a}_t \mid \mathbf{s}_t) } \nabla_{\theta} \log \pi_{\theta}(\mathbf{a}_t \mid \mathbf{s}_t)\left(\sum_{t'=t}^T r(\mathbf{s}_{t'}, \mathbf{a}_{t'}) - b\right)
 $$
 These ratios are called the **importance weights** for our *off-policy* policy gradient. The full REINFORCE algorithm is the same but now we can take multiple gradient steps per batch.
