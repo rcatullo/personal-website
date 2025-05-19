@@ -1,14 +1,22 @@
-import Link from 'next/link'
+import NavbarItem from './ui/navbar-item';
 
-const navItems = {
-  '/': {
+type NavItem = {
+  name: string;
+  href: string;
+}
+
+const navItems: Record<string, NavItem> = {
+  'home': {
     name: 'home',
+    href: '/',
   },
-  '/projects': {
+  'projects': {
     name: 'projects',
+    href: '/projects',
   },
-  '/stacks': {
+  'stacks': {
     name: 'stacks',
+    href: '/stacks',
   },
 }
 
@@ -21,20 +29,9 @@ export function Navbar() {
           id="nav"
         >
           <div className="flex flex-row space-x-0 pr-10">
-            {Object.entries(navItems).map(([path, { name }]) => {
+            {Object.entries(navItems).map(([label, { name, href }]) => {
               return (
-                <>
-                <Link
-                  key={path}
-                  href={path}
-                  className="inline-block flex align-middle relative py-1 px-2 m-1"
-                >
-                  <span className="group transition duration-500 ease-in-out relative">
-                    <span className="absolute bg-gradient-to-r from-light-platinum via-light-aztec-gold to-light-dirty-brown dark:from-dirty-brown dark:via-aztec-gold dark:to-platinum bg-clip-text text-transparent transition-opacity duration-500 ease-in-out opacity-0 group-hover:opacity-100 cursor-pointer">{name}</span>
-                    <span className="relative text-black dark:text-white transition-opacity duration-500 ease-in-out group-hover:opacity-0 cursor-pointer">{name}</span>
-                  </span>
-                </Link>
-                </>
+                <NavbarItem label={label} name={name} href={href} />
               )
             })}
           </div>
