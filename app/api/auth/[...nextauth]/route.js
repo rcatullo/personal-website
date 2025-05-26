@@ -14,7 +14,7 @@ const handler = NextAuth({
   secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
     async signIn({ account, profile }) {
-      return profile.email === "rcatullo13@gmail.com"
+      return profile.email === process.env.ADMIN_EMAIL
     }
   }
 });
