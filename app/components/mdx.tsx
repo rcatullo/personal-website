@@ -7,7 +7,7 @@ import { compileMDX } from 'next-mdx-remote/rsc'
 import remarkMath from 'remark-math'
 import rehypeKatex from 'rehype-katex'
 import { generateMacros } from 'app/stacks/utils'
-import CopyButton from './copy-button'
+import CopyButton from './ui/copy-button'
 
 const katexCSS = `
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossOrigin="anonymous"/>
