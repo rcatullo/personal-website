@@ -1,7 +1,4 @@
-"use client";
-
 import { BlogPosts } from 'app/components/posts'
-import { useSession } from "next-auth/react"
 import NewPostButton from "app/components/ui/new-post-button"
 
 export const metadata = {
@@ -10,7 +7,6 @@ export const metadata = {
 }
 
 export default function Page() {
-  const { data: session } = useSession();
 
   return (
     <section>
@@ -18,7 +14,7 @@ export default function Page() {
       <div className='mb-8'>
         <strong className="font-semibold bg-clip-text text-transparent bg-gradient-to-r from-light-platinum via-light-aztec-gold to-light-dirty-brown dark:from-dirty-brown dark:via-aztec-gold dark:to-platinum">pure mathematics blog</strong>
       </div>
-      { session ? <NewPostButton /> : null }
+      <NewPostButton/>
       <BlogPosts />
     </section>
   )
