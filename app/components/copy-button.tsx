@@ -6,22 +6,22 @@ interface CopyButtonProps {
     textToCopy: string;
 }
 
+const handleCopy = async (textToCopy: string, setCopied: React.Dispatch<React.SetStateAction<boolean>>) => {
+    try {
+        await navigator.clipboard.writeText(textToCopy);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+    } catch (error) {
+        console.error('Copy failed', error);
+    }
+};
+
 const CopyButton: React.FC<CopyButtonProps> = ({ textToCopy }) => {
     const [copied, setCopied] = useState(false);
 
-    const handleCopy = async () => {
-        try {
-            await navigator.clipboard.writeText(textToCopy);
-            setCopied(true);
-            setTimeout(() => setCopied(false), 2000);
-        } catch (error) {
-            console.error('Copy failed', error);
-        }
-    };
-
     return (
         <button 
-            onClick={handleCopy}
+            onClick={() => handleCopy(textToCopy, setCopied)}
             className="absolute top-2 right-2 border p-1 rounded transition-opacity opacity-0 group-hover:opacity-100"
             title="Copy code"
         >
