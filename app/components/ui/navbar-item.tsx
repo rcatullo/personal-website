@@ -1,6 +1,9 @@
+"use client";
 import Link from "next/link";
+import { useSession, signIn, signOut } from "next-auth/react"
+import NavButton from "./nav-button";
 
-export default function NavbarItem({ label, name, href }: { label: string, name: string, href: string }) {
+export function NavbarItem({ label, name, href }: { label: string, name: string, href: string }) {
     return (
         <Link
                 key={label}
@@ -14,3 +17,22 @@ export default function NavbarItem({ label, name, href }: { label: string, name:
         </Link>
     )
 }
+
+export function NavbarAuth() {
+    const { data: session } = useSession();
+
+    return (
+        <div className="ml-auto">
+            {session ? (
+                <NavButton onClick={() => signOut()}>
+                    logout
+                </NavButton>
+            ) : (
+                <NavButton onClick={() => signIn()}>
+                    login
+                </NavButton>
+            )}
+        </div>
+    );
+}
+    
