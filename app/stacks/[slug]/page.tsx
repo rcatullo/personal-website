@@ -1,30 +1,36 @@
 import { notFound } from 'next/navigation'
-import { formatDate, getBlogPosts } from 'app/stacks/utils'
+import { formatDate } from 'app/stacks/utils'
 import { baseUrl } from 'app/sitemap'
 import { CustomMDX } from 'app/components/mdx'
+import { getSupabasePostBySlug } from 'app/lib/supabase'
 
+// Generate static params at build time
 export async function generateStaticParams() {
-  let posts = getBlogPosts()
-  return posts.map((post) => ({
-    slug: post.slug
-  }))
+  const { supabase } = await import('app/lib/supabase')
+  const { data: posts } = await supabase
+    .from('posts')
+    .select('slug')
+    .eq('published', true)
+
+  return posts?.map(({ slug }) => ({
+    slug,
+  })) || []
 }
 
-export function generateMetadata({ params }) {
-  let post = getBlogPosts().find((post) => post.slug === params.slug)
+export async function generateMetadata({ params }) {
+  const post = await getSupabasePostBySlug(params.slug)
   if (!post) {
     notFound()
   }
 
-  let {
+  const {
     title,
     publishedAt: publishedTime,
     summary: description,
     image,
   } = post.metadata
-  let ogImage = image
-    ? image
-    : `${baseUrl}/og?title=${encodeURIComponent(title)}`
+  
+  const ogImage = image ? image : `${baseUrl}/og?title=${encodeURIComponent(title)}`
 
   return {
     title,
@@ -34,7 +40,7 @@ export function generateMetadata({ params }) {
       description,
       type: 'article',
       publishedTime,
-      url: `${baseUrl}/blog/${post.slug}`,
+      url: `${baseUrl}/stacks/${post.slug}`,
       images: [
         {
           url: ogImage,
@@ -50,13 +56,19 @@ export function generateMetadata({ params }) {
   }
 }
 
-export default async function Blog({ params }) {
-  const { slug } = await params
-  let post = getBlogPosts().find((post) => post.slug === slug)
+export default async function BlogPost({ params }) {
+  const post = await getSupabasePostBySlug(params.slug)
   if (!post) {
     notFound()
   }
-  const content = await CustomMDX(post.content)
+  
+  let content: React.ReactElement | null = null
+  try {
+    content = await CustomMDX(post.content)
+  } catch (error) {
+    console.error('Error rendering MDX content:', error)
+    notFound()
+  }
 
   return (
     <section>
@@ -85,7 +97,7 @@ export default async function Blog({ params }) {
         {post.metadata.title}
       </h1>
       <div className="flex justify-between items-center mt-2 mb-8 text-sm">
-      <p className="text-sm text-neutral-600 dark:text-neutral-400">
+        <p className="text-sm text-neutral-600 dark:text-neutral-400">
           {formatDate(post.metadata.publishedAt)}
         </p>
       </div>
