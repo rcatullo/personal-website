@@ -75,7 +75,7 @@ function Code({ children, ...props }) {
   )
 }
 
-function slugify(str) {
+export function slugify(str) {
   return str
     .toString()
     .toLowerCase()
