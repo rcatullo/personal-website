@@ -1,6 +1,6 @@
 'use client';
 import React, { useState, FormEvent } from 'react';
-import { MdxEditor } from './mdx-editor';
+import { MdxEditor } from './editor/mdx-editor';
 
 async function handleSubmit(e: FormEvent, title: string, content: string) {
   e.preventDefault();
