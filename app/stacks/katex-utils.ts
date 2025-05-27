@@ -1,10 +1,20 @@
 
-const standardStyURL = "https://raw.githubusercontent.com/rcatullo/standard-latex-papers/refs/heads/main/standard-operators.sty?<?php echo 'v=' . filemtime('app.js'); ?>";
+const standardStyURL = "https://raw.githubusercontent.com/rcatullo/standard-latex-papers/main/standard-operators.sty";
 
 async function readStyFile(): Promise<string> {
-  const response = await fetch(standardStyURL);
-  const fileContent = await response.text();
-  return fileContent
+  const timestamp = new Date().getTime();
+  const response = await fetch(`${standardStyURL}?v=${timestamp}`, {
+    headers: {
+      'Cache-Control': 'no-cache',
+      'Pragma': 'no-cache'
+    }
+  });
+  
+  if (!response.ok) {
+    throw new Error(`Failed to fetch macros: ${response.statusText}`);
+  }
+  
+  return await response.text();
 }
 
 function findBalancedClosing(input: string, start: number) {
@@ -13,22 +23,17 @@ function findBalancedClosing(input: string, start: number) {
   for (let i = start; i < input.length; i++) {
       const char = input[i];
 
-      if (char === '{') stack++; // Increment stack for an opening brace
+      if (char === '{') stack++;
       if (char === '}') {
-          stack--; // Decrement stack for a closing brace
-          if (stack === 0) return i; // Found the balanced closing brace
+          stack--;
+          if (stack === 0) return i;
       }
   }
 
-  return 0; // No balanced closing brace found (should not happen if braces are balanced)
+  return 0;
 }
 
 function parseStytoMacros(fileContent: string) {
-    type CMD = {
-      commandString: string, // substring of fileContent containing the command and its arguments
-      arg1: string, // first argument (new command)
-      arg2: string // second argument (LaTeX it is replacing)
-    }
     const selectCmds = ["\\newcommand", "\\renewcommand", "\\DeclareMathOperator"];
     let macros = {};
     let i = 0;
@@ -37,12 +42,12 @@ function parseStytoMacros(fileContent: string) {
         const command = selectCmds.find((cmd) => fileContent.startsWith(cmd, i));
         if (command) {
           const start = i;
-          i = findBalancedClosing(fileContent, start); // index of the first (balanced) closing brace
+          i = findBalancedClosing(fileContent, start);
           const firstArg = fileContent.slice(fileContent.indexOf('{', start) + 1, i);
-          i = fileContent.indexOf('{', i) // move index of the opening brace of the second argument
-          const end = findBalancedClosing(fileContent, i); // index of the second (balanced) closing brace
+          i = fileContent.indexOf('{', i)
+          const end = findBalancedClosing(fileContent, i);
           const secondArg = fileContent.slice(i + 1, end);
-          i = end + 1; // move index to the next character after the closing brace
+          i = end + 1;
           if (command === "\\DeclareMathOperator") {
             macros = {
               ...macros,

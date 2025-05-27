@@ -27,10 +27,7 @@ export async function generateMetadata({ params }) {
     title,
     publishedAt: publishedTime,
     summary: description,
-    image,
   } = post.metadata
-  
-  const ogImage = image ? image : `${baseUrl}/og?title=${encodeURIComponent(title)}`
 
   return {
     title,
@@ -41,17 +38,11 @@ export async function generateMetadata({ params }) {
       type: 'article',
       publishedTime,
       url: `${baseUrl}/stacks/${post.slug}`,
-      images: [
-        {
-          url: ogImage,
-        },
-      ],
     },
     twitter: {
       card: 'summary_large_image',
       title,
       description,
-      images: [ogImage],
     },
   }
 }
@@ -82,9 +73,6 @@ export default async function BlogPost({ params }) {
             datePublished: post.metadata.publishedAt,
             dateModified: post.metadata.publishedAt,
             description: post.metadata.summary,
-            image: post.metadata.image
-              ? `${baseUrl}${post.metadata.image}`
-              : `/og?title=${encodeURIComponent(post.metadata.title)}`,
             url: `${baseUrl}/stacks/${post.slug}`,
             author: {
               '@type': 'Person',
