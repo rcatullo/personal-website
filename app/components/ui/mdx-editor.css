@@ -1,0 +1,9 @@
+.mdxeditor-root-content {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.mdxeditor-root-content > p {
+  margin: 0 !important;
+  padding: 0 !important;
+}
