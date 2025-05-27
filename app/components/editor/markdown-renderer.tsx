@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { compileMDX } from 'next-mdx-remote/rsc';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
@@ -79,11 +79,5 @@ export function MarkdownRenderer({ content, className = '' }: MarkdownRendererPr
     return <div className="p-4 text-red-500">{error}</div>;
   }
 
-  return (
-    <div className={`prose dark:prose-invert max-w-none ${className}`}>
-      <div className="px-0">
-        {renderedContent}
-      </div>
-    </div>
-  );
+  return renderedContent;
 }

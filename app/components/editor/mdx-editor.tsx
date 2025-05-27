@@ -25,27 +25,24 @@ export function MdxEditor({ value, onChange }: MdxEditorProps) {
   }, []);
 
   return (
-    <div className="bg-white dark:bg-gray-900 flex flex-col h-full">
-      <div className="flex-1 min-h-[300px] mx-0">
-        {activeTab === 'edit' ? (
+    <>
+      {activeTab === 'edit' ? (
           <textarea
             value={value}
             onChange={handleEditorChange}
-            className="w-full h-full min-h-[300px] font-mono text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-900 border-0 focus:ring-0 focus:outline-none resize-none"
+            className="bg-transparent min-w-full min-h-[300px] font-mono text-sm text-gray-900 dark:text-gray-100 border-0 focus:ring-0 focus:outline-none resize-none"
             placeholder="Start writing your markdown here..."
             spellCheck="false"
           />
         ) : (
           <MarkdownPreview content={previewContent} />
         )}
-      </div>
-      
       <div className="border-t border-gray-200 dark:border-gray-700">
         <EditorTabs 
           activeTab={activeTab} 
           onTabChange={handleTabChange} 
         />
       </div>
-    </div>
+    </>
   );
 }

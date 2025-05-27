@@ -17,15 +17,14 @@ export function PostForm() {
   const [content, setContent] = useState('');
 
   return (
-    <form onSubmit={(e) => handleSubmit(e, title, content)} className="space-y-6">
+    <form onSubmit={(e) => handleSubmit(e, title, content)}>
         <h1 className="title font-semibold text-2xl tracking-tighter">
         <input
           id="title"
-          className="focus:outline-none placeholder-black"
+          className="focus:outline-none placeholder-black dark:placeholder-white bg-transparent"
           value={title}
           onChange={e => setTitle(e.target.value)}
           placeholder="[Title]"
-          required
         />
         </h1>
         <div className="flex justify-between items-center mt-2 mb-8 text-sm">
@@ -33,10 +32,8 @@ export function PostForm() {
             {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
         </p>
         </div>
-        <article className="prose">
         <MdxEditor value={content} onChange={setContent} />
-        </article>
-        <button type="submit" className="px-4 py-2 bg-black text-white rounded">
+        <button type="submit" className="px-4 py-2 mt-6 bg-black text-white dark:bg-white dark:text-black rounded">
         Publish
       </button>
     </form>

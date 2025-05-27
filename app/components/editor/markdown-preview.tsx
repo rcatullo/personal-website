@@ -8,9 +8,10 @@ interface MarkdownPreviewProps {
 
 export const MarkdownPreview: React.FC<MarkdownPreviewProps> = ({
   content,
-  className = ''
 }) => (
-  <div className={`min-h-[300px] ${className}`}>
-    <MarkdownRenderer content={content} />
-  </div>
+  <article className="prose">
+    <div className={`min-h-[300px]`}>
+      <MarkdownRenderer content={content} />
+    </div>
+  </article>
 );
