@@ -1,7 +1,7 @@
 'use client';
 import React, { useState, useCallback } from 'react';
-import { EditorTabs } from './EditorTabs';
-import { MarkdownPreview } from './MarkdownPreview';
+import { EditorTabs } from './editor-tabs';
+import { MarkdownPreview } from './markdown-preview';
 
 type EditorTab = 'edit' | 'preview';
 
