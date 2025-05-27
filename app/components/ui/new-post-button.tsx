@@ -15,11 +15,10 @@ export default function NewPostButton() {
         <div className="flex items-center w-full my-8">
             <div className="flex-grow h-px bg-gray-200"></div>
             <Link href="/stacks/new-post" className="flex-shrink-0 mx-4">
-                <button 
-                    className="w-8 h-8 rounded-full bg-gray-600 dark:bg-gray-300 text-white dark:text-black text-xl flex items-center justify-center hover:bg-gray-900 dark:hover:bg-gray-100 transition-colors leading-none"
+                <button
                     aria-label="Create new post"
                 >
-                    <span className="relative top-[-1px]">+</span>
+                    +
                 </button>
             </Link>
             <div className="flex-grow h-px bg-gray-200"></div>

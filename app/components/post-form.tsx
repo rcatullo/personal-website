@@ -1,23 +1,35 @@
 'use client';
 import React, { useState, FormEvent } from 'react';
+import { useRouter } from 'next/navigation';
 import { MdxEditor } from './editor/mdx-editor';
 
-async function handleSubmit(e: FormEvent, title: string, content: string) {
-  e.preventDefault();
-  await fetch('/api/posts', {
-    method: 'POST',
-    headers: {'Content-Type':'application/json'},
-    body: JSON.stringify({ title, mdx: content })
-  });
-  // reset or navigate...
-}
 
 export function PostForm() {
+  const router = useRouter();
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
 
+  const handleSubmit = async () => {
+    if (!title.trim() || !content.trim()) return;
+    
+    try {
+      await fetch('/api/posts', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ title, content })
+      });
+      router.push('/stacks');
+    } catch (error) {
+      console.error('Error submitting post:', error);
+    }
+  };
+
+  const handleFormSubmit = (e: FormEvent) => {
+    e.preventDefault();
+  };
+
   return (
-    <form onSubmit={(e) => handleSubmit(e, title, content)}>
+    <form onSubmit={handleFormSubmit}>
         <h1 className="title font-semibold text-2xl tracking-tighter">
         <input
           id="title"
@@ -33,9 +45,13 @@ export function PostForm() {
         </p>
         </div>
         <MdxEditor value={content} onChange={setContent} />
-        <button type="submit" className="px-4 py-2 mt-6 bg-black text-white dark:bg-white dark:text-black rounded">
-        Publish
-      </button>
+        <button 
+          type="button" 
+          onClick={handleSubmit}
+          className="px-4 py-2 mt-6 bg-black text-white dark:bg-white dark:text-black rounded hover:opacity-80 transition-opacity"
+        >
+          Publish
+        </button>
     </form>
   );
 }

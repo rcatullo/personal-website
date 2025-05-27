@@ -1,8 +1,8 @@
 import { PostForm } from '../../components/post-form';
 
 export const metadata = {
-  title: 'New Blog Post',
-  description: 'Upload a new blog post to the stacks.',
+  title: 'New Post',
+  description: 'Upload a new post to the stacks.',
 };
 
 export default function Page() {
