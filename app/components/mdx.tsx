@@ -6,7 +6,7 @@ import React from 'react'
 import { compileMDX } from 'next-mdx-remote/rsc'
 import remarkMath from 'remark-math'
 import rehypeKatex from 'rehype-katex'
-import { generateMacros } from 'app/stacks/katex-utils'
+import { generateMacros } from 'app/utils/katex-utils'
 import CopyButton from './ui/copy-button'
 
 const katexCSS = `

@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation'
 import supabase from 'app/lib/supabase'
 import { getPostBySlug, getContentById } from 'app/lib/supabase'
-import { formatDate } from 'app/stacks/utils'
+import { formatDate } from 'app/utils/utils'
 import { baseUrl } from 'app/sitemap';
 import { CustomMDX } from 'app/components/mdx';
 

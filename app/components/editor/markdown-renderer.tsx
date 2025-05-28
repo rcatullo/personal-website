@@ -4,7 +4,7 @@ import React, { useEffect } from 'react';
 import { compileMDX } from 'next-mdx-remote/rsc';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
-import { generateMacros } from 'app/stacks/katex-utils';
+import { generateMacros } from 'app/utils/katex-utils';
 import * as mdxComponents from '../mdx';
 
 const katexCSS = `

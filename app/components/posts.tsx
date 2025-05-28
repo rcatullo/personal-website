@@ -1,6 +1,6 @@
 'use client';
 import Link from 'next/link'
-import { formatDate } from 'app/stacks/utils'
+import { formatDate } from 'app/utils/utils'
 import { useEffect, useState } from 'react';
 import { getPosts } from 'app/lib/supabase';
 import { useSession } from "next-auth/react"
