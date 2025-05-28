@@ -4,19 +4,19 @@ import supabase from 'app/lib/supabase';
 
 export async function POST(req) {
   try {
-    const { title, content } = await req.json();
+    const { title, content, published } = await req.json();
     const slug = slugify(title);
-    const { data: postData, error: postError } = await supabase.from('posts')
-      .insert({ title, slug, published: true }).select().single();
+    const { data: post, error } = await supabase.from('posts')
+      .insert({ title, slug, published }).select().single();
 
-    if (postError) throw postError;
+    if (error) throw error;
 
-    const { data: contentData, error: contentError } = await supabase.from('content')
-      .insert({ id: postData.id, markdown: content }).select().single();
+    const { error: contentError } = await supabase.from('content')
+      .insert({ id: post.id, markdown: content }).select().single();
 
     if (contentError) throw contentError;
 
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ success: true, data: post });
   } catch (err) {
     return NextResponse.json(
       { success: false, error: err.message || String(err) },
@@ -27,48 +27,57 @@ export async function POST(req) {
 
 export async function PUT(req) {
   try {
-    const { title, content, id } = await req.json();
+    const { title, content, id, published } = await req.json();
     const slug = slugify(title);
-    const now = new Date().toISOString();
+    const updated_at = new Date().toISOString();
+    const { data, error } = await supabase.from('posts')
+      .select('*').eq('id', id).single();
     
-    if (id) {
-      // Update existing draft
-      const { data: postData, error: postError } = await supabase.from('posts')
-        .update({
-          created_at: now
-        }).eq('id', id).select().single();
-      
-      if (postError) throw postError;
-      
-      const { data: contentData, error: contentError } = await supabase.from('content')
-        .update({markdown: content}).eq('id', id).select().single();
+    if (error) throw error;
 
-      if (contentError) throw contentError;
-      return NextResponse.json({ success: true, data: postData });
-    } else {
-      // Create new draft
-      const { data: postData, error: postError } = await supabase.from('posts')
-        .insert([
-          {
-            title,
-            slug,
-            published: false,
-            created_at: now
-          }
-        ]).select().single();
-
-      if (postError) throw postError;
-
-      const { data: contentData, error: contentError } = await supabase.from('content')
-        .insert({ id: postData.id, markdown: content }).select().single();
-
-      if (contentError) throw contentError;
-      return NextResponse.json({ success: true, data: postData });
+    let published_at = data.published_at;
+    if (published && data.published === false) {
+      published_at = updated_at;
     }
+
+    const post = { title, slug, published, updated_at, published_at }
+
+    const { error: updateErr } = await supabase.from('posts')
+      .update(post)
+      .eq('id', id);
+    
+    if (updateErr) throw updateErr;
+
+    const { error: contentError } = await supabase.from('content')
+      .update({ markdown: content })
+      .eq('id', id);
+    
+    if (contentError) throw contentError;
+    
+    return NextResponse.json({ success: true, data: post });
+    
   } catch (err) {
     return NextResponse.json(
       { success: false, error: err.message || String(err) },
       { status: 500 }
     );
+  }
+}
+
+export async function DELETE(req) {
+  try {
+    const { id } = await req.json();
+    const { error } = await supabase.from('posts')
+      .delete()
+      .eq('id', id);
+    
+    if (error) throw error;
+    
+    return NextResponse.json({ success: true });
+  } catch(err) {
+    return NextResponse.json(
+      { success: false, error: err.message || String(err) },
+      { status: 500 }
+    )
   }
 }
