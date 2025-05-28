@@ -1,35 +1,30 @@
 'use client';
-import React, { useState, FormEvent } from 'react';
-import { useRouter } from 'next/navigation';
+import React, { useEffect, useState, FormEvent } from 'react';
 import { MdxEditor } from './editor/mdx-editor';
-
-
-export function PostForm() {
+import { getDraft } from 'app/lib/supabase';
+import { publish, save } from 'app/utils/post-actions';
+import { useRouter } from "next/navigation";
+export function PostForm({ draftId }: { draftId?: number }) {
   const router = useRouter();
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
+  const [id, setId] = useState(draftId);
 
-  const handleSubmit = async () => {
-    if (!title.trim() || !content.trim()) return;
-    
-    try {
-      await fetch('/api/posts', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({ title, content })
-      });
-      router.push('/stacks');
-    } catch (error) {
-      console.error('Error submitting post:', error);
+  useEffect(() => {
+    if (id) {
+      getDraft(id).then(res => {
+        setTitle(res.title ? res.title : '');
+        setContent(res.content ? res.content : '');
+      })
     }
-  };
+  }, [id]);
 
-  const handleFormSubmit = (e: FormEvent) => {
+  const handlePublish = (e: FormEvent) => {
     e.preventDefault();
   };
 
   return (
-    <form onSubmit={handleFormSubmit}>
+    <form onSubmit={handlePublish}>
         <h1 className="title font-semibold text-2xl tracking-tighter">
         <input
           id="title"
@@ -47,10 +42,17 @@ export function PostForm() {
         <MdxEditor value={content} onChange={setContent} />
         <button 
           type="button" 
-          onClick={handleSubmit}
+          onClick={async () => {await publish(title, content); router.push('/stacks');}}
           className="px-4 py-2 mt-6 bg-black text-white dark:bg-white dark:text-black rounded hover:opacity-80 transition-opacity"
         >
           Publish
+        </button>
+        <button 
+          type="button" 
+          onClick={async () => {const newId = await save(title, content, id); setId(newId)}}
+          className="px-4 py-2 mt-6 bg-white text-black dark:bg-black dark:text-white rounded hover:opacity-80 transition-opacity"
+        >
+          Save Draft
         </button>
     </form>
   );

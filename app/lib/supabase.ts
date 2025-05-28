@@ -7,11 +7,11 @@ const supabase = createClient(
 
 export default supabase;
 
-export async function getPosts() {
+export async function getPosts(drafts: boolean = false) {
   const { data: posts, error } = await supabase
     .from('posts')
     .select('*')
-    .eq('published', true)
+    .eq('published', !drafts)
     .order('created_at', { ascending: false });
 
   if (error) {
@@ -49,4 +49,30 @@ export async function getContentById(id) {
   }
 
   return data.markdown;
+}
+
+export async function getPostById(id: number) {
+  const { data: post, error } = await supabase
+    .from('posts')
+    .select('*')
+    .eq('id', id)
+    .single();
+
+  if (error || !post) {
+    return null;
+  }
+
+  return post;
+}
+
+export async function getDraft(id: number) {
+  try {
+    const draft = await getPostById(id);
+    const title = draft.title;
+    const content = await getContentById(id);
+    return { title, content };
+  } catch (error) {
+    console.error('Error fetching draft:', error);
+    return { title: null, content: null };
+  }
 }
