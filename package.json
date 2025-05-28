@@ -31,6 +31,7 @@
     "sugar-high": "^0.6.1",
     "tailwindcss-border-gradients": "^2.0.3",
     "typescript": "5.3.3",
+    "utf-8-validate": "^6.0.5",
     "vfile": "^5.3.7",
     "vfile-message": "^3.1.4"
   },

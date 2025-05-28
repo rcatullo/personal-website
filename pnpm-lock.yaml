@@ -16,7 +16,7 @@ importers:
         version: 6.8.2(typescript@5.3.3)
       '@supabase/supabase-js':
         specifier: ^2.49.8
-        version: 2.49.8(bufferutil@4.0.9)
+        version: 2.49.8(bufferutil@4.0.9)(utf-8-validate@6.0.5)
       '@types/katex':
         specifier: ^0.16.7
         version: 0.16.7
@@ -37,7 +37,7 @@ importers:
         version: 0.6.4
       '@vercel/postgres':
         specifier: ^0.10.0
-        version: 0.10.0
+        version: 0.10.0(utf-8-validate@6.0.5)
       '@vercel/speed-insights':
         specifier: ^1.0.9
         version: 1.0.9(next@13.5.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react@18.2.0)
@@ -83,6 +83,9 @@ importers:
       typescript:
         specifier: 5.3.3
         version: 5.3.3
+      utf-8-validate:
+        specifier: ^6.0.5
+        version: 6.0.5
       vfile:
         specifier: ^5.3.7
         version: 5.3.7
@@ -1447,6 +1450,10 @@ packages:
     peerDependencies:
       browserslist: '>= 4.21.0'
 
+  utf-8-validate@6.0.5:
+    resolution: {integrity: sha512-EYZR+OpIXp9Y1eG1iueg8KRsY8TuT8VNgnanZ0uA3STqhHQTLwbl+WX76/9X5OY12yQubymBpaBSmMPkSTQcKA==}
+    engines: {node: '>=6.14.2'}
+
   util-deprecate@1.0.2:
     resolution: {integrity: sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw==}
 
@@ -1677,12 +1684,12 @@ snapshots:
     dependencies:
       '@supabase/node-fetch': 2.6.15
 
-  '@supabase/realtime-js@2.11.2(bufferutil@4.0.9)':
+  '@supabase/realtime-js@2.11.2(bufferutil@4.0.9)(utf-8-validate@6.0.5)':
     dependencies:
       '@supabase/node-fetch': 2.6.15
       '@types/phoenix': 1.6.6
       '@types/ws': 8.18.1
-      ws: 8.18.2(bufferutil@4.0.9)
+      ws: 8.18.2(bufferutil@4.0.9)(utf-8-validate@6.0.5)
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
@@ -1691,13 +1698,13 @@ snapshots:
     dependencies:
       '@supabase/node-fetch': 2.6.15
 
-  '@supabase/supabase-js@2.49.8(bufferutil@4.0.9)':
+  '@supabase/supabase-js@2.49.8(bufferutil@4.0.9)(utf-8-validate@6.0.5)':
     dependencies:
       '@supabase/auth-js': 2.69.1
       '@supabase/functions-js': 2.4.4
       '@supabase/node-fetch': 2.6.15
       '@supabase/postgrest-js': 1.19.4
-      '@supabase/realtime-js': 2.11.2(bufferutil@4.0.9)
+      '@supabase/realtime-js': 2.11.2(bufferutil@4.0.9)(utf-8-validate@6.0.5)
       '@supabase/storage-js': 2.7.1
     transitivePeerDependencies:
       - bufferutil
@@ -1781,11 +1788,11 @@ snapshots:
       satori: 0.12.0
       yoga-wasm-web: 0.3.3
 
-  '@vercel/postgres@0.10.0':
+  '@vercel/postgres@0.10.0(utf-8-validate@6.0.5)':
     dependencies:
       '@neondatabase/serverless': 0.9.5
       bufferutil: 4.0.9
-      ws: 8.18.2(bufferutil@4.0.9)
+      ws: 8.18.2(bufferutil@4.0.9)(utf-8-validate@6.0.5)
     transitivePeerDependencies:
       - utf-8-validate
 
@@ -3192,6 +3199,10 @@ snapshots:
       escalade: 3.2.0
       picocolors: 1.1.1
 
+  utf-8-validate@6.0.5:
+    dependencies:
+      node-gyp-build: 4.8.4
+
   util-deprecate@1.0.2: {}
 
   uuid@8.3.2: {}
@@ -3258,9 +3269,10 @@ snapshots:
       string-width: 5.1.2
       strip-ansi: 7.1.0
 
-  ws@8.18.2(bufferutil@4.0.9):
+  ws@8.18.2(bufferutil@4.0.9)(utf-8-validate@6.0.5):
     optionalDependencies:
       bufferutil: 4.0.9
+      utf-8-validate: 6.0.5
 
   yallist@4.0.0: {}
 

@@ -1,8 +1,8 @@
 import { baseUrl } from 'app/sitemap'
-import { getBlogPosts } from 'app/stacks/utils'
+import { getPosts } from 'app/lib/supabase'
 
 export async function GET() {
-  let allBlogs = await getBlogPosts()
+  let allBlogs = await getPosts()
 
   const itemsXml = allBlogs
     .sort((a, b) => {
