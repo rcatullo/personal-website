@@ -1,5 +1,6 @@
 'use client';
 import supabase from 'app/lib/supabase'
+import { getPostBySlug } from 'app/lib/supabase'
 import { useEffect, useState } from 'react'
 import { formatDate } from 'app/stacks/utils'
 import { baseUrl } from 'app/sitemap';
@@ -18,22 +19,8 @@ export default function Post({ slug }: { slug: string }) {
     const [post, setPost] = useState<Post>()
 
     useEffect(() => {
-        const getPost = async () => {
-            const { data: post, error } = await supabase
-                .from('posts')
-                .select('*')
-                .eq('published', true)
-                .eq('slug', slug)
-                .single();
-            
-            if (error) {
-                console.error('Error fetching posts:', error);
-            }
-            
-            setPost(post)
-        }
-        getPost()
-        }, []);
+        getPostBySlug(slug).then(res => {setPost(res)})
+    }, [supabase]);
 
     if (!post) {
         return <p className="text-neutral-600 dark:text-neutral-400"></p>

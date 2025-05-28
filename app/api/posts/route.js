@@ -1,11 +1,6 @@
 import { NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
-import { slugify } from '@/components/mdx'
-
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
-);
+import { slugify } from 'app/components/mdx'
+import supabase from 'app/lib/supabase';
 
 export async function POST(req) {
   try {

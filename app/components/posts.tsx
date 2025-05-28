@@ -1,5 +1,6 @@
 'use client';
 import supabase from 'app/lib/supabase'
+import { getPosts } from 'app/lib/supabase'
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { formatDate } from 'app/stacks/utils'
@@ -17,22 +18,8 @@ export default function Posts() {
   const [posts, setPosts] = useState<Post[]>([])
 
   useEffect(() => {
-      const getPosts = async () => {
-      const { data: posts, error } = await supabase
-        .from('posts')
-        .select('*')
-        .eq('published', true)
-        .order('created_at', { ascending: false });
-    
-      if (error) {
-        console.error('Error fetching posts:', error);
-      }
-    
-      setPosts(posts || [])
-      }
-  
-      getPosts()
-    }, []);
+      getPosts().then(res => {setPosts(res)})
+  }, [supabase]);
 
   if (!posts || posts.length === 0) {
     return <p className="text-neutral-600 dark:text-neutral-400">No posts found.</p>
