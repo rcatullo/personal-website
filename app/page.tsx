@@ -1,12 +1,15 @@
 import fs from 'fs/promises'
 import Posts from 'app/components/posts'
-import { MarkdownRenderer } from './components/editor/markdown-renderer';
+import { getPosts } from './lib/supabase';
+import { CustomMDX } from './components/mdx';
 
 export const revalidate = 0;
 
 export default async function Page() {
 
   let bio = await fs.readFile('app/bio.mdx', 'utf-8');
+  const renderedBio = await CustomMDX(bio);
+  const posts = await getPosts();
 
   return (
     <section>
@@ -17,10 +20,10 @@ export default async function Page() {
         Mathematics and Computer Science @ Stanford University
       </h2>
       <article className="prose">
-        <MarkdownRenderer content={bio} />
+        { renderedBio }
       </article>
       <div className="my-8">
-        <Posts />
+        <Posts params={posts}/>
       </div>
       <h2 className="mb-2 text-xl">
         Contact

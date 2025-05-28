@@ -1,14 +1,20 @@
-import { getPosts } from 'app/lib/supabase'
+'use client';
 import Link from 'next/link'
 import { formatDate } from 'app/stacks/utils'
+import { useEffect, useState } from 'react';
+import { getPosts } from 'app/lib/supabase';
 
-export default async function Posts() {
-  const posts = await getPosts();
-
-  if (!posts || posts.length === 0) {
-    return <p className="text-neutral-600 dark:text-neutral-400">No posts found.</p>
-  }
-
+export default function Posts({ params }: { params: any[] }) {
+  const [posts, setPosts] = useState(params);
+  
+  useEffect(() => {
+    const update = async () => {
+      const posts = await getPosts()
+      setPosts(posts || []);
+    };
+    update();
+  }, []);
+  
   return (
     <div>
       {posts.map((post) => (
