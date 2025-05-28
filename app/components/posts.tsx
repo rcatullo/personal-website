@@ -22,7 +22,7 @@ export default function Posts() {
   }, [supabase]);
 
   if (!posts || posts.length === 0) {
-    return <p className="text-neutral-600 dark:text-neutral-400">No posts found.</p>
+    return <p className="text-neutral-600 dark:text-neutral-400"></p>
   }
 
   return (

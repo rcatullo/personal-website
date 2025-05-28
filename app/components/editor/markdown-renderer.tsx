@@ -72,11 +72,11 @@ export function MarkdownRenderer({ content, className = '' }: MarkdownRendererPr
   }, [content]);
 
   if (isLoading) {
-    return <div className="p-4 text-gray-500">Loading preview...</div>;
+    return <div className="text-gray-500"></div>;
   }
 
   if (error) {
-    return <div className="p-4 text-red-500">{error}</div>;
+    return <div className="text-red-500">{error}</div>;
   }
 
   return renderedContent;
