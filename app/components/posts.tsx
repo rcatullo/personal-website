@@ -1,17 +1,46 @@
+'use client';
+import supabase from 'app/lib/supabase'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { formatDate } from 'app/stacks/utils'
-import { getSupabasePosts } from 'app/lib/supabase'
 
-export async function BlogPosts() {
-  const allBlogs = await getSupabasePosts()
+type Post = {
+  id: number;
+  title: string;
+  slug: string;
+  created_at: string;
+  content: string;
+  published: boolean;
+}
 
-  if (!allBlogs || allBlogs.length === 0) {
+export default function Posts() {
+  const [posts, setPosts] = useState<Post[]>([])
+
+  useEffect(() => {
+      const getPosts = async () => {
+      const { data: posts, error } = await supabase
+        .from('posts')
+        .select('*')
+        .eq('published', true)
+        .order('created_at', { ascending: false });
+    
+      if (error) {
+        console.error('Error fetching posts:', error);
+      }
+    
+      setPosts(posts || [])
+      }
+  
+      getPosts()
+    }, []);
+
+  if (!posts || posts.length === 0) {
     return <p className="text-neutral-600 dark:text-neutral-400">No posts found.</p>
   }
 
   return (
     <div>
-      {allBlogs.map((post) => (
+      {posts.map((post) => (
         <Link
           key={post.slug}
           className="flex flex-col space-y-1 mb-4"
@@ -19,10 +48,10 @@ export async function BlogPosts() {
         >
           <div className="w-full flex flex-col md:flex-row space-x-0 md:space-x-2">
             <p className="text-neutral-600 dark:text-neutral-400 w-[100px] tabular-nums">
-              {formatDate(post.metadata.publishedAt, false)}
+              {formatDate(post.created_at, false)}
             </p>
             <p className="text-neutral-900 dark:text-neutral-100 tracking-tight">
-              {post.metadata.title}
+              {post.title}
             </p>
           </div>
         </Link>

@@ -1,5 +1,5 @@
-import { BlogPosts } from 'app/components/posts'
 import NewPostButton from "app/components/ui/new-post-button"
+import Posts from 'app/components/posts'
 
 export const metadata = {
   title: 'The Stacks',
@@ -14,7 +14,7 @@ export default async function Page() {
         <strong className="font-semibold bg-clip-text text-transparent bg-gradient-to-r from-light-platinum via-light-aztec-gold to-light-dirty-brown dark:from-dirty-brown dark:via-aztec-gold dark:to-platinum">pure mathematics blog</strong>
       </div>
       <NewPostButton/>
-      <BlogPosts />
+      <Posts />
     </section>
   )
 }

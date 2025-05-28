@@ -1,10 +1,10 @@
-import { BlogPosts } from 'app/components/posts'
-import fs from 'fs'
-import { CustomMDX } from './components/mdx'
+import fs from 'fs/promises'
+import Posts from 'app/components/posts'
+import { MarkdownRenderer } from './components/editor/markdown-renderer';
 
 export default async function Page() {
-  let bio = fs.readFileSync('app/bio.mdx', 'utf-8')
-  const content = await CustomMDX(bio)
+
+  let bio = await fs.readFile('app/bio.mdx', 'utf-8');
 
   return (
     <section>
@@ -15,10 +15,10 @@ export default async function Page() {
         Mathematics and Computer Science @ Stanford University
       </h2>
       <article className="prose">
-        {content}
+        <MarkdownRenderer content={bio} />
       </article>
       <div className="my-8">
-        <BlogPosts />
+        <Posts />
       </div>
       <h2 className="mb-2 text-xl">
         Contact

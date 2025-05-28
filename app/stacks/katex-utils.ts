@@ -1,14 +1,9 @@
 
 const standardStyURL = "https://raw.githubusercontent.com/rcatullo/standard-latex-papers/main/standard-operators.sty";
+export { standardStyURL };
 
 async function readStyFile(): Promise<string> {
-  const timestamp = new Date().getTime();
-  const response = await fetch(`${standardStyURL}?v=${timestamp}`, {
-    headers: {
-      'Cache-Control': 'no-cache',
-      'Pragma': 'no-cache'
-    }
-  });
+  const response = await fetch(standardStyURL);
   
   if (!response.ok) {
     throw new Error(`Failed to fetch macros: ${response.statusText}`);
@@ -70,7 +65,7 @@ function parseStytoMacros(fileContent: string) {
     return { ...macros, ...customMacros };
 }
 
-export async function generateMacros(): Promise<Record<string, string>> { 
-  let content = await readStyFile();
+export async function generateMacros(): Promise<Record<string, string>> {
+  const content = await readStyFile();
   return parseStytoMacros(content)
 }

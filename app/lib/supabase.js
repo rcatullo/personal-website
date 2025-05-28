@@ -1,13 +1,13 @@
 import { createClient } from '@supabase/supabase-js';
 
 const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
+  process.env.NEXT_PUBLIC_SUPABASE_URL,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 );
 
-export { supabase };
+export default supabase;
 
-export async function getSupabasePosts() {
+export async function getPosts() {
   const { data: posts, error } = await supabase
     .from('posts')
     .select('*')
@@ -19,19 +19,10 @@ export async function getSupabasePosts() {
     return [];
   }
 
-  return posts.map(post => ({
-    ...post,
-    metadata: {
-      title: post.title,
-      publishedAt: post.created_at,
-      summary: post.summary || '',
-      image: post.image || null,
-    },
-    content: post.content
-  }));
+  return posts;
 }
 
-export async function getSupabasePostBySlug(slug) {
+export async function getPostBySlug(slug) {
   const { data: post, error } = await supabase
     .from('posts')
     .select('*')
@@ -43,14 +34,5 @@ export async function getSupabasePostBySlug(slug) {
     return null;
   }
 
-  return {
-    ...post,
-    metadata: {
-      title: post.title,
-      publishedAt: post.created_at,
-      summary: post.summary || '',
-      image: post.image || null,
-    },
-    content: post.content
-  };
+  return post;
 }
