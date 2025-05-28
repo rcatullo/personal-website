@@ -1,25 +1,30 @@
 'use client';
 import supabase from 'app/lib/supabase'
-import { getPostBySlug } from 'app/lib/supabase'
+import { getPostBySlug, getContentById } from 'app/lib/supabase'
 import { useEffect, useState } from 'react'
 import { formatDate } from 'app/stacks/utils'
 import { baseUrl } from 'app/sitemap';
 import { MarkdownRenderer } from './editor/markdown-renderer';
 
-type Post = {
+type Metadata = {
     id: number;
     title: string;
     slug: string;
     created_at: string;
-    content: string;
     published: boolean;
 }
 
 export default function Post({ slug }: { slug: string }) {
-    const [post, setPost] = useState<Post>()
+    const [post, setPost] = useState<Metadata>()
+    const [mdx, setMdx] = useState<string>("")
 
     useEffect(() => {
-        getPostBySlug(slug).then(res => {setPost(res)})
+        getPostBySlug(slug).then(post => {
+            setPost(post);
+            getContentById(post.id).then(res => {
+                setMdx(res.markdown);
+            });
+        })
     }, [supabase]);
 
     if (!post) {
@@ -55,7 +60,7 @@ export default function Post({ slug }: { slug: string }) {
             </p>
             </div>
             <article className="prose">
-            <MarkdownRenderer content={post.content}/>
+                <MarkdownRenderer content={mdx}/>
             </article>
         </section>
     )

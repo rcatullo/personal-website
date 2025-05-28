@@ -36,3 +36,17 @@ export async function getPostBySlug(slug) {
 
   return post;
 }
+
+export async function getContentById(id) {
+  const { data, error } = await supabase
+    .from('content')
+    .select('*')
+    .eq('id', id)
+    .single();
+
+  if (error || !data) {
+    return null;
+  }
+
+  return data;
+}

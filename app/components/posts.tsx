@@ -5,17 +5,16 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { formatDate } from 'app/stacks/utils'
 
-type Post = {
+type Metadata = {
   id: number;
   title: string;
   slug: string;
   created_at: string;
-  content: string;
   published: boolean;
 }
 
 export default function Posts() {
-  const [posts, setPosts] = useState<Post[]>([])
+  const [posts, setPosts] = useState<Metadata[]>([])
 
   useEffect(() => {
       getPosts().then(res => {setPosts(res)})
