@@ -7,8 +7,7 @@ export default function NewPostButton() {
     const { data: session } = useSession();
 
     if (!session) {
-        // DEBUG: remove when done debugging.
-        // return null;
+        return null;
     }
 
     return (
