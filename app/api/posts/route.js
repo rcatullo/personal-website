@@ -8,12 +8,21 @@ export async function POST(req) {
     const slug = slugify(title);
     const { data, error } = await supabase
       .from('posts')
-      .insert({ title, content, slug, published: true })
-      .select();
+      .insert({ title, slug, published: true })
+      .select()
+      .single();
 
     if (error) throw error;
 
-    return NextResponse.json({ success: true, post: data[0] });
+    const { data: contentData, error: contentError } = await supabase
+    .from('content')
+    .insert({ id: data.id, markdown: content })
+    .select()
+    .single();
+
+    if (contentError) throw contentError;
+
+    return NextResponse.json({ success: true });
   } catch (err) {
     return NextResponse.json(
       { success: false, error: err.message || String(err) },

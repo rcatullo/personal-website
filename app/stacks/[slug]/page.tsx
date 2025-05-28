@@ -1,8 +1,9 @@
 import { notFound } from 'next/navigation'
-import { baseUrl } from 'app/sitemap'
-import { getPostBySlug } from 'app/lib/supabase'
 import supabase from 'app/lib/supabase'
-import Post from 'app/components/post'
+import { getPostBySlug, getContentById } from 'app/lib/supabase'
+import { formatDate } from 'app/stacks/utils'
+import { baseUrl } from 'app/sitemap';
+import { CustomMDX } from 'app/components/mdx';
 
 // Generate static params at build time
 export async function generateStaticParams() {
@@ -48,7 +49,45 @@ export async function generateStaticParams() {
 
 export default async function Page({ params }) {
 
-  return (
-    <Post slug={ params.slug } />
-  )
+    const post = await getPostBySlug(params.slug);
+    const mdx: string = await getContentById(post.id);
+    const renderedMdx = await CustomMDX(mdx);
+
+    if (!post) {
+        return <p className="text-neutral-600 dark:text-neutral-400"></p>
+    }
+
+    return (
+        <section>
+            <script
+            type="application/ld+json"
+            suppressHydrationWarning
+            dangerouslySetInnerHTML={{
+                __html: JSON.stringify({
+                '@type': 'BlogPosting',
+                //headline: post.metadata.title,
+                //datePublished: post.metadata.publishedAt,
+                //dateModified: post.metadata.publishedAt,
+                //description: post.metadata.summary,
+                url: `${baseUrl}/stacks/${post.slug}`,
+                author: {
+                    '@type': 'Person',
+                    name: 'Ryan Catullo',
+                },
+                }),
+            }}
+            />
+            <h1 className="title font-semibold text-2xl tracking-tighter">
+            {post.title}
+            </h1>
+            <div className="flex justify-between items-center mt-2 mb-8 text-sm">
+            <p className="text-sm text-neutral-600 dark:text-neutral-400">
+                {formatDate(post.created_at, false)}
+            </p>
+            </div>
+            <article className="prose">
+                { renderedMdx }
+            </article>
+        </section>
+    )
 }

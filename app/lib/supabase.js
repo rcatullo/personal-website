@@ -48,5 +48,5 @@ export async function getContentById(id) {
     return null;
   }
 
-  return data;
+  return data.markdown;
 }

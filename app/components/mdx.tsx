@@ -155,7 +155,7 @@ export async function CustomMDX(post) {
     globalGroup: true
   }
   const { content } = await compileMDX({
-      source: post.concat(katexCSS),
+      source: post + katexCSS,
       options: {
         parseFrontmatter: false,
         mdxOptions: {
