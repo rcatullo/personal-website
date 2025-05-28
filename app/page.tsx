@@ -1,10 +1,16 @@
-import { BlogPosts } from 'app/components/posts'
-import fs from 'fs'
-import { CustomMDX } from './components/mdx'
+import fs from 'fs/promises'
+import Posts from 'app/components/posts'
+import { getPosts } from 'app/lib/supabase';
+import { CustomMDX } from 'app/components/mdx';
+
+export const revalidate = 0;
 
 export default async function Page() {
-  let bio = fs.readFileSync('app/bio.mdx', 'utf-8')
-  const content = await CustomMDX(bio)
+
+  const bioPath = `${process.cwd()}/app/bio.mdx`;
+  let bio = await fs.readFile(bioPath, 'utf-8');
+  const renderedBio = await CustomMDX(bio);
+  const posts = await getPosts();
 
   return (
     <section>
@@ -15,10 +21,10 @@ export default async function Page() {
         Mathematics and Computer Science @ Stanford University
       </h2>
       <article className="prose">
-        {content}
+        { renderedBio }
       </article>
       <div className="my-8">
-        <BlogPosts />
+        <Posts params={posts}/>
       </div>
       <h2 className="mb-2 text-xl">
         Contact
