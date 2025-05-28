@@ -8,9 +8,5 @@ export const metadata = {
 export const revalidate = 0;
 
 export default function Page({ params }) {
-  return (
-    <section>
-      <PostForm draftId={params.id}/>
-    </section>
-  );
+  return <PostForm params={{id: params.id}}/>
 }

@@ -8,9 +8,5 @@ export const metadata = {
 };
 
 export default function Page() {
-  return (
-    <section>
-      <PostForm />
-    </section>
-  );
+  return <PostForm />
 }

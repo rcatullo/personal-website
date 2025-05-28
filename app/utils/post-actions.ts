@@ -30,3 +30,27 @@ export async function save(title: string, content: string, id?: number): Promise
         return;
     }
 }
+
+export async function deletePost(id: number) {
+    try {
+        await fetch('/api/posts', {
+            method: 'DELETE',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ id })
+        });
+    } catch (error) {
+        console.error('Error deleting post:', error);
+    }
+}
+
+export async function draftPost(id: number) {
+    try {
+        await fetch('/api/posts', {
+            method: 'PUT',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ id, published: false })
+        });
+    } catch (error) {
+        console.error('Error drafting post:', error);
+    }
+}

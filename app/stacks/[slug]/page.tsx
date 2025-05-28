@@ -1,9 +1,9 @@
-import { notFound } from 'next/navigation'
 import supabase from 'app/lib/supabase'
 import { getPostBySlug, getContentById } from 'app/lib/supabase'
 import { formatDate } from 'app/utils/utils'
 import { baseUrl } from 'app/sitemap';
 import { CustomMDX } from 'app/components/mdx';
+import Actions from 'app/components/post-actions'
 
 // Generate static params at build time
 export async function generateStaticParams() {
@@ -56,7 +56,7 @@ export default async function Page({ params }) {
     const renderedMdx = await CustomMDX(mdx);
 
     if (!post) {
-        return <p className="text-neutral-600 dark:text-neutral-400"></p>
+        return <p className="text-neutral-600 dark:text-neutral-400">Not found.</p>
     }
 
     return (
@@ -90,6 +90,7 @@ export default async function Page({ params }) {
             <article className="prose">
                 { renderedMdx }
             </article>
+            <Actions params={{ id: post.id, draft: false }} />
         </section>
     )
 }

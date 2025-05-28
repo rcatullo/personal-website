@@ -27,32 +27,36 @@ export async function POST(req) {
 
 export async function PUT(req) {
   try {
-    const { title, content, id, published } = await req.json();
-    const slug = slugify(title);
+    const { content, ...request } = await req.json();
     const updated_at = new Date().toISOString();
     const { data, error } = await supabase.from('posts')
-      .select('*').eq('id', id).single();
+      .select('*').eq('id', request.id).single();
     
     if (error) throw error;
 
-    let published_at = data.published_at;
-    if (published && data.published === false) {
-      published_at = updated_at;
+    let post = {...request, updated_at};
+
+    if (request.published && data.published === false) {
+      post = {...post, published_at: updated_at};
     }
 
-    const post = { title, slug, published, updated_at, published_at }
+    if (request.title && request.title !== data.title) {
+      post = {...post, slug: slugify(request.title)};
+    }
 
     const { error: updateErr } = await supabase.from('posts')
       .update(post)
-      .eq('id', id);
+      .eq('id', request.id);
     
     if (updateErr) throw updateErr;
 
-    const { error: contentError } = await supabase.from('content')
-      .update({ markdown: content })
-      .eq('id', id);
-    
-    if (contentError) throw contentError;
+    if (content) {
+      const { error: contentError } = await supabase.from('content')
+        .update({ markdown: content })
+        .eq('id', request.id);
+      
+      if (contentError) throw contentError;
+    }
     
     return NextResponse.json({ success: true, data: post });
     
