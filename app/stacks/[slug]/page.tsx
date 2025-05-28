@@ -47,6 +47,8 @@ export async function generateStaticParams() {
   }
 }*/
 
+export const revalidate = 0;
+
 export default async function Page({ params }) {
 
     const post = await getPostBySlug(params.slug);

@@ -1,27 +1,12 @@
-'use client';
-import supabase from 'app/lib/supabase'
 import { getPosts } from 'app/lib/supabase'
-import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { formatDate } from 'app/stacks/utils'
 
-type Metadata = {
-  id: number;
-  title: string;
-  slug: string;
-  created_at: string;
-  published: boolean;
-}
-
-export default function Posts() {
-  const [posts, setPosts] = useState<Metadata[]>([])
-
-  useEffect(() => {
-      getPosts().then(res => {setPosts(res)})
-  }, [supabase]);
+export default async function Posts() {
+  const posts = await getPosts();
 
   if (!posts || posts.length === 0) {
-    return <p className="text-neutral-600 dark:text-neutral-400"></p>
+    return <p className="text-neutral-600 dark:text-neutral-400">No posts found.</p>
   }
 
   return (

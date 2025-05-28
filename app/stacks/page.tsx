@@ -6,6 +6,7 @@ export const metadata = {
   description: 'A series of math blog posts.',
 }
 
+export const revalidate = 0;
 export default async function Page() {
   return (
     <section>

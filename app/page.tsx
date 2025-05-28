@@ -2,6 +2,8 @@ import fs from 'fs/promises'
 import Posts from 'app/components/posts'
 import { MarkdownRenderer } from './components/editor/markdown-renderer';
 
+export const revalidate = 0;
+
 export default async function Page() {
 
   let bio = await fs.readFile('app/bio.mdx', 'utf-8');
