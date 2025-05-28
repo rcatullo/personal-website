@@ -2,7 +2,7 @@
 import React, { useEffect, useState, FormEvent } from 'react';
 import { MdxEditor } from './editor/mdx-editor';
 import { getDraft } from 'app/lib/supabase';
-import Actions from './post-actions';
+import Actions from './actions';
 import { useRouter } from "next/navigation";
 
 

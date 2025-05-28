@@ -1,13 +1,14 @@
 import fs from 'fs/promises'
 import Posts from 'app/components/posts'
-import { getPosts } from './lib/supabase';
-import { CustomMDX } from './components/mdx';
+import { getPosts } from 'app/lib/supabase';
+import { CustomMDX } from 'app/components/mdx';
 
 export const revalidate = 0;
 
 export default async function Page() {
 
-  let bio = await fs.readFile('app/bio.mdx', 'utf-8');
+  const bioPath = `${process.cwd()}/app/bio.mdx`;
+  let bio = await fs.readFile(bioPath, 'utf-8');
   const renderedBio = await CustomMDX(bio);
   const posts = await getPosts();
 
