@@ -24,55 +24,62 @@ export function MarkdownRenderer({ content, className = '' }: MarkdownRendererPr
   useEffect(() => {
     let isMounted = true;
 
-    const renderMarkdown = async () => {
+    const compileContent = async () => {
       try {
-        const macros = await generateMacros();
-        const options = {
-          macros,
-          trust: true,
-          strict: false,
-          throwOnError: false,
-          globalGroup: true,
-        };
-
-        const { content: compiledContent } = await compileMDX({
-          source: content + katexCSS,
-          options: {
-            parseFrontmatter: false,
-            mdxOptions: {
-              remarkPlugins: [remarkMath],
-              rehypePlugins: [[rehypeKatex, options]],
-            },
-          },
-          components: mdxComponents.components,
-        });
-
+        const compiledContent = await getCompiledContent(content);
         if (isMounted) {
           setRenderedContent(compiledContent);
           setError(null);
         }
       } catch (err) {
-        console.error('Error rendering markdown:', err);
-        if (isMounted) {
-          setError('Failed to render markdown preview');
-          setRenderedContent(<div className="text-red-500">Error rendering markdown preview</div>);
-        }
+        handleCompileError(err, isMounted);
       } finally {
-        if (isMounted) {
-          setIsLoading(false);
-        }
+        if (isMounted) setIsLoading(false);
       }
     };
 
-    renderMarkdown();
+    compileContent();
 
     return () => {
       isMounted = false;
     };
   }, [content]);
 
+  const getCompiledContent = async (content: string) => {
+    const macros = await generateMacros();
+    const options = {
+      macros,
+      trust: true,
+      strict: false,
+      throwOnError: false,
+      globalGroup: true,
+    };
+
+    const { content: compiledContent } = await compileMDX({
+      source: content + katexCSS,
+      options: {
+        parseFrontmatter: false,
+        mdxOptions: {
+          remarkPlugins: [remarkMath],
+          rehypePlugins: [[rehypeKatex, options]],
+        },
+      },
+      components: mdxComponents.components,
+    });
+
+    return compiledContent;
+  };
+
+  const handleCompileError = (err: any, isMounted: boolean) => {
+    console.error('Error rendering markdown:', err);
+    if (isMounted) {
+      setError('Failed to render markdown preview');
+      setRenderedContent(<div className="text-red-500">Error rendering markdown preview</div>);
+    }
+  };
+
   if (isLoading) {
-    return <div className="text-gray-500"></div>;
+    return <div className="text-gray-500">Loading...</div>;
   }
 
   if (error) {

@@ -1,6 +1,6 @@
 'use client';
 import React, { useCallback, useEffect, useState, FormEvent } from 'react';
-import { MdxEditor } from './editor/mdx-editor';
+import { MdxEditor } from '../editor/mdx-editor';
 import { getDraft } from 'app/lib/supabase';
 import Actions from './actions';
 import { useRouter } from "next/navigation";
@@ -11,22 +11,17 @@ interface PostFormProps {
 }
 
 export function PostForm({ params }: PostFormProps) {
-  console.log('PostForm render', { params });
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [id, setId] = useState<number | undefined>(params?.id);
   const router = useRouter();
   
-  // Log content changes
   const handleContentChange = useCallback((newContent: string) => {
-    console.log('Content changed, length:', newContent.length);
     setContent(newContent);
   }, []);
   
-  // Log title changes
   const handleTitleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const newTitle = e.target.value;
-    console.log('Title changed:', newTitle);
     setTitle(newTitle);
   }, []);
 
@@ -65,11 +60,8 @@ export function PostForm({ params }: PostFormProps) {
           title={title}
           postId={id}
           onSaveSuccess={(newId) => {
-            console.log('Save successful, new ID:', newId);
             if (!id && newId) {
-              console.log('Updating URL with new post ID:', newId);
               setId(newId);
-              // Update the URL to include the new post ID
               router.push(`/stacks/new-post/${newId}`);
             }
           }}

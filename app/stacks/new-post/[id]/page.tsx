@@ -1,4 +1,4 @@
-import { PostForm } from '../../../components/post-form';
+import { PostForm } from '../../../components/drafting/post-form';
 
 export const metadata = {
   title: 'New Post',

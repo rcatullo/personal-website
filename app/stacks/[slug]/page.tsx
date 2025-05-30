@@ -3,7 +3,7 @@ import { getPostBySlug, getContentById } from 'app/lib/supabase'
 import { formatDate } from 'app/utils/utils'
 import { baseUrl } from 'app/sitemap';
 import { CustomMDX } from 'app/components/mdx';
-import Actions from 'app/components/actions'
+import Actions from 'app/components/drafting/actions'
 
 // Generate static params at build time
 export async function generateStaticParams() {
