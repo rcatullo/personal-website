@@ -15,19 +15,47 @@ export async function publish(title: string, content: string, id?: number) {
 }
 
 export async function save(title: string, content: string, id?: number): Promise<number | undefined> {
-    if (!title.trim() || !content.trim()) return;
+    if (!title.trim() || !content.trim()) {
+        console.log('Save skipped: title or content is empty');
+        return;
+    }
     
     try {
-        const res = await fetch('/api/posts', {
-            method: id ? 'PUT' : 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ title, content, id, published: false })
+        console.log('Saving post:', { id, title: title.substring(0, 20) + '...', contentLength: content.length });
+        const url = '/api/posts';
+        const method = id ? 'PUT' : 'POST';
+        const body = JSON.stringify({ 
+            title, 
+            content, 
+            id, 
+            published: false 
         });
+        
+        console.log('Sending request:', { method, url, body: JSON.parse(body) });
+        
+        const res = await fetch(url, {
+            method,
+            headers: {'Content-Type': 'application/json'},
+            body
+        });
+        
+        if (!res.ok) {
+            const errorText = await res.text();
+            throw new Error(`HTTP error! status: ${res.status}, body: ${errorText}`);
+        }
+        
         const response = await res.json();
+        console.log('Save successful, response:', response);
+        
+        if (!response.data?.id) {
+            console.error('Unexpected response format:', response);
+            throw new Error('Invalid response format: missing data.id');
+        }
+        
         return response.data.id;
     } catch (error) {
         console.error('Error saving draft:', error);
-        return;
+        throw error; // Re-throw to be handled by the caller
     }
 }
 

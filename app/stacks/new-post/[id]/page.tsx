@@ -7,6 +7,7 @@ export const metadata = {
 
 export const revalidate = 0;
 
-export default function Page({ params }) {
-  return <PostForm params={{id: params.id}}/>
+export default async function Page({ params }) {
+  const { id } = await params;
+  return <PostForm params={{id}}/>
 }

@@ -1,48 +1,65 @@
 'use client';
 import React, { useState, useCallback } from 'react';
 import { EditorTabs } from './editor-tabs';
-import { MarkdownPreview } from './markdown-preview';
+import { EditorContent } from './editor-content';
+import { useDebounce } from 'app/hooks/use-debounce';
+import { MdxEditorProps, EditorTab } from './types';
+import { useAutoSave } from './use-auto-save';
 
-type EditorTab = 'edit' | 'preview';
-
-interface MdxEditorProps {
-  value: string;
-  onChange: (newVal: string) => void;
-}
-
-export function MdxEditor({ value, onChange }: MdxEditorProps) {
+export function MdxEditor({ value, onChange, title, postId, onSaveSuccess }: MdxEditorProps) {
   const [activeTab, setActiveTab] = useState<EditorTab>('edit');
   const [previewContent, setPreviewContent] = useState(value);
+  
+  const { saveStatus, handleSave } = useAutoSave(title, postId, onSaveSuccess);
+  
+  const debouncedSave = useDebounce(async (content: string) => {
+    await handleSave(content);
+  }, 1000);
 
   const handleEditorChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const newValue = e.target.value;
     setPreviewContent(newValue);
     onChange(newValue);
-  }, [onChange]);
+    debouncedSave(newValue);
+  }, [onChange, debouncedSave]);
 
   const handleTabChange = useCallback((tab: EditorTab) => {
     setActiveTab(tab);
   }, []);
 
   return (
-    <>
-      {activeTab === 'edit' ? (
-          <textarea
-            value={value}
-            onChange={handleEditorChange}
-            className="bg-transparent min-w-full min-h-[300px] font-mono text-sm text-gray-900 dark:text-gray-100 border-0 focus:ring-0 focus:outline-none resize-none"
-            placeholder="Start writing your markdown here..."
-            spellCheck="false"
-          />
-        ) : (
-          <MarkdownPreview content={previewContent} />
-        )}
-      <div className="border-t border-gray-200 dark:border-gray-700">
-        <EditorTabs 
+    <div className="flex flex-col h-full">
+      
+      <div className="flex-1 overflow-auto">
+        <EditorContent 
           activeTab={activeTab} 
-          onTabChange={handleTabChange} 
+          value={value} 
+          onChange={handleEditorChange} 
+          previewContent={previewContent}
         />
       </div>
-    </>
+
+      <div className="flex items-center justify-between mb-4">
+        <EditorTabs activeTab={activeTab} onTabChange={handleTabChange} />
+        <StatusIndicator status={saveStatus} />
+      </div>
+    </div>
+  );
+}
+
+function StatusIndicator({ status }: { status: string }) {
+  const statusText = {
+    saving: 'Saving...',
+    saved: 'Saved',
+    error: 'Error saving',
+    idle: ''
+  }[status];
+
+  if (!statusText) return null;
+  
+  return (
+    <div className="text-sm text-gray-500">
+      {statusText}
+    </div>
   );
 }
