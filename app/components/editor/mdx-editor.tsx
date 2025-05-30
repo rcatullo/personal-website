@@ -3,9 +3,31 @@ import React, { useState, useCallback } from 'react';
 import { EditorTabs } from './editor-tabs';
 import { EditorContent } from './editor-content';
 import { useDebounce } from 'app/hooks/use-debounce';
-import { MdxEditorProps, EditorTab } from './types';
 import { useAutoSave } from './use-auto-save';
+import StatusIndicator from '../ui/status-indicator';
 
+type EditorTab = 'edit' | 'preview';
+
+interface MdxEditorProps {
+  value: string;
+  onChange: (newVal: string) => void;
+  title: string;
+  postId?: number;
+  onSaveSuccess?: (id: number) => void;
+}
+
+  /**
+   * An editor component for MDX content, with tabs for switching between edit
+   * and preview modes.
+   *
+   * @param {string} value - The initial value of the editor
+   * @param {(newVal: string) => void} onChange - A callback to call when the
+   *   value of the editor changes
+   * @param {string} title - The title of the post being edited
+   * @param {number} postId - The ID of the post being edited, if it already exists
+   * @param {(id: number) => void} onSaveSuccess - A callback to call when the
+   *   post is successfully saved
+   */
 export function MdxEditor({ value, onChange, title, postId, onSaveSuccess }: MdxEditorProps) {
   const [activeTab, setActiveTab] = useState<EditorTab>('edit');
   const [previewContent, setPreviewContent] = useState(value);
@@ -43,23 +65,6 @@ export function MdxEditor({ value, onChange, title, postId, onSaveSuccess }: Mdx
         <EditorTabs activeTab={activeTab} onTabChange={handleTabChange} />
         <StatusIndicator status={saveStatus} />
       </div>
-    </div>
-  );
-}
-
-function StatusIndicator({ status }: { status: string }) {
-  const statusText = {
-    saving: 'Saving...',
-    saved: 'Saved',
-    error: 'Error saving',
-    idle: ''
-  }[status];
-
-  if (!statusText) return null;
-  
-  return (
-    <div className="text-sm text-gray-500">
-      {statusText}
     </div>
   );
 }

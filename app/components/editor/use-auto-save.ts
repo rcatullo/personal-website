@@ -1,33 +1,40 @@
 import { useState, useCallback } from 'react';
 import { save } from 'app/utils/post-actions';
-import { SaveStatus } from './types';
 
-export function useAutoSave(title: string, postId?: number, onSaveSuccess?: (id: number) => void) {
-  const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle');
+type SaveStatus = 'idle' | 'saving' | 'saved' | 'error';
 
-  const handleSave = useCallback(async (content: string) => {
-    if (!title.trim() || !content.trim()) return;
+export function useAutoSave(
+  title: string,
+  postId?: number,
+  onSaveSuccess?: (id: number) => void
+): {
+  saveStatus: SaveStatus;
+  handleSave: (content: string) => Promise<void>;
+} {
+  const [status, setStatus] = useState<SaveStatus>('idle');
 
-    setSaveStatus('saving');
-    
-    try {
-      const id = await save(title, content, postId);
-      if (id) {
-        setSaveStatus('saved');
-        onSaveSuccess?.(id);
-        
-        setTimeout(() => {
-          setSaveStatus('idle');
-        }, 2000);
-        
-        return id;
+  const handleSave = useCallback(
+    async (content: string) => {
+      if (!title.trim() || !content.trim()) return;
+
+      setStatus('saving');
+
+      try {
+        const id = await save(title, content, postId);
+        if (id) {
+          setStatus('saved');
+          onSaveSuccess?.(id);
+          setTimeout(() => setStatus('idle'), 2000);
+        } else {
+          throw new Error('Save returned no ID');
+        }
+      } catch (error) {
+        setStatus('error');
+        throw error;
       }
-      throw new Error('Save returned no ID');
-    } catch (error) {
-      setSaveStatus('error');
-      throw error;
-    }
-  }, [title, postId, onSaveSuccess]);
+    },
+    [title, postId, onSaveSuccess]
+  );
 
-  return { saveStatus, handleSave };
+  return { saveStatus: status, handleSave };
 }

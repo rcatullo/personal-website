@@ -1,6 +1,7 @@
 import NewPostButton from "app/components/ui/new-post-button"
 import Posts from 'app/components/posts'
-import { getPosts } from 'app/lib/supabase'
+import { getPosts } from 'app/utils/supabase/get-utils'
+
 export const metadata = {
   title: 'The Stacks',
   description: 'A series of math blog posts.',

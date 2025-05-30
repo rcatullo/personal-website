@@ -1,11 +1,4 @@
-import { createClient } from '@supabase/supabase-js';
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
-
-export default supabase;
+import supabase from 'app/utils/supabase/client';
 
 export async function getPosts(drafts: boolean = false) {
   const { data: posts, error } = await supabase
@@ -22,7 +15,7 @@ export async function getPosts(drafts: boolean = false) {
   return posts;
 }
 
-export async function getPostBySlug(slug) {
+export async function getPostBySlug(slug: string) {
   const { data: post, error } = await supabase
     .from('posts')
     .select('*')
@@ -37,7 +30,7 @@ export async function getPostBySlug(slug) {
   return post;
 }
 
-export async function getContentById(id) {
+export async function getContentById(id: number) {
   const { data, error } = await supabase
     .from('content')
     .select('*')
@@ -66,13 +59,30 @@ export async function getPostById(id: number) {
 }
 
 export async function getDraft(id: number) {
+  if (id === null || id === undefined) {
+    console.error('Error: ID is required');
+    return { title: null, content: null, error: 'ID is required' };
+  }
+
   try {
     const draft = await getPostById(id);
-    const title = draft.title;
+    
+    if (!draft) {
+      console.error(`Error: Draft with ID ${id} not found`);
+      return { title: null, content: null, error: 'Draft not found' };
+    }
+
     const content = await getContentById(id);
-    return { title, content };
+    
+    if (!content) {
+      console.error(`Error: Content for draft ${id} not found`);
+      return { title: draft.title, content: null, error: 'Content not found' };
+    }
+
+    return { title: draft.title, content, error: null };
   } catch (error) {
-    console.error('Error fetching draft:', error);
-    return { title: null, content: null };
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+    console.error('Error fetching draft:', errorMessage);
+    return { title: null, content: null, error: errorMessage };
   }
 }

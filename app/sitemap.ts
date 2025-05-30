@@ -1,4 +1,4 @@
-import { getPosts } from 'app/lib/supabase'
+import { getPosts } from 'app/utils/supabase/get-utils'
 
 export const baseUrl = 'https://rcatullo.com'
 

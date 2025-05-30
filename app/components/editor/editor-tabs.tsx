@@ -1,5 +1,5 @@
 import React from 'react';
-import { TabButton } from './tab-button';
+import { TabButton } from '../ui/tab-button';
 
 type TabType = 'edit' | 'preview';
 

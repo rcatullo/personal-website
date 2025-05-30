@@ -1,8 +1,8 @@
-import supabase from 'app/lib/supabase'
-import { getPostBySlug, getContentById } from 'app/lib/supabase'
+import supabase from 'app/utils/supabase/client'
+import { getPostBySlug, getContentById } from 'app/utils/supabase/get-utils'
 import { formatDate } from 'app/utils/utils'
-import { baseUrl } from 'app/sitemap';
-import { CustomMDX } from 'app/components/mdx';
+import { baseUrl } from 'app/sitemap'
+import { CustomMDX } from 'app/components/mdx'
 import Actions from 'app/components/drafting/actions'
 
 // Generate static params at build time
@@ -50,8 +50,9 @@ export async function generateStaticParams() {
 export const revalidate = 0;
 
 export default async function Page({ params }) {
-
-    const post = await getPostBySlug(params.slug);
+  
+    const { slug } = await params;
+    const post = await getPostBySlug(slug);
     const mdx: string = await getContentById(post.id);
     const renderedMdx = await CustomMDX(mdx);
 

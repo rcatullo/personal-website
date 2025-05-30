@@ -13,10 +13,28 @@ const katexCSS = `
 
 interface MarkdownRendererProps {
   content: string;
-  className?: string;
 }
 
-export function MarkdownRenderer({ content, className = '' }: MarkdownRendererProps) {
+  /**
+   * A React component that renders a markdown string using `next-mdx-remote` on the client.
+   *
+   * This component takes a single prop, `content`, which is a markdown string.
+   * It renders the markdown as HTML, with math support using KaTeX.
+   *
+   * The component also handles errors when rendering the markdown,
+   * and displays a loading message while the markdown is being rendered.
+   *
+   * The component uses the `mdxComponents` object from the `app/components/mdx` module
+   * to render the markdown. This object should contain the components that will be used
+   * to render the markdown, such as `h1`, `p`, `code`, etc.
+   *
+   * The component also uses the `generateMacros` function from the `app/utils/katex-utils`
+   * module to generate the macros that will be used to render math in the markdown.
+   *
+   * @param {string} content - The markdown string to render.
+   * @return {React.ReactElement} The rendered markdown as HTML.
+   */
+export function MarkdownRenderer({ content }: MarkdownRendererProps) {
   const [renderedContent, setRenderedContent] = React.useState<React.ReactNode>(null);
   const [isLoading, setIsLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);

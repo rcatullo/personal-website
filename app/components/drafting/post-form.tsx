@@ -1,7 +1,7 @@
 'use client';
 import React, { useCallback, useEffect, useState, FormEvent } from 'react';
 import { MdxEditor } from '../editor/mdx-editor';
-import { getDraft } from 'app/lib/supabase';
+import { getDraft } from 'app/utils/supabase/get-utils';
 import Actions from './actions';
 import { useRouter } from "next/navigation";
 

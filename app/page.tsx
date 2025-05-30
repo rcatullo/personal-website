@@ -1,6 +1,6 @@
 import fs from 'fs/promises'
 import Posts from 'app/components/posts'
-import { getPosts } from 'app/lib/supabase';
+import { getPosts } from 'app/utils/supabase/get-utils';
 import { CustomMDX } from 'app/components/mdx';
 
 export const revalidate = 0;

@@ -1,87 +1,92 @@
 import { NextResponse } from 'next/server';
 import { slugify } from 'app/components/mdx'
-import supabase from 'app/lib/supabase';
+import { getPostById } from 'app/utils/supabase/get-utils';
+import { insertContent, insertPost, validate } from 'app/utils/supabase/post-utils';
+import { updatePost, updateContent, formUpdateReq } from 'app/utils/supabase/put-utils';
+import { deletePost, validateDeleteRequest } from 'app/utils/supabase/delete-utils';
 
-export async function POST(req) {
+export async function POST(req: Request) {
   try {
-    const { title, content, published } = await req.json();
+    const input = await req.json();
+    validate(input);
+    
+    const { title, content, published } = input;
     const slug = slugify(title);
-    const { data: post, error } = await supabase.from('posts')
-      .insert({ title, slug, published }).select().single();
+    const post = await insertPost({ title, slug, published });
+    await insertContent(post.id, content);
 
-    if (error) throw error;
-
-    const { error: contentError } = await supabase.from('content')
-      .insert({ id: post.id, markdown: content }).select().single();
-
-    if (contentError) throw contentError;
-
-    return NextResponse.json({ success: true, data: post });
-  } catch (err) {
     return NextResponse.json(
-      { success: false, error: err.message || String(err) },
-      { status: 500 }
+      { success: true, data: post },
+      { status: 201 }
+    );
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
+    console.error('Error creating post:', error);
+    
+    return NextResponse.json(
+      { success: false, error: errorMessage },
+      { status: error instanceof Error && error.message.includes('Failed to create') ? 400 : 500 }
     );
   }
 }
 
-export async function PUT(req) {
+export async function PUT(req: Request) {
   try {
     const { content, ...request } = await req.json();
-    const updated_at = new Date().toISOString();
-    const { data, error } = await supabase.from('posts')
-      .select('*').eq('id', request.id).single();
+    const updatedAt = new Date().toISOString();
     
-    if (error) throw error;
-
-    let post = {...request, updated_at};
-
-    if (request.published && data.published === false) {
-      post = {...post, published_at: updated_at};
-    }
-
-    if (request.title && request.title !== data.title) {
-      post = {...post, slug: slugify(request.title)};
-    }
-
-    const { error: updateErr } = await supabase.from('posts')
-      .update(post)
-      .eq('id', request.id);
+    const currentPost = await getPostById(request.id);
+    const updates = formUpdateReq(currentPost, request, updatedAt);
+    const data = await updatePost(request.id, updates);
     
-    if (updateErr) throw updateErr;
-
     if (content) {
-      const { error: contentError } = await supabase.from('content')
-        .update({ markdown: content })
-        .eq('id', request.id);
-      
-      if (contentError) throw contentError;
+      await updateContent(request.id, content);
     }
     
-    return NextResponse.json({ success: true, data: post });
-    
-  } catch (err) {
     return NextResponse.json(
-      { success: false, error: err.message || String(err) },
-      { status: 500 }
+      { success: true, data},
+      { status: 200 }
+    );
+    
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
+    console.error('Error updating post:', error);
+    
+    const statusCode = error instanceof Error && error.message.includes('Failed to fetch post') 
+      ? 404 
+      : error instanceof Error && error.message.includes('Failed to update') 
+        ? 400 
+        : 500;
+    
+    return NextResponse.json(
+      { success: false, error: errorMessage },
+      { status: statusCode }
     );
   }
 }
 
-export async function DELETE(req) {
+
+export async function DELETE(req: Request) {
   try {
     const { id } = await req.json();
-    const { error } = await supabase.from('posts')
-      .delete()
-      .eq('id', id);
     
-    if (error) throw error;
+    validateDeleteRequest(id);
     
-    return NextResponse.json({ success: true });
-  } catch(err) {
+    await deletePost(id);
+    
     return NextResponse.json(
-      { success: false, error: err.message || String(err) },
-      { status: 500 }
-    )
+      { success: true },
+      { status: 200 }
+    );
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
+    console.error('Error deleting post:', error);
+    
+    const statusCode = errorMessage.includes('not found') ? 404 : 500;
+    
+    return NextResponse.json(
+      { success: false, error: errorMessage },
+      { status: statusCode }
+    );
   }
 }

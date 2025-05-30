@@ -2,7 +2,7 @@
 import Link from 'next/link'
 import { formatDate } from 'app/utils/utils'
 import { useEffect, useState } from 'react';
-import { getPosts } from 'app/lib/supabase';
+import { getPosts } from 'app/utils/supabase/get-utils';
 import { useSession } from "next-auth/react"
 
 export default function Posts({ params }: { params: any[] }) {
