@@ -38,6 +38,10 @@ export function MdxEditor({ value, onChange, title, postId, onSaveSuccess }: Mdx
     await handleSave(content);
   }, 1000);
 
+  React.useEffect(() => {
+    setPreviewContent(value);
+  }, [value]);
+
   const handleEditorChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const newValue = e.target.value;
     setPreviewContent(newValue);
