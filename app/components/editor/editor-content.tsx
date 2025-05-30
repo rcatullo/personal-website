@@ -1,6 +1,7 @@
 import React from 'react';
 import { MarkdownPreview } from './markdown-preview';
-import { EditorTab } from './types';
+
+type EditorTab = 'edit' | 'preview';
 
 interface EditorContentProps {
   activeTab: EditorTab;
