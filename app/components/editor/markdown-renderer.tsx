@@ -6,6 +6,7 @@ import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 import { generateMacros } from 'app/utils/katex-utils';
 import * as mdxComponents from '../mdx';
+import { CustomMDX } from 'app/components/mdx'
 
 const katexCSS = `
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossOrigin="anonymous"/>
@@ -44,7 +45,7 @@ export function MarkdownRenderer({ content }: MarkdownRendererProps) {
 
     const compileContent = async () => {
       try {
-        const compiledContent = await getCompiledContent(content);
+        const compiledContent = await CustomMDX(content);
         if (isMounted) {
           setRenderedContent(compiledContent);
           setError(null);
@@ -62,31 +63,6 @@ export function MarkdownRenderer({ content }: MarkdownRendererProps) {
       isMounted = false;
     };
   }, [content]);
-
-  const getCompiledContent = async (content: string) => {
-    const macros = await generateMacros();
-    const options = {
-      macros,
-      trust: true,
-      strict: false,
-      throwOnError: false,
-      globalGroup: true,
-    };
-
-    const { content: compiledContent } = await compileMDX({
-      source: content + katexCSS,
-      options: {
-        parseFrontmatter: false,
-        mdxOptions: {
-          remarkPlugins: [remarkMath],
-          rehypePlugins: [[rehypeKatex, options]],
-        },
-      },
-      components: mdxComponents.components,
-    });
-
-    return compiledContent;
-  };
 
   const handleCompileError = (err: any, isMounted: boolean) => {
     console.error('Error rendering markdown:', err);
