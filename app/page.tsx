@@ -9,10 +9,23 @@ export default async function Page() {
 
   const bioPath = `${process.cwd()}/app/bio.mdx`;
   let bio = await fs.readFile(bioPath, 'utf-8');
-  const renderedBio = await CustomMDX(bio);
-  const posts = await getPosts();
+  let renderedBio;
+  let posts;
+  try {
+    renderedBio = await CustomMDX(bio);
+  } catch (err) {
+    console.error(err);
+    renderedBio = '';
+  }
+  try {
+    posts = await getPosts();
+  } catch (err) {
+    console.error(err);
+    posts = [];
+  }
 
-  return (
+
+    return (
     <section>
       <h1 className="mb-2 text-2xl font-semibold tracking-tighter">
         Ryan Catullo

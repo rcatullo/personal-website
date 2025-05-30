@@ -51,14 +51,18 @@ export const revalidate = 0;
 
 export default async function Page({ params }) {
   
-    const { slug } = await params;
-    const post = await getPostBySlug(slug);
-    const mdx: string = await getContentById(post.id);
-    const renderedMdx = await CustomMDX(mdx);
-
-    if (!post) {
-        return <p className="text-neutral-600 dark:text-neutral-400">Not found.</p>
-    }
+  const { slug } = await params;
+  let post;
+  let mdx;
+  let renderedMdx;
+  try {
+    post = await getPostBySlug(slug);
+    mdx = await getContentById(post.id);
+    renderedMdx = await CustomMDX(mdx);
+  } catch (err) {
+    console.error(err);
+    return <p className="text-neutral-600 dark:text-neutral-400">Not found.</p>
+  }
 
     return (
         <section>
@@ -85,7 +89,7 @@ export default async function Page({ params }) {
             </h1>
             <div className="flex justify-between items-center mt-2 mb-8 text-sm">
             <p className="text-sm text-neutral-600 dark:text-neutral-400">
-                {formatDate(post.created_at, false)}
+                {formatDate(post.published_at, false)}
             </p>
             </div>
             <article className="prose">

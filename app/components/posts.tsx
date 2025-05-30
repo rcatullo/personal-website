@@ -2,7 +2,7 @@
 import Link from 'next/link'
 import { formatDate } from 'app/utils/utils'
 import { useEffect, useState } from 'react';
-import { getPosts } from 'app/utils/supabase/get-utils';
+import { getDrafts, getPosts } from 'app/utils/supabase/get-utils';
 import { useSession } from "next-auth/react"
 
 export default function Posts({ params }: { params: any[] }) {
@@ -12,11 +12,21 @@ export default function Posts({ params }: { params: any[] }) {
   
   useEffect(() => {
     const update = async () => {
-      const posts = await getPosts()
-      setPosts(posts || []);
+      try {
+        const posts = await getPosts()
+        setPosts(posts);
+      } catch (err) {
+        console.error(err);
+        setPosts([]);
+      }
       if (session) {
-        const drafts = await getPosts(true)
-        setDrafts(drafts || []);
+        try {
+          const drafts = await getDrafts()
+          setDrafts(drafts);
+        } catch (err) {
+          console.error(err);
+          setDrafts([]);
+        }
       }
     };
     update();
@@ -40,7 +50,7 @@ export default function Posts({ params }: { params: any[] }) {
             >
               <div className="w-full flex flex-col md:flex-row space-x-0 md:space-x-2">
                 <p className="text-neutral-600 dark:text-neutral-400 w-[100px] tabular-nums">
-                  {formatDate(draft.created_at, false)}
+                  {formatDate(draft.updated_at, false)}
                 </p>
                 <p className="text-neutral-900 dark:text-neutral-100 tracking-tight">
                   {draft.title}
@@ -59,7 +69,7 @@ export default function Posts({ params }: { params: any[] }) {
         >
           <div className="w-full flex flex-col md:flex-row space-x-0 md:space-x-2">
             <p className="text-neutral-600 dark:text-neutral-400 w-[100px] tabular-nums">
-              {formatDate(post.created_at, false)}
+              {formatDate(post.published_at, false)}
             </p>
             <p className="text-neutral-900 dark:text-neutral-100 tracking-tight">
               {post.title}

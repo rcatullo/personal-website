@@ -1,21 +1,44 @@
 import supabase from 'app/utils/supabase/client';
 
-export async function getPosts(drafts: boolean = false) {
+type Post = {
+  "id": number;
+  "title": string;
+  "slug": string;
+  "published": boolean;
+  "published_at": string;
+  "created_at": string;
+  "updated_at": string;
+}
+
+export async function getPosts(): Promise<Post[]> {
   const { data: posts, error } = await supabase
     .from('posts')
     .select('*')
-    .eq('published', !drafts)
-    .order('created_at', { ascending: false });
+    .eq('published', true)
+    .order('published_at', { ascending: false });
 
-  if (error) {
-    console.error('Error fetching posts:', error);
-    return [];
+  if (error || !posts) {
+    throw new Error('Error fetching posts: ' + error);
   }
 
-  return posts;
+  return posts as Post[];
 }
 
-export async function getPostBySlug(slug: string) {
+export async function getDrafts(): Promise<Post[]> {
+  const { data: drafts, error } = await supabase
+    .from('posts')
+    .select('*')
+    .eq('published', false)
+    .order('updated_at', { ascending: false });
+
+  if (error || !drafts) {
+    throw new Error('Error fetching drafts: ' + error);
+  }
+
+  return drafts as Post[];
+}
+
+export async function getPostBySlug(slug: string): Promise<Post> {
   const { data: post, error } = await supabase
     .from('posts')
     .select('*')
@@ -24,13 +47,13 @@ export async function getPostBySlug(slug: string) {
     .single();
 
   if (error || !post) {
-    return null;
+    throw new Error('Error fetching post by slug: ' + error);
   }
 
-  return post;
+  return post as Post;
 }
 
-export async function getContentById(id: number) {
+export async function getContentById(id: number): Promise<string> {
   const { data, error } = await supabase
     .from('content')
     .select('*')
@@ -38,13 +61,13 @@ export async function getContentById(id: number) {
     .single();
 
   if (error || !data) {
-    return null;
+    throw new Error('Error fetching content by ID: ' + error);
   }
 
   return data.markdown;
 }
 
-export async function getPostById(id: number) {
+export async function getPostById(id: number): Promise<Post> {
   const { data: post, error } = await supabase
     .from('posts')
     .select('*')
@@ -52,37 +75,28 @@ export async function getPostById(id: number) {
     .single();
 
   if (error || !post) {
-    return null;
+    throw new Error('Error fetching post by ID: ' + error);
   }
 
-  return post;
+  return post as Post;
 }
 
-export async function getDraft(id: number) {
-  if (id === null || id === undefined) {
-    console.error('Error: ID is required');
-    return { title: null, content: null, error: 'ID is required' };
-  }
+export async function getDraft(id: number): Promise<{ title: string; content: string }> {
+    if (!id) {
+      throw new Error('ID is required');
+    }
 
-  try {
     const draft = await getPostById(id);
     
     if (!draft) {
-      console.error(`Error: Draft with ID ${id} not found`);
-      return { title: null, content: null, error: 'Draft not found' };
+      throw new Error(`Draft with ID ${id} not found`);
     }
 
     const content = await getContentById(id);
     
     if (!content) {
-      console.error(`Error: Content for draft ${id} not found`);
-      return { title: draft.title, content: null, error: 'Content not found' };
+      throw new Error(`Content for draft ${id} not found`);
     }
 
-    return { title: draft.title, content, error: null };
-  } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
-    console.error('Error fetching draft:', errorMessage);
-    return { title: null, content: null, error: errorMessage };
-  }
+    return { title: draft.title, content };
 }
