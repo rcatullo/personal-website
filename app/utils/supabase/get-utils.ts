@@ -1,14 +1,5 @@
 import supabase from 'app/utils/supabase/client';
-
-type Post = {
-  "id": number;
-  "title": string;
-  "slug": string;
-  "published": boolean;
-  "published_at": string;
-  "created_at": string;
-  "updated_at": string;
-}
+import { Post } from './types'
 
 export async function getPosts(): Promise<Post[]> {
   const { data: posts, error } = await supabase

@@ -24,12 +24,7 @@ export async function save(title: string, content: string, id?: number): Promise
         console.log('Saving post:', { id, title: title.substring(0, 20) + '...', contentLength: content.length });
         const url = '/api/posts';
         const method = id ? 'PUT' : 'POST';
-        const body = JSON.stringify({ 
-            title, 
-            content, 
-            id, 
-            published: false 
-        });
+        const body = JSON.stringify({ title, content, id, published: false });
         
         console.log('Sending request:', { method, url, body: JSON.parse(body) });
         
@@ -73,12 +68,24 @@ export async function deletePost(id: number) {
 
 export async function draftPost(id: number) {
     try {
-        await fetch('/api/posts', {
+        let response = await fetch('/api/posts', {
+            method: 'GET',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ id })
+        });
+        if (!response.ok) {
+            throw new Error(`Error: ${response.status} - ${response.statusText}`);
+        }
+        const { data } = await response.json();
+        response = await fetch('/api/posts', {
             method: 'PUT',
             headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ id, published: false })
-        });
+            body: JSON.stringify({ id, title: data.title, content: data.content, published: false })
+        }); 
+        if (!response.ok) {
+            throw new Error(`Error: ${response.status} - ${response.statusText}`);
+        }
     } catch (error) {
-        console.error('Error drafting post:', error);
+        console.error(error);
     }
 }
