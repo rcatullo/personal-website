@@ -1,27 +1,18 @@
 import supabase from 'app/utils/supabase/client'
 
-export interface DeletePostResponse {
-    success: boolean;
-    error?: string;
-}
-
-export async function deletePost(postId: string): Promise<void> {
+export async function deletePost(id: number) {
     const { error } = await supabase
         .from('posts')
         .delete()
-        .eq('id', postId);
+        .eq('id', id);
 
     if (error) {
         throw new Error(`Failed to delete post: ${error.message}`);
     }
 }
 
-export function validateDeleteRequest(id: string): void {
-    if (!id?.trim()) {
+export function validateDeleteRequest(id: number) {
+    if (!id && id !== 0) {
         throw new Error('Post ID is required');
-    }
-    
-    if (typeof id !== 'string' || id.length < 1) {
-        throw new Error('Invalid post ID format');
     }
 }
