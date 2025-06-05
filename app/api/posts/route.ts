@@ -4,7 +4,7 @@ import { getContentById, getPostById } from 'app/utils/supabase/get-utils';
 import { insertContent, insertPost, validate } from 'app/utils/supabase/post-utils';
 import { updatePost, updateContent } from 'app/utils/supabase/put-utils';
 import { deletePost, validateDeleteRequest } from 'app/utils/supabase/delete-utils';
-import { Post } from 'app/utils/supabase/types';
+import { Post, fullPost } from 'app/utils/supabase/types';
 
 export async function POST(req: Request) {
   try {
@@ -12,12 +12,12 @@ export async function POST(req: Request) {
     validate(input);
     
     const { title, content, published } = input;
-    const slug = slugify(title);
-    const post = await insertPost({ title, slug, published });
-    await insertContent(post.id, content);
+    const post: Post = await fullPost({ partial: { title, published } });
+    const data = await insertPost(post);
+    await insertContent(data.id, content);
 
     return NextResponse.json(
-      { success: true, data: post },
+      { success: true, data },
       { status: 201 }
     );
   } catch (error) {
@@ -34,16 +34,8 @@ export async function POST(req: Request) {
 export async function PUT(req: Request) {
   try {
     const { id, title, content, published } = await req.json();
-    const updated_at = new Date().toISOString();
-    
-    const post = await getPostById(id);
-    let published_at = post.published_at;
-    if (published && !post.published) {
-        published_at = updated_at;
-    }
-    const slug = slugify(title);
-    const update: Post = { id, title, slug, published, updated_at, published_at, created_at: post.created_at }
-    const data = await updatePost(id, update);
+    const update: Post = await fullPost({ partial: { id, title, published } });
+    const data = await updatePost(update);
     await updateContent(id, content);
     
     return NextResponse.json(
@@ -96,9 +88,14 @@ export async function DELETE(req: Request) {
 
 export async function GET(req: Request) {
   try {
-    const { id } = await req.json();
+    const { searchParams } = new URL(req.url);
+    const id = Number(searchParams.get('id'));
+    
+    if (!id || isNaN(id)) {
+      throw new Error('Post ID is required and must be a number');
+    }
 
-    const post = await getPostById(id);
+    const post = await fullPost({ partial: { id } });
     const content = await getContentById(id);
 
     return NextResponse.json(

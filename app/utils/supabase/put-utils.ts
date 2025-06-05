@@ -1,11 +1,11 @@
 import supabase from 'app/utils/supabase/client';
 import { Post } from './types'
 
-export async function updatePost(id: number, update: Post): Promise<Post> {
-    
+export async function updatePost(update: Post): Promise<Post> {
+    const { id, ...updateData } = update;
     const { data, error } = await supabase
         .from('posts')
-        .update(update)
+        .update(updateData)
         .eq('id', id)
         .select()
         .single();

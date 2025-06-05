@@ -68,10 +68,9 @@ export async function deletePost(id: number) {
 
 export async function draftPost(id: number) {
     try {
-        let response = await fetch('/api/posts', {
+        let response = await fetch(`/api/posts?id=${id}`, {
             method: 'GET',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ id })
+            headers: {'Content-Type': 'application/json'}
         });
         if (!response.ok) {
             throw new Error(`Error: ${response.status} - ${response.statusText}`);
