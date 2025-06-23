@@ -4,12 +4,20 @@ import { formatDate } from 'app/utils/utils'
 import { useEffect, useState } from 'react';
 import { getDrafts, getPosts } from 'app/utils/supabase/get-utils';
 import { useSession } from "next-auth/react"
+import Pagination from './ui/pagination';
 
 export default function Posts({ params }: { params: any[] }) {
   const [posts, setPosts] = useState(params);
   const [drafts, setDrafts] = useState<any[]>([]);
   const { data: session } = useSession();
-  
+  const [currentPage, setCurrentPage] = useState(1);
+  const POSTS_PER_PAGE = 10;
+
+  // Sort posts by published date descending
+  const sortedPosts = [...posts].sort((a, b) => new Date(b.published_at).getTime() - new Date(a.published_at).getTime());
+  const totalPages = Math.ceil(sortedPosts.length / POSTS_PER_PAGE);
+  const paginatedPosts = sortedPosts.slice((currentPage - 1) * POSTS_PER_PAGE, currentPage * POSTS_PER_PAGE);
+
   useEffect(() => {
     const update = async () => {
       try {
@@ -30,8 +38,13 @@ export default function Posts({ params }: { params: any[] }) {
       }
     };
     update();
-  }, [session, posts, drafts]);
-  
+  }, [session]);
+
+  useEffect(() => {
+    // Reset to first page if posts change
+    setCurrentPage(1);
+  }, [posts]);
+
   return (
     <div>
       {session && drafts.length > 0 && (
@@ -61,7 +74,7 @@ export default function Posts({ params }: { params: any[] }) {
           <hr className="my-6 border-neutral-200 dark:border-neutral-800" />
         </>
       )}
-      {posts.map((post) => (
+      {paginatedPosts.map((post) => (
         <Link
           key={post.slug}
           className="flex flex-col space-y-1 mb-4"
@@ -77,6 +90,11 @@ export default function Posts({ params }: { params: any[] }) {
           </div>
         </Link>
       ))}
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={setCurrentPage}
+      />
     </div>
   )
 }
