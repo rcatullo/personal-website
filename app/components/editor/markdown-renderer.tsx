@@ -1,11 +1,6 @@
 'use client';
 
 import React, { useEffect } from 'react';
-import { compileMDX } from 'next-mdx-remote/rsc';
-import remarkMath from 'remark-math';
-import rehypeKatex from 'rehype-katex';
-import { generateMacros } from 'app/utils/katex-utils';
-import * as mdxComponents from '../mdx';
 import { CustomMDX } from 'app/components/mdx'
 
 const katexCSS = `
@@ -25,12 +20,8 @@ interface MarkdownRendererProps {
    * The component also handles errors when rendering the markdown,
    * and displays a loading message while the markdown is being rendered.
    *
-   * The component uses the `mdxComponents` object from the `app/components/mdx` module
-   * to render the markdown. This object should contain the components that will be used
-   * to render the markdown, such as `h1`, `p`, `code`, etc.
-   *
-   * The component also uses the `generateMacros` function from the `app/utils/katex-utils`
-   * module to generate the macros that will be used to render math in the markdown.
+   * The component uses the `CustomMDX` function from the `app/components/mdx` module
+   * to render the markdown with custom components and math support.
    *
    * @param {string} content - The markdown string to render.
    * @return {React.ReactElement} The rendered markdown as HTML.

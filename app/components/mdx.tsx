@@ -66,6 +66,16 @@ function RoundedImage(props) {
 }
 
 function Code({ children, ...props }) {
+  const isInline = typeof children === 'string' && 
+                   !children.includes('\n') && 
+                   !props.className?.includes('block') &&
+                   !props.className?.includes('code-container');
+  
+  if (isInline) {
+    let codeHTML = highlight(children)
+    return <code className="px-1 py-0.5 rounded-lg bg-neutral-100 dark:bg-neutral-800" dangerouslySetInnerHTML={{ __html: codeHTML }} {...props} />
+  }
+  
   let codeHTML = highlight(children)
   return (
     <div className="relative group code-container">
